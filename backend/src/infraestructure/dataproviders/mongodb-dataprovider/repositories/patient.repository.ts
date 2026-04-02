@@ -4,12 +4,13 @@ import Patient from "./../../../../core/domain/entities/patient.entity.ts";
 
 export class PatientRepository {
   
-    async createPatient(patient: Patient): Promise<Patient> {
+  //   async createPatient(patient: Patient): Promise<Patient> {
     
-    const createdPatient = await PatientModel.create(patient);
+  //   const createdPatient = await PatientModel.create(patient);
     
-    return createdPatient.toObject() as Patient;
-  }
+  //   // return createdPatient.toObject() as Patient;
+  //   // return createdPatient as Patient;
+  // }
 
   // Other CRUD methods (find, update, delete) can be implemented similarly
 }
