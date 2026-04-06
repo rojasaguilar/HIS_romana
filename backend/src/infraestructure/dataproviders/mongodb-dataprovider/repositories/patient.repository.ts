@@ -76,6 +76,42 @@ export class PatientRepository implements IPatientRepository {
     );
   }
 
+  async getAll(): Promise<Patient[]> {
+    const patients = await PatientModel.find();
+
+    if (patients.length === 0) return [];
+
+    return patients.map((patient) => {
+      const patientAddress = new Address(
+        patient.address.street,
+        patient.address.number,
+        patient.address.city,
+        patient.address.state,
+        patient.address.zipCode,
+      );
+
+      const patientEmergencyConctact = patient.emergencyContact
+        ? new EmergencyContact(
+            patient.emergencyContact.name,
+            patient.emergencyContact.phoneNumber,
+            patient.emergencyContact.relation,
+          )
+        : undefined;
+
+      return new Patient(
+        patient.name,
+        patient.email,
+        patient.phoneNumber,
+        patientAddress,
+        patient.birthDate,
+        patient.allergies,
+        patient.bloodType,
+        patient._id.toString(),
+        patientEmergencyConctact,
+      );
+    });
+  }
+
   // Other CRUD methods (find, update, delete) can be implemented similarly
 }
 
