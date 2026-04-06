@@ -1,4 +1,4 @@
-import { isPostalCode } from "validator";
+import validator from 'validator';
 export class Address {
   constructor(
     public readonly street: string,
@@ -7,6 +7,7 @@ export class Address {
     public readonly state: string,
     public readonly zipCode: string,
   ) {
-    if (!isPostalCode(zipCode, "MX")) throw new Error("Código postal invalido");
+    if (!validator.isPostalCode(zipCode, 'MX'))
+      throw new Error('Código postal invalido');
   }
 }

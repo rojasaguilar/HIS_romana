@@ -1,4 +1,4 @@
-import { PatientEntity } from "../entities/patient.entity.ts";
+import { PatientEntity } from "../entities/patient.entity";
 
 export interface IPatientRepository {
   save(patient: PatientEntity): Promise<PatientEntity>;

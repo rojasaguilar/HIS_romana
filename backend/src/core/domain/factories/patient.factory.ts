@@ -3,11 +3,11 @@
 // // used on useCases to create new Patient instances based on the data received from the controllers or other sources
 // // then persisted using the repositories
 
-import PatientEntity from "../entities/patient.entity";
+import PatientEntity from '../entities/patient.entity';
 
-import { Address } from "../value-objects/address.vo";
-import { BloodType } from "../types/blood.type";
-import { EmergencyContact } from "../value-objects/emergencyContact.vo";
+import { Address } from '../value-objects/address.vo';
+import { BloodType } from '../types/blood.type';
+import { EmergencyContact } from '../value-objects/emergencyContact.vo';
 
 export interface RegisterPatientProps {
   name: string;
@@ -26,7 +26,7 @@ export interface RegisterPatientProps {
   //medical stuff
   bloodType: BloodType;
 
-  emergencyContact?: { name: string; phoneNumber: string };
+  emergencyContact?: { name: string; phoneNumber: string; relation: string };
 }
 
 export class PatientFactory {
@@ -39,6 +39,7 @@ export class PatientFactory {
       ? new EmergencyContact(
           props.emergencyContact.name,
           props.emergencyContact.phoneNumber,
+          props.emergencyContact.relation,
         )
       : undefined;
 

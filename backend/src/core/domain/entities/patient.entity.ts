@@ -1,8 +1,8 @@
-import { Address } from '../value-objects/address.vo.ts';
-import { EmergencyContact } from '../value-objects/emergencyContact.vo.ts';
-import { BloodType } from './../types/blood.type.ts';
+import { Address } from '../value-objects/address.vo';
+import { EmergencyContact } from '../value-objects/emergencyContact.vo';
+import { BloodType } from './../types/blood.type';
 
-import { isEmail } from 'validator';
+import validator from 'validator';
 
 export class PatientEntity {
   constructor(
@@ -19,7 +19,8 @@ export class PatientEntity {
     public readonly id?: string,
     public emergencyContact?: EmergencyContact,
   ) {
-    if (!isEmail(this.email)) throw new Error('Invalid email address');
+    if (!validator.isEmail(this.email))
+      throw new Error('Invalid email address');
   }
 
   public isUniversalDonator(): boolean {
