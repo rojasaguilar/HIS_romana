@@ -4,7 +4,7 @@ import { GetPatientUseCase } from '../../../core/usecases/patients/get-patient.u
 // import PatientEntity from '../../../core/domain/entities/patient.entity';
 // import PatientEntity just to know if my useCase returns that type
 
-class PatientController {
+export class PatientController {
   constructor(
     private registerPatient: RegisterPatientUseCase,
     private getPatient: GetPatientUseCase,
@@ -34,5 +34,3 @@ class PatientController {
     res.status(200).json(patients);
   }
 }
-
-export default PatientController;

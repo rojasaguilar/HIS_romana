@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import PatientController from '../controllers/patient.controller';
+import {PatientController} from '../controllers/patient.controller';
 
 export class PatientRouter {
   public router: Router;

@@ -1,7 +1,7 @@
 import { GetPatientUseCase } from '../../core/usecases/patients/get-patient.usecase';
 import { RegisterPatientUseCase } from '../../core/usecases/patients/register-patient.usecase';
 import PatientRepository from '../../infraestructure/dataproviders/mongodb-dataprovider/repositories/patient.repository';
-import PatientController from '../../presentation/http/controllers/patient.controller';
+import {PatientController} from '../../presentation/http/controllers/patient.controller';
 import { PatientRouter } from '../../presentation/http/routes/patient.routes';
 
 export const createPatientModule = () => {
