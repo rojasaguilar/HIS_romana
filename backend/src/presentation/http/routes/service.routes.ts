@@ -12,6 +12,7 @@ export class ServiceRoutes {
   private routes() {
     this.router
       .route('/')
+      .get(this.serviceController.getAllServices.bind(this.serviceController))
       .post(this.serviceController.createService.bind(this.serviceController));
   }
 }
