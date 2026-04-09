@@ -1,4 +1,4 @@
-import { Role } from "./../types/role.type.ts";
+import { Role } from '../types/role.type';
 
 export class SystemAccount {
   constructor(

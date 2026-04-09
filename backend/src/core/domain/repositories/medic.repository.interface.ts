@@ -1,6 +1,6 @@
 import { MedicEntity } from '../entities/medic.entity';
 
-export interface IPatientRepository {
+export interface IMedicRepository {
   save(medic: MedicEntity): Promise<MedicEntity>;
 
   findById(id: string): Promise<MedicEntity | null>;

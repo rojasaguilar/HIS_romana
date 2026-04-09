@@ -1,3 +1,5 @@
+import { MedicType } from "../types/medic.type";
+
 export class MedicEntity {
   constructor(
     public name: string,
@@ -13,6 +15,8 @@ export class MedicEntity {
     public consultationFee: number,
     public profilePictureUrl: string,
     public isActive: boolean,
+    public type: MedicType,
     public organizationId?: string,
+    public id?: string,
   ) {}
 }
