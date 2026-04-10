@@ -5,11 +5,13 @@ import {
   RegisterMedicDTO,
   RegisterMedicUseCase,
 } from '../../../core/usecases/medic/register-medic.usecase';
+import { GetAllMedicsUseCase } from '../../../core/usecases/medic/getAll-medics.usecase';
 
 export class MedicController {
   constructor(
     private registerMedicUseCase: RegisterMedicUseCase,
     private getMedicUseCase: GetMedicUseCase,
+    private getAllMedicsUseCase: GetAllMedicsUseCase,
   ) {}
 
   async createMedic(req: Request<RegisterMedicDTO>, res: Response) {
@@ -26,5 +28,11 @@ export class MedicController {
     const medic = await this.getMedicUseCase.findById(id);
 
     res.status(200).json(medic);
+  }
+
+  async getMedics(req: Request, res: Response) {
+    const medics = await this.getAllMedicsUseCase.execute();
+
+    res.status(200).json(medics);
   }
 }

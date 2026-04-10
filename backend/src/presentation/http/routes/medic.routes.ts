@@ -12,6 +12,7 @@ export class MedicRouter {
   private routes() {
     this.router
       .route('/')
+      .get(this.medicController.getMedics.bind(this.medicController))
       .post(this.medicController.createMedic.bind(this.medicController));
 
     this.router

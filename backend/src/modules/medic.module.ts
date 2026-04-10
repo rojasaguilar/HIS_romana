@@ -1,4 +1,5 @@
 import { GetMedicUseCase } from '../core/usecases/medic/get-medic.usecase';
+import { GetAllMedicsUseCase } from '../core/usecases/medic/getAll-medics.usecase';
 import { RegisterMedicUseCase } from '../core/usecases/medic/register-medic.usecase';
 import { MedicRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/medic.repository';
 import { SpecialityRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/speciality.repository';
@@ -16,9 +17,12 @@ export const createMedicModule = () => {
   );
   const getMedicUseCase = new GetMedicUseCase(medicRepository);
 
+  const getAllMedicsUseCase = new GetAllMedicsUseCase(medicRepository);
+
   const medicController = new MedicController(
     registerMedicUseCase,
     getMedicUseCase,
+    getAllMedicsUseCase,
   );
 
   const medicRouter = new MedicRouter(medicController);

@@ -18,6 +18,8 @@ export class MedicRepository implements IMedicRepository {
   }
 
   async getAll(): Promise<MedicEntity[]> {
-    throw new Error('Method not implemented.');
+    const medics = await medicModel.find();
+
+    return medics.map((medic) => MedicMapper.toDomain(medic));
   }
 }
