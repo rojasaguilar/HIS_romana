@@ -1,4 +1,4 @@
 export type Billing =
   | { source: 'DIRECT' }
-  | { source: 'SUBSCRIPTION'; suscriptionId: string }
+  | { source: 'SUBSCRIPTION'; subscriptionId: string }
   | { source: 'PROMOTION'; promotionId: string };

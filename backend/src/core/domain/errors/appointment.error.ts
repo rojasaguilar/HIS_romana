@@ -18,3 +18,31 @@ export class AppointmentCanNotBeCancelled extends Error {
     this.name = 'AppointmentCanNotBeCancelled';
   }
 }
+
+export class AppointmentCanNotBeReschedule extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AppointmentCanNotBeReschedule';
+  }
+}
+
+export class AppointmentCanNotBeCompleted extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AppointmentCanNotBeCompleted';
+  }
+}
+
+export class AppointmentDateError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AppointmentDateError';
+  }
+}
+
+export class AppointmentInconsistentStateError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'AppointmentInconsistentStateError';
+  }
+}
