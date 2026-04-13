@@ -7,11 +7,14 @@ import {
 } from '../errors/appointment.error';
 import { Status } from '../types/appointment-status.type';
 import { BillingVO } from '../value-objects/billing.vo';
-import { Cancellation } from '../value-objects/cancellation.vo';
+import {
+  Cancellation,
+  CancellationDTO,
+} from '../value-objects/cancellation.vo';
 
 export class AppointmentEntity {
   private constructor(
-    public startTime: Date,
+    public startDate: Date,
     public endTime: Date,
     public patientId: string,
     public medicId: string,
@@ -29,7 +32,7 @@ export class AppointmentEntity {
   ) {}
 
   static create(
-    startTime: Date,
+    startDate: Date,
     endTime: Date,
     patientId: string,
     medicId: string,
@@ -45,7 +48,7 @@ export class AppointmentEntity {
     completedAt?: Date,
     id?: string,
   ) {
-    this.validateEndDateLessThanStartDate(startTime, endTime);
+    this.validateEndDateLessThanStartDate(startDate, endTime);
 
     if (status === 'COMPLETADA' && !completedAt) {
       throw new AppointmentInconsistentStateError(
@@ -82,7 +85,7 @@ export class AppointmentEntity {
     }
 
     return new AppointmentEntity(
-      startTime,
+      startDate,
       endTime,
       patientId,
       medicId,
@@ -100,11 +103,19 @@ export class AppointmentEntity {
     );
   }
 
-  public cancel(cancellation: Cancellation) {
+  public cancel(cancellation: CancellationDTO) {
     if (!this.canBeCancelled())
       throw new AppointmentCanNotBeCancelled(
         `Appointmet with status: ${this.status} can not be cancelled`,
       );
+
+    const cancel = new Cancellation(
+      cancellation.cancelledBy,
+      cancellation.reason,
+      cancellation.cancelationDate,
+    );
+
+    this.cancellation = cancel;
 
     this.status = 'CANCELADA';
   }
@@ -114,6 +125,9 @@ export class AppointmentEntity {
       throw new AppointmentCanNotBeCompleted(
         `Appointment with status ${this.status} can not be marked as completed`,
       );
+
+    this.status = 'COMPLETADA';
+    this.completedAt = new Date();
   }
 
   public markNoShow() {}
@@ -135,8 +149,8 @@ export class AppointmentEntity {
     return this.status === 'PROGRAMADA';
   }
 
-  static validateEndDateLessThanStartDate(startTime: Date, endTime: Date) {
-    if (endTime.getTime() <= startTime.getTime())
+  static validateEndDateLessThanStartDate(startDate: Date, endTime: Date) {
+    if (endTime.getTime() <= startDate.getTime())
       throw new AppointmentDateError(`Start date can not be less tan end Date`);
   }
 

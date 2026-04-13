@@ -1,13 +1,32 @@
-import { CancellationActor } from "../types/cancellation-actor.type";
+import { CancellationError } from '../errors/cancellation.error';
+import { CancellationActor } from '../types/cancellation-actor.type';
+
+export interface CancellationDTO {
+  readonly cancelledBy: CancellationActor;
+  readonly reason: string;
+  readonly cancelationDate: Date;
+}
 
 export class Cancellation {
   constructor(
     public readonly cancelledBy: CancellationActor,
     public readonly reason: string,
-    public readonly canceledAt: Date,
+    public readonly cancelationDate: Date,
   ) {
     if (!reason) {
-      throw new Error('Cancellation reason is required');
+      throw new CancellationError(
+        `Reason must be specified on appointment cancellation`,
+      );
+    }
+
+    if (!cancelledBy) {
+      throw new CancellationError(
+        `There must be an user who cancelled the appointmet`,
+      );
+    }
+
+    if (!cancelationDate) {
+      throw new CancellationError(`A cancellation date must be specified`);
     }
   }
 }
