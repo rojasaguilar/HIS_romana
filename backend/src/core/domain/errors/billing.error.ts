@@ -4,3 +4,10 @@ export class BillingInconsistentError extends Error {
     this.name = 'BillingInconsistentError';
   }
 }
+
+export class InvalidBillingType extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'InvalidBillingType';
+  }
+}

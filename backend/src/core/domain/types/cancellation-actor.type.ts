@@ -1,1 +1,8 @@
-export type CancellationActor = 'PATIENT' | 'MEDIC' | 'RECEPCIONIST' | 'SYSTEM';
+export enum CancellationActor {
+  PATIENT = 'PATIENT',
+  MEDIC = 'MEDIC',
+  RECEPCIONIST = 'RECEPCIONIST',
+  SYSTEM = 'SYSTEM',
+}
+
+//'PATIENT' | 'MEDIC' | 'RECEPCIONIST' | 'SYSTEM'

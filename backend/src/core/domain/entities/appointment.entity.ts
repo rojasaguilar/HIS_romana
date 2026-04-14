@@ -7,28 +7,7 @@ import {
 } from '../errors/appointment.error';
 import { Status } from '../types/appointment-status.type';
 import { BillingVO } from '../value-objects/billing.vo';
-import {
-  Cancellation,
-  CancellationDTO,
-} from '../value-objects/cancellation.vo';
-
-export interface AppointmentDTO {
-  startDate: Date;
-  endTime: Date;
-  patientId: string;
-  medicId: string;
-  serviceId: string;
-  status: Status;
-  type: 'IN_PERSON' | 'ONLINE';
-  patientCharge: number;
-  medicEarning: number;
-  billing: BillingVO;
-  cancellation?: Cancellation;
-  preNotes?: string;
-  postNotes?: string;
-  completedAt?: Date;
-  readonly id?: string;
-}
+import { Cancellation } from '../value-objects/cancellation.vo';
 
 export class AppointmentEntity {
   private constructor(
@@ -61,82 +40,63 @@ export class AppointmentEntity {
         this.validateScheduledState();
         break;
       case 'NO_ASISTIO':
+        this.validateNoShowState();
         break;
 
       default:
         throw new AppointmentInconsistentStateError(
-          `appointment status: [${status}] not valid`,
+          `appointment status: [${this.status}] not valid`,
         );
     }
   }
 
-  static create(
-    startDate: Date,
-    endTime: Date,
-    patientId: string,
-    medicId: string,
-    serviceId: string,
-    status: Status,
-    type: 'IN_PERSON' | 'ONLINE',
-    patientCharge: number,
-    medicEarning: number,
-    billing: BillingVO,
-    cancellation?: Cancellation,
-    preNotes?: string,
-    postNotes?: string,
-    completedAt?: Date,
-    id?: string,
-  ) {
-    if (status === 'PROGRAMADA' && completedAt)
-      throw new AppointmentInconsistentStateError(
-        `An scheduled appointment can not have a completed date`,
-      );
-
-    if (status === 'PROGRAMADA' && cancellation)
-      throw new AppointmentInconsistentStateError(
-        `An scheduled appointment can not have cancellation info`,
-      );
-
-    if (status === 'CANCELADA' && !cancellation) {
-      throw new AppointmentInconsistentStateError(
-        `A canceled appointment must have it's cancellation info`,
-      );
-    }
-
+  static create(data: {
+    startDate: Date;
+    endTime: Date;
+    patientId: string;
+    medicId: string;
+    serviceId: string;
+    status: Status;
+    type: 'IN_PERSON' | 'ONLINE';
+    patientCharge: number;
+    medicEarning: number;
+    billing: BillingVO;
+    cancellation?: Cancellation;
+    preNotes?: string;
+    postNotes?: string;
+    completedAt?: Date;
+    id?: string;
+  }) {
     return new AppointmentEntity(
-      startDate,
-      endTime,
-      patientId,
-      medicId,
-      serviceId,
-      status,
-      type,
-      patientCharge,
-      medicEarning,
-      billing,
-      cancellation,
-      preNotes,
-      postNotes,
-      completedAt,
-      id,
+      data.startDate,
+      data.endTime,
+      data.patientId,
+      data.medicId,
+      data.serviceId,
+      data.status,
+      data.type,
+      data.patientCharge,
+      data.medicEarning,
+      data.billing,
+      data.cancellation,
+      data.preNotes,
+      data.postNotes,
+      data.completedAt,
+      data.id,
     );
   }
 
-  public cancel(cancellation: CancellationDTO) {
+  public cancel(cancellation: Cancellation) {
     if (!this.canBeCancelled())
       throw new AppointmentCanNotBeCancelled(
         `Appointmet with status: ${this.status} can not be cancelled`,
       );
 
-    const cancel = new Cancellation(
-      cancellation.cancelledBy,
-      cancellation.reason,
-      cancellation.cancelationDate,
-    );
-
-    this.cancellation = cancel;
+    this.cancellation = cancellation;
 
     this.status = 'CANCELADA';
+
+    //validaciones despues de cada 
   }
 
   public complete() {
@@ -188,13 +148,13 @@ export class AppointmentEntity {
 
     if (this.isInvalidPatientCharge())
       throw new AppointmentInconsistentStateError(
-        `Invalid charge for ${this.patientCharge}`,
+        `Invalid charge ${this.patientCharge}`,
       );
 
     if (this.billing.source === 'DIRECT')
       this.validateDirectBilling(this.patientCharge);
 
-    if (!this.isInvalidMedicCharge())
+    if (this.isInvalidMedicCharge())
       throw new AppointmentInconsistentStateError(
         ' A completed appointment must have registered medic earning',
       );
@@ -232,12 +192,14 @@ export class AppointmentEntity {
       );
     }
 
-    if (this.patientCharge >= 0) {
-    }
+    if (this.isInvalidPatientCharge())
+      throw new AppointmentInconsistentStateError(
+        `Invalid charge ${this.patientCharge}`,
+      );
   }
 
   private validateDirectBilling(patientCharge: number) {
-    if (patientCharge) {
+    if (patientCharge <= 0) {
       throw new AppointmentInconsistentStateError(
         `An appointment with a billing type DIRECT must have a valid patient charge`,
       );
