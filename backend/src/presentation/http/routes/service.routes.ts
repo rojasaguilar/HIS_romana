@@ -14,5 +14,9 @@ export class ServiceRoutes {
       .route('/')
       .get(this.serviceController.getAllServices.bind(this.serviceController))
       .post(this.serviceController.createService.bind(this.serviceController));
+
+    this.router
+      .route('/:id')
+      .get(this.serviceController.getServiceById.bind(this.serviceController));
   }
 }

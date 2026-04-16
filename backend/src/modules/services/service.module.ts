@@ -1,3 +1,4 @@
+import { GetServiceByIdUseCase } from '../../core/usecases/services/get-serviceById.usecase';
 import { GetServicesUseCase } from '../../core/usecases/services/get-services.usecase';
 import { RegisterServiceUseCase } from '../../core/usecases/services/register-service.usecase';
 import { ServiceRepository } from '../../infraestructure/dataproviders/mongodb-dataprovider/repositories/services.repository';
@@ -14,10 +15,12 @@ export const createServiceModule = () => {
     specialityRepository,
   );
   const getServicesUseCase = new GetServicesUseCase(serviceRepository);
+  const getServiceByIdUseCase = new GetServiceByIdUseCase(serviceRepository);
 
   const serviceController = new ServiceController(
     registerServiceUseCase,
     getServicesUseCase,
+    getServiceByIdUseCase,
   );
 
   const serviceRouter = new ServiceRoutes(serviceController);

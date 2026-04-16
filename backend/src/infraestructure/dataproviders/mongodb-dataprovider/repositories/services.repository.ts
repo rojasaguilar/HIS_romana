@@ -13,7 +13,9 @@ export class ServiceRepository implements IServicesRepository {
   }
 
   async findById(id: string): Promise<ServiceEntity | null> {
-    throw new Error('Method not implemented.');
+    const serviceDoc = await serviceModel.findById(id);
+
+    return ServiceMapper.toDomain(serviceDoc);
   }
 
   async getAll(): Promise<ServiceEntity[]> {
