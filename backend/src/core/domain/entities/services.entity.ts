@@ -1,3 +1,5 @@
+import { MedicEntity } from './medic.entity';
+
 export class ServiceEntity {
   constructor(
     public name: string,
@@ -6,4 +8,8 @@ export class ServiceEntity {
     public specialityId: string,
     public readonly id?: string,
   ) {}
+
+  public canBePerformedByMedic(medic: MedicEntity): boolean {
+    return medic.hasSpeciality(this.specialityId);
+  }
 }

@@ -6,7 +6,10 @@ import { IPatientRepository } from '../../domain/repositories/patient.repository
 import { IMedicRepository } from '../../domain/repositories/medic.repository.interface';
 import { MedicNotFoundError } from '../../domain/errors/medic.error';
 import { PatientNotFoundError } from '../../domain/errors/patient.errors';
-import { ServiceNotFoundError } from '../../domain/errors/service.error';
+import {
+  ServiceCanNotBePerformedByMedicError,
+  ServiceNotFoundError,
+} from '../../domain/errors/service.error';
 import { AppointmentDateError } from '../../domain/errors/appointment.error';
 
 export class ScheduleAppointmentUseCase {
@@ -42,19 +45,21 @@ export class ScheduleAppointmentUseCase {
 
     //4. Puede medico hacer esto?
 
+    if (!service.canBePerformedByMedic(medic))
+      throw new ServiceCanNotBePerformedByMedicError(``);
+
     //5. horario disponible?
-    if (
-      this.appointmentRepository.overlaps(
-        dto.medicId,
-        dto.startDate,
-        service.duration,
-      )
-    )
+    const overlaps = await this.appointmentRepository.overlaps(
+      dto.medicId,
+      dto.startDate,
+      service.duration,
+    );
+
+    if (overlaps)
       throw new AppointmentDateError(
         `Medic already has an appointment in this time slot`,
       );
 
-    
     const newAppointment = AppointmentFactory.schedule(dto, service, medic);
 
     return await this.appointmentRepository.save(newAppointment);

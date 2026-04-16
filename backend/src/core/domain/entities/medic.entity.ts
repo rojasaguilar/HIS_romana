@@ -1,4 +1,4 @@
-import { MedicType } from "../types/medic.type";
+import { MedicType } from '../types/medic.type';
 
 export class MedicEntity {
   constructor(
@@ -20,7 +20,7 @@ export class MedicEntity {
     public id?: string,
   ) {}
 
-  public canPerform(specialityIds: string[]){
-    return 
+  public hasSpeciality(specialityId: string) {
+    return this.specialityIds.includes(specialityId);
   }
 }

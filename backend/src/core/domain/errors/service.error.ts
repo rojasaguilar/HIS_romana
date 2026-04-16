@@ -11,3 +11,10 @@ export class ServiceAlreadyExistError extends Error {
     this.name = 'ServiceAlreadyExistError';
   }
 }
+
+export class ServiceCanNotBePerformedByMedicError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ServiceCanNotBePerformedByMedicError';
+  }
+}
