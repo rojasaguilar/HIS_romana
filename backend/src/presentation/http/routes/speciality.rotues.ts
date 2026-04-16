@@ -11,8 +11,21 @@ export class SpecialityRoutes {
   private routes() {
     this.router
       .route('/')
+      .get(
+        this.specialityController.getAllSpecialities.bind(
+          this.specialityController,
+        ),
+      )
       .post(
         this.specialityController.createSpeciality.bind(
+          this.specialityController,
+        ),
+      );
+
+    this.router
+      .route('/:id')
+      .get(
+        this.specialityController.getSpecialityById.bind(
           this.specialityController,
         ),
       );

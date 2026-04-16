@@ -11,10 +11,18 @@ export class SpecialityRepository implements ISpecialityRepository {
 
     return SpecialityMapper.toDomain(specialityDoc);
   }
+
   async findById(id: string): Promise<SpecialityEntity | null> {
-    return await specialityModel.findById(id);
+    const specialityDoc = await specialityModel.findById(id);
+
+    return SpecialityMapper.toDomain(specialityDoc);
   }
+
   async getAll(): Promise<SpecialityEntity[]> {
-    throw new Error('Method not implemented.');
+    const specialityDocs = await specialityModel.find();
+
+    return specialityDocs.map((speciality) =>
+      SpecialityMapper.toDomain(speciality),
+    );
   }
 }

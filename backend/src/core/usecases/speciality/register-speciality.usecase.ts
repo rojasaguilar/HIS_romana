@@ -9,7 +9,7 @@ export class RegisterSpecialityUseCase {
   constructor(public readonly specialityRepository: ISpecialityRepository) {}
 
   async execute(data: SpecialityDTO): Promise<SpecialityEntity> {
-    const specialityToSave = new SpecialityEntity(data.name);
+    const specialityToSave = new SpecialityEntity(data.name, true);
 
     return await this.specialityRepository.save(specialityToSave);
   }

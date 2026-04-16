@@ -2,7 +2,7 @@ import { SpecialityEntity } from '../../../../core/domain/entities/speciality.en
 
 export class SpecialityMapper {
   static toDomain(doc: any): SpecialityEntity {
-    return new SpecialityEntity(doc.name, doc._id.toString());
+    return new SpecialityEntity(doc.name, doc.isActive, doc._id.toString());
   }
 
   static toPersistence(entity: SpecialityEntity) {
