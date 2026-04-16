@@ -15,7 +15,7 @@ export class SpecialityRepository implements ISpecialityRepository {
   async findById(id: string): Promise<SpecialityEntity | null> {
     const specialityDoc = await specialityModel.findById(id);
 
-    return SpecialityMapper.toDomain(specialityDoc);
+    return specialityDoc ? SpecialityMapper.toDomain(specialityDoc) : null;
   }
 
   async getAll(): Promise<SpecialityEntity[]> {

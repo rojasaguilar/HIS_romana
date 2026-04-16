@@ -15,7 +15,7 @@ export class ServiceRepository implements IServicesRepository {
   async findById(id: string): Promise<ServiceEntity | null> {
     const serviceDoc = await serviceModel.findById(id);
 
-    return ServiceMapper.toDomain(serviceDoc);
+    return serviceDoc ? ServiceMapper.toDomain(serviceDoc) : null;
   }
 
   async getAll(): Promise<ServiceEntity[]> {

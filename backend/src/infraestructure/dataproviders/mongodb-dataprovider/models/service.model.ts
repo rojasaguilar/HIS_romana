@@ -17,6 +17,12 @@ const serviceModel = new Schema(
       required: [true, 'Service must have a price'],
       min: [0, 'Price can not be negative'],
     },
+    modalities: [
+      {
+        type: String,
+        required: [true, 'Service must have at least 1 type'],
+      },
+    ],
     specialityId: {
       type: Types.ObjectId,
       ref: 'Specialities',

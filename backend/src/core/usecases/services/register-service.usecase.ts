@@ -2,11 +2,13 @@ import { ServiceEntity } from '../../domain/entities/services.entity';
 import { SpecialityNotFoundError } from '../../domain/errors/speciality.error';
 import { IServicesRepository } from '../../domain/repositories/services.repository.interface';
 import { ISpecialityRepository } from '../../domain/repositories/speciality.repository.interface';
+import { ServiceModality } from '../../domain/types/service.type';
 
 export interface CreateServiceDTO {
   name: string;
   duration: number;
   cost: number;
+  modalities: ServiceModality[];
   specialityId: string;
 }
 
@@ -24,12 +26,13 @@ export class RegisterServiceUseCase {
         `Speciality with id: ${dto.specialityId} not found`,
       );
 
-    const serviceToSave = new ServiceEntity(
-      dto.name,
-      dto.duration,
-      dto.cost,
-      dto.specialityId,
-    );
+    const serviceToSave = ServiceEntity.create({
+      name: dto.name,
+      duration: dto.duration,
+      cost: dto.cost,
+      modalities: dto.modalities,
+      specialityId: dto.specialityId,
+    });
 
     return await this.serviceRepository.save(serviceToSave);
   }

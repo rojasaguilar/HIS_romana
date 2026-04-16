@@ -8,6 +8,7 @@ import { MedicNotFoundError } from '../../domain/errors/medic.error';
 import { PatientNotFoundError } from '../../domain/errors/patient.errors';
 import {
   ServiceCanNotBePerformedByMedicError,
+  ServiceModalityError,
   ServiceNotFoundError,
 } from '../../domain/errors/service.error';
 import { AppointmentDateError } from '../../domain/errors/appointment.error';
@@ -35,6 +36,11 @@ export class ScheduleAppointmentUseCase {
     if (!service)
       throw new ServiceNotFoundError(
         `Service with id: ${dto.serviceId} not found`,
+      );
+
+    if (!service.containsModality(dto.type))
+      throw new ServiceModalityError(
+        `Service is not eligible for modality ${dto.type}`,
       );
 
     //3. Verificar si existe médico

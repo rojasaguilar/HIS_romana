@@ -18,3 +18,17 @@ export class ServiceCanNotBePerformedByMedicError extends Error {
     this.name = 'ServiceCanNotBePerformedByMedicError';
   }
 }
+
+export class ServiceInconsistentStateError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ServiceInconsistentStateError';
+  }
+}
+
+export class ServiceModalityError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ServiceModalityError';
+  }
+}

@@ -40,11 +40,11 @@ export class PatientRepository implements IPatientRepository {
     );
   }
 
-  async findById(id: string): Promise<Patient> {
+  async findById(id: string): Promise<Patient | null> {
     const patient = await PatientModel.findById(id);
 
     if (!patient) {
-      throw new Error(`Patient with id ${id} not found`);
+      return null;
     }
 
     const patientAddress = new Address(

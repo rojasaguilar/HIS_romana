@@ -2,13 +2,14 @@ import { ServiceEntity } from '../../../../core/domain/entities/services.entity'
 
 export class ServiceMapper {
   static toDomain(doc: any) {
-    return new ServiceEntity(
-      doc.name,
-      doc.duration,
-      doc.cost,
-      doc.specialityId,
-      doc._id.toString(),
-    );
+    return ServiceEntity.create({
+      name: doc.name,
+      duration: doc.duration,
+      cost: doc.cost,
+      modalities: doc.modalities,
+      specialityId: doc.specialityId,
+      id: doc._id.toString(),
+    });
   }
 
   static toPersistence(entity: ServiceEntity) {
@@ -16,6 +17,7 @@ export class ServiceMapper {
       name: entity.name,
       duration: entity.duration,
       cost: entity.cost,
+      modalities: entity.modalities.map((modality) => modality.toString()),
       specialityId: entity.specialityId,
     };
   }
