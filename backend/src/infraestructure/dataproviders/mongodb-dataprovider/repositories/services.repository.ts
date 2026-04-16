@@ -23,4 +23,10 @@ export class ServiceRepository implements IServicesRepository {
 
     return servicesDocs.map((doc) => ServiceMapper.toDomain(doc));
   }
+
+  async findByName(name: string): Promise<ServiceEntity | null> {
+    const serviceDoc = await serviceModel.findOne({ name });
+
+    return serviceDoc ? ServiceMapper.toDomain(serviceDoc) : null;
+  }
 }

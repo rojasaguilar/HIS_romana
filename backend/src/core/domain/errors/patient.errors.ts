@@ -11,3 +11,10 @@ export class PatientAlreadyExistError extends Error {
     this.name = 'PatientAlreadyExistError';
   }
 }
+
+export class PatientInconsistentStateError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'PatientInconsistentStateError';
+  }
+}

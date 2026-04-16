@@ -3,15 +3,17 @@ import { Schema, model, Types } from 'mongoose';
 const medicSchema = new Schema(
   {
     name: { type: String, required: [true, 'Medic must have a name'] },
-    email: { type: String },
-    phoneNumber: { type: String },
+    email: { type: String, unique: true },
+    phoneNumber: { type: String, unique: true },
     healthLicenseNumber: {
       type: String,
       required: [true, 'Medic must have a licence number'],
+      unique: true,
     },
     professionalLicenceNumber: {
       type: String,
       required: [true, 'Medic must have a professional licence'],
+      unique: true,
     },
     languages: [{ type: String, default: 'español' }],
     specialityIds: [{ type: String }],

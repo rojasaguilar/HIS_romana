@@ -1,6 +1,7 @@
 import validator from 'validator';
+import { AddressInconsistentStateError } from '../errors/address.error';
 export class Address {
-  constructor(
+  private constructor(
     public readonly street: string,
     public readonly number: string,
     public readonly city: string,
@@ -8,6 +9,22 @@ export class Address {
     public readonly zipCode: string,
   ) {
     if (!validator.isPostalCode(zipCode, 'MX'))
-      throw new Error('Código postal invalido');
+      throw new AddressInconsistentStateError(`Postal code is not valid`);
+  }
+
+  static create(data: {
+    street: string;
+    number: string;
+    city: string;
+    state: string;
+    zipCode: string;
+  }) {
+    return new Address(
+      data.street,
+      data.number,
+      data.city,
+      data.state,
+      data.zipCode,
+    );
   }
 }

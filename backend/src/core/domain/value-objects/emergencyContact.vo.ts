@@ -1,12 +1,17 @@
 import validator from 'validator';
+import { PersonalInfoValidationError } from '../errors/personal-info.error';
 
 export class EmergencyContact {
-  constructor(
+  private constructor(
     public readonly name: string,
     public readonly phoneNumber: string,
-    public readonly relation: string
+    public readonly relation: string,
   ) {
-    if (!validator.isMobilePhone)
-      throw new Error('Numero de telefono inválido');
+    if (!validator.isMobilePhone(this.phoneNumber))
+      throw new PersonalInfoValidationError(`Mobile phone is not valid`);
+  }
+
+  static create(data: { name: string; phoneNumber: string; relation: string }) {
+    return new EmergencyContact(data.name, data.phoneNumber, data.relation);
   }
 }

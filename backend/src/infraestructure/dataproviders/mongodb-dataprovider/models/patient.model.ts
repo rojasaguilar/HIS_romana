@@ -1,7 +1,6 @@
 import { Schema, model } from 'mongoose';
-import { RegisterPatientProps } from './../../../../core/domain/factories/patient.factory';
 
-const patientSchema = new Schema<RegisterPatientProps>(
+const patientSchema = new Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true },
@@ -10,6 +9,7 @@ const patientSchema = new Schema<RegisterPatientProps>(
     birthDate: { type: String, required: true },
     allergies: [{ type: String, required: true }],
     bloodType: { type: String, required: true },
+    isActive: { type: Boolean, default: true },
     emergencyContact: { type: Object },
   },
   { timestamps: true },

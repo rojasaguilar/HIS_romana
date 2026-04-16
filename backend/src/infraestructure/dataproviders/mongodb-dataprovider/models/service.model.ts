@@ -32,4 +32,6 @@ const serviceModel = new Schema(
   { timestamps: true },
 );
 
+
+
 export default model('Services', serviceModel);

@@ -5,5 +5,7 @@ export interface IServicesRepository {
 
   findById(id: string): Promise<ServiceEntity | null>;
 
+  findByName(name: string): Promise<ServiceEntity | null>;
+
   getAll(): Promise<ServiceEntity[]>;
 }
