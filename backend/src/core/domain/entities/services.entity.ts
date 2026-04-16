@@ -3,7 +3,7 @@ export class ServiceEntity {
     public name: string,
     public duration: number,
     public cost: number,
-    public specialityIds: string[],
+    public specialityId: string,
     public readonly id?: string,
   ) {}
 }

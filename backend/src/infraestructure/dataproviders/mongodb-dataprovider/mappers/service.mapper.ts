@@ -6,7 +6,7 @@ export class ServiceMapper {
       doc.name,
       doc.duration,
       doc.cost,
-      doc.specialityIds.map((id: any) => id.toString()),
+      doc.specialityId,
       doc._id.toString(),
     );
   }
@@ -16,7 +16,7 @@ export class ServiceMapper {
       name: entity.name,
       duration: entity.duration,
       cost: entity.cost,
-      specialityIds: entity.specialityIds,
+      specialityId: entity.specialityId,
     };
   }
 }

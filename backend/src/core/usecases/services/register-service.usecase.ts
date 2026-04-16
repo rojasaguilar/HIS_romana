@@ -7,7 +7,7 @@ export interface CreateServiceDTO {
   name: string;
   duration: number;
   cost: number;
-  specialityIds: string[];
+  specialityId: string;
 }
 
 export class RegisterServiceUseCase {
@@ -16,22 +16,19 @@ export class RegisterServiceUseCase {
     private readonly specialityRepository: ISpecialityRepository,
   ) {}
 
-  async execute(data: CreateServiceDTO): Promise<ServiceEntity> {
+  async execute(dto: CreateServiceDTO): Promise<ServiceEntity> {
+    const spec = await this.specialityRepository.findById(dto.specialityId);
 
-    for (const specialityId of data.specialityIds) {
-      const spec = await this.specialityRepository.findById(specialityId);
-
-      if (!spec)
-        throw new SpecialityNotFoundError(
-          `Speciality with id: ${specialityId} not found`,
-        );
-    }
+    if (!spec)
+      throw new SpecialityNotFoundError(
+        `Speciality with id: ${dto.specialityId} not found`,
+      );
 
     const serviceToSave = new ServiceEntity(
-      data.name,
-      data.duration,
-      data.cost,
-      data.specialityIds,
+      dto.name,
+      dto.duration,
+      dto.cost,
+      dto.specialityId,
     );
 
     return await this.serviceRepository.save(serviceToSave);

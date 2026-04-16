@@ -2,7 +2,11 @@ import { Schema, model, Types } from 'mongoose';
 
 const serviceModel = new Schema(
   {
-    name: { type: String, required: [true, 'Service must have a name'] },
+    name: {
+      type: String,
+      unique: true,
+      required: [true, 'Service must have a name'],
+    },
     duration: {
       type: Number,
       required: [true, 'Service must have a duration'],
@@ -13,13 +17,11 @@ const serviceModel = new Schema(
       required: [true, 'Service must have a price'],
       min: [0, 'Price can not be negative'],
     },
-    specialityIds: [
-      {
-        type: Types.ObjectId,
-        ref: 'Specialities',
-        required: true,
-      },
-    ],
+    specialityId: {
+      type: Types.ObjectId,
+      ref: 'Specialities',
+      required: true,
+    },
   },
   { timestamps: true },
 );
