@@ -19,4 +19,8 @@ export class MedicEntity {
     public organizationId?: string,
     public id?: string,
   ) {}
+
+  public canPerform(specialityIds: string[]){
+    return 
+  }
 }

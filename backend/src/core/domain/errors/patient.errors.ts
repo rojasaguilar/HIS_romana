@@ -1,13 +1,13 @@
 export class PatientNotFoundError extends Error {
-  constructor() {
-    super("El paciente no ha sido encontrado");
-    this.name = "PatientNotFoundError";
+  constructor(message: string) {
+    super(message);
+    this.name = 'PatientNotFoundError';
   }
 }
 
 export class PatientAlreadyExistError extends Error {
   constructor() {
-    super("El paciente ya existe");
-    this.name = "PatientAlreadyExistError";
+    super('El paciente ya existe');
+    this.name = 'PatientAlreadyExistError';
   }
 }

@@ -3,19 +3,19 @@ import { Billing } from '../types/billing.type';
 import { CancellationDTO } from '../value-objects/cancellation.vo';
 
 export interface AppointmentDTO {
-  startDate: Date;
-  endTime: Date;
   patientId: string;
-  medicId: string;
   serviceId: string;
-  status: Status;
-  type: 'IN_PERSON' | 'ONLINE';
-  patientCharge: number;
-  medicEarning: number;
   billing: Billing;
-  cancellation?: CancellationDTO;
+  startDate: Date;
+  // endTime: Date; CALCULAR CON STARTDATE + SERVICE.TIME
+  // status: Status; SIMEPRE SERÁ 'PROGRAMADA'
+  medicId: string;
+  type: 'IN_PERSON' | 'ONLINE';
+  // patientCharge: number; obtener de service.cost
+  // medicEarning: number; calcular a partir de service.cost con medic%
+  // cancellation?: CancellationDTO;
   preNotes?: string;
-  postNotes?: string;
-  completedAt?: Date;
-  readonly id?: string;
+  // postNotes?: string; no tiene sentido en schedule 
+  // completedAt?: Date; no teie sentido si será programada
+  // readonly id?: string; no hay un id de cita aún
 }

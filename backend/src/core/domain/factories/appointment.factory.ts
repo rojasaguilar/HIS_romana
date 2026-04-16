@@ -1,26 +1,32 @@
 import { AppointmentDTO } from '../dtos/appointmet.dto';
 import { AppointmentEntity } from '../entities/appointment.entity';
+import { MedicEntity } from '../entities/medic.entity';
+import { ServiceEntity } from '../entities/services.entity';
 import { InvalidBillingType } from '../errors/billing.error';
 import { BillingVO } from '../value-objects/billing.vo';
 
 export class AppointmentFactory {
-  static createNewAppointmet(appointment: AppointmentDTO): AppointmentEntity {
-    const billing = this.createBilling(appointment.billing);
+  static schedule(
+    dto: AppointmentDTO,
+    service: ServiceEntity,
+    medic: MedicEntity,
+  ): AppointmentEntity {
+    const billing = this.createBilling(dto.billing);
 
     return AppointmentEntity.create({
-      startDate: appointment.startDate,
-      endTime: appointment.endTime,
-      patientId: appointment.patientId,
-      medicId: appointment.medicId,
-      serviceId: appointment.serviceId,
-      status: appointment.status,
-      type: appointment.type,
+      startDate: dto.startDate,
+      endTime: dto.endTime,
+      patientId: dto.patientId,
+      medicId: dto.medicId,
+      serviceId: dto.serviceId,
+      status: dto.status,
+      type: dto.type,
       patientCharge: 0,
-      medicEarning: appointment.medicEarning,
+      medicEarning: dto.medicEarning,
       billing: billing,
       cancellation: undefined, //cancellation
-      preNotes: appointment.preNotes,
-      postNotes: appointment.postNotes,
+      preNotes: dto.preNotes,
+      postNotes: dto.postNotes,
       completedAt: undefined, //completed at
       id: undefined, //id
     });
