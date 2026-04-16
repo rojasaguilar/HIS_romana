@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { RegisterSpecialityUseCase } from '../../../core/usecases/speciality/register-speciality.usecase';
-import { GetAllSpecialitiesUseCase } from '../../../core/usecases/services/getAll-specialities.usecase';
+import { GetAllSpecialitiesUseCase } from '../../../core/usecases/speciality/getAll-specialities.usecase';
 import { GetSpecialityByIdUseCase } from '../../../core/usecases/speciality/get-speciality.usecase';
 
 export class SpecialityController {

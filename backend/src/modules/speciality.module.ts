@@ -1,4 +1,4 @@
-import { GetAllSpecialitiesUseCase } from '../core/usecases/services/getAll-specialities.usecase';
+import { GetAllSpecialitiesUseCase } from '../core/usecases/speciality/getAll-specialities.usecase';
 import { GetSpecialityByIdUseCase } from '../core/usecases/speciality/get-speciality.usecase';
 import { RegisterSpecialityUseCase } from '../core/usecases/speciality/register-speciality.usecase';
 import { SpecialityRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/speciality.repository';
