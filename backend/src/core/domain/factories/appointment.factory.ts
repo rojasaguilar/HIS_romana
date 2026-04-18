@@ -15,20 +15,16 @@ export class AppointmentFactory {
 
     return AppointmentEntity.create({
       startDate: dto.startDate,
-      endTime: dto.endTime,
+      endTime: dto.endTime, //calcularlo
       patientId: dto.patientId,
       medicId: dto.medicId,
       serviceId: dto.serviceId,
-      status: dto.status,
+      status: 'PROGRAMADA',
       type: dto.type,
       patientCharge: 0,
-      medicEarning: dto.medicEarning,
+      medicEarning: service.cost * medic.consultationFee,
       billing: billing,
-      cancellation: undefined, //cancellation
       preNotes: dto.preNotes,
-      postNotes: dto.postNotes,
-      completedAt: undefined, //completed at
-      id: undefined, //id
     });
   }
 
