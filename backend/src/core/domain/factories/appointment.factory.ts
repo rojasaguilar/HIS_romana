@@ -13,9 +13,13 @@ export class AppointmentFactory {
   ): AppointmentEntity {
     const billing = this.createBilling(dto.billing);
 
+    const estiamtedEndTime = new Date(
+      dto.startDate.getTime() + service.duration * 60 * 1000,
+    );
+
     return AppointmentEntity.create({
       startDate: dto.startDate,
-      endTime: dto.endTime, //calcularlo
+      endTime: estiamtedEndTime, //calcularlo
       patientId: dto.patientId,
       medicId: dto.medicId,
       serviceId: dto.serviceId,
