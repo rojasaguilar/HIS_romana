@@ -7,7 +7,7 @@ export class ServiceMapper {
       duration: doc.duration,
       cost: doc.cost,
       modalities: doc.modalities,
-      specialityId: doc.specialityId,
+      specialityId: doc.specialityId.toString(),
       id: doc._id.toString(),
     });
   }

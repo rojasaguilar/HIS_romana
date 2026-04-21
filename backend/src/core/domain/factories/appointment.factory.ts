@@ -16,6 +16,8 @@ export class AppointmentFactory {
   ): AppointmentEntity {
     const billing = this.createBilling(dto.billing);
 
+    const patientCharge = billing.source === 'DIRECT' ? service.cost : 0;
+
     const estiamtedEndTime = new Date(
       dto.startDate.getTime() + service.duration * 60 * 1000,
     );
@@ -28,8 +30,8 @@ export class AppointmentFactory {
       serviceId: dto.serviceId,
       status: 'PROGRAMADA',
       type: dto.type,
-      patientCharge: 0,
-      medicEarning: service.cost * medic.consultationFee,
+      patientCharge,
+      medicEarning: service.cost * (medic.consultationFee / 100),
       billing: billing,
       preNotes: dto.preNotes,
     });

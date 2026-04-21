@@ -50,19 +50,22 @@ export class ScheduleAppointmentUseCase {
       throw new MedicNotFoundError(`Medic with id: ${dto.medicId} not found`);
 
     //4. Puede medico hacer esto?
-
     if (!service.canBePerformedByMedic(medic))
-      throw new ServiceCanNotBePerformedByMedicError(``);
+      throw new ServiceCanNotBePerformedByMedicError(
+        `Service: ${dto.serviceId} can not be performed`,
+      );
+
+    const startDate: Date = new Date(dto.startDate);
 
     const estiamtedEndTime = new Date(
-      dto.startDate.getTime() + service.duration * 60 * 1000,
+      startDate.getTime() + service.duration * 60 * 1000,
     );
 
     //5. horario disponible?
     const overlaps = await this.appointmentRepository.overlaps(
       dto.patientId,
       dto.medicId,
-      dto.startDate,
+      startDate,
       estiamtedEndTime,
     );
 
@@ -71,7 +74,11 @@ export class ScheduleAppointmentUseCase {
         `Medic already has an appointment in this time slot`,
       );
 
-    const newAppointment = AppointmentFactory.schedule(dto, service, medic);
+    const newAppointment = AppointmentFactory.schedule(
+      { ...dto, startDate },
+      service,
+      medic,
+    );
 
     return await this.appointmentRepository.save(newAppointment);
   }
