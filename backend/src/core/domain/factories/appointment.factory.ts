@@ -1,4 +1,4 @@
-import { AppointmentDTO } from '../dtos/appointmet.dto';
+import { AppointmentDTO, CreateAppointmentDTO } from '../dtos/appointmet.dto';
 import { AppointmentEntity } from '../entities/appointment.entity';
 import { MedicEntity } from '../entities/medic.entity';
 import { ServiceEntity } from '../entities/services.entity';
@@ -30,6 +30,12 @@ export class AppointmentFactory {
       billing: billing,
       preNotes: dto.preNotes,
     });
+  }
+
+  static createExistingAppointment(
+    appointmentData: CreateAppointmentDTO,
+  ): Promise<AppointmentEntity> {
+    return AppointmentEntity.create(appointmentData);
   }
 
   private static createBilling(billing: AppointmentDTO['billing']): BillingVO {

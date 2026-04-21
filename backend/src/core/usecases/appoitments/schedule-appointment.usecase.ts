@@ -54,11 +54,16 @@ export class ScheduleAppointmentUseCase {
     if (!service.canBePerformedByMedic(medic))
       throw new ServiceCanNotBePerformedByMedicError(``);
 
+    const estiamtedEndTime = new Date(
+      dto.startDate.getTime() + service.duration * 60 * 1000,
+    );
+
     //5. horario disponible?
     const overlaps = await this.appointmentRepository.overlaps(
+      dto.patientId,
       dto.medicId,
       dto.startDate,
-      service.duration,
+      estiamtedEndTime,
     );
 
     if (overlaps)

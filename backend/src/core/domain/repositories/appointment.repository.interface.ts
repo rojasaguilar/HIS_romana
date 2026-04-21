@@ -8,8 +8,9 @@ export interface IAppointmentRepository {
   getAll(): Promise<AppointmentEntity[]>;
 
   overlaps(
+    patientId: string,
     medicId: string,
     startDate: Date,
-    duration: number,
+    endTime: Date,
   ): Promise<boolean>;
 }
