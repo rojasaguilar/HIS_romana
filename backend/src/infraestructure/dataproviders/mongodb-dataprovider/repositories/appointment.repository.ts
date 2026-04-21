@@ -9,7 +9,7 @@ export class AppointmentRepository implements IAppointmentRepository {
 
     const savedAppointment = await appointmentModel.create(appointmentData);
 
-    
+    return AppointmentMapper.toDomain(savedAppointment)
   }
   findById(id: string): Promise<AppointmentEntity | null> {
     throw new Error('Method not implemented.');

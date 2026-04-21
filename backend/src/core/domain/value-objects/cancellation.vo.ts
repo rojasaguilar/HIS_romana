@@ -29,4 +29,12 @@ export class Cancellation {
       throw new CancellationError(`A cancellation date must be specified`);
     }
   }
+
+  static createCancellation(cancelation: CancellationDTO): Cancellation {
+    return new Cancellation(
+      cancelation.cancelledBy,
+      cancelation.reason,
+      cancelation.cancelationDate,
+    );
+  }
 }

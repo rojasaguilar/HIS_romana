@@ -4,6 +4,9 @@ import { MedicEntity } from '../entities/medic.entity';
 import { ServiceEntity } from '../entities/services.entity';
 import { InvalidBillingType } from '../errors/billing.error';
 import { BillingVO } from '../value-objects/billing.vo';
+import { Status } from '../types/appointment-status.type';
+import { Cancellation } from '../value-objects/cancellation.vo';
+import { Billing } from '../types/billing.type';
 
 export class AppointmentFactory {
   static schedule(
@@ -34,11 +37,37 @@ export class AppointmentFactory {
 
   static createExistingAppointment(
     appointmentData: CreateAppointmentDTO,
-  ): Promise<AppointmentEntity> {
-    return AppointmentEntity.create(appointmentData);
+  ): AppointmentEntity {
+    const billing = this.createBilling(appointmentData.billing);
+
+    const cancelation = appointmentData.cancellation
+      ? Cancellation.createCancellation(appointmentData.cancellation)
+      : undefined;
+
+    const completedAt = appointmentData.completedAt
+      ? new Date(appointmentData.completedAt)
+      : undefined;
+
+    return AppointmentEntity.create({
+      startDate: new Date(appointmentData.startDate),
+      endTime: new Date(appointmentData.endTime),
+      patientId: appointmentData.patientId,
+      medicId: appointmentData.medicId,
+      serviceId: appointmentData.serviceId,
+      status: appointmentData.status as Status,
+      type: appointmentData.type,
+      patientCharge: appointmentData.patientCharge,
+      medicEarning: appointmentData.medicEarning,
+      billing,
+      cancellation: cancelation,
+      preNotes: appointmentData.preNotes,
+      postNotes: appointmentData.postNotes,
+      completedAt,
+      id: appointmentData.id,
+    });
   }
 
-  private static createBilling(billing: AppointmentDTO['billing']): BillingVO {
+  private static createBilling(billing: Billing): BillingVO {
     switch (billing.source) {
       case 'DIRECT':
         return BillingVO.createFromDirect();

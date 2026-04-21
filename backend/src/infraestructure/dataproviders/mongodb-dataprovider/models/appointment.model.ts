@@ -1,4 +1,9 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model, Types, HydratedDocument } from 'mongoose';
+import { CancellationDTO } from '../../../../core/domain/value-objects/cancellation.vo';
+import {
+  Status,
+  STATUS_VALUES,
+} from '../../../../core/domain/types/appointment-status.type';
 
 const BillingSchema = new Schema(
   {
@@ -53,6 +58,7 @@ const appointmentSchema = new Schema({
   },
   status: {
     type: String,
+    enum: Object.values(STATUS_VALUES),
     required: [true, 'Appointment requires a status'],
   },
   type: {
@@ -100,4 +106,36 @@ appointmentSchema.index({
   startDate: 1,
 });
 
-export default model('Appointment', appointmentSchema);
+export default model<AppointmentPersistance>('Appointment', appointmentSchema);
+
+export interface AppointmentPersistance {
+  startDate: Date;
+  endTime: Date;
+
+  patientId: Types.ObjectId;
+  medicId: Types.ObjectId;
+  serviceId: Types.ObjectId;
+
+  status: string;
+  type: 'IN_PERSON' | 'ONLINE';
+
+  patientCharge: number;
+  medicEarning: number;
+
+  billing: {
+    source: 'DIRECT' | 'PROMOTION' | 'SUBSCRIPTION';
+    promotionId?: Types.ObjectId | null;
+    subscriptionId?: Types.ObjectId | null;
+  };
+
+  cancellation?: CancellationDTO;
+
+  preNotes?: string | null;
+  postNotes?: string | null;
+
+  completedAt?: Date;
+
+  _id: Types.ObjectId;
+}
+
+export type AppointmentDocument = HydratedDocument<AppointmentPersistance>;
