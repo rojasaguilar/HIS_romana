@@ -96,7 +96,7 @@ export class AppointmentEntity {
 
     this.status = 'CANCELADA';
 
-    //validaciones despues de cada 
+    //validaciones despues de cada
   }
 
   public complete() {
@@ -118,14 +118,14 @@ export class AppointmentEntity {
       );
   }
 
-  private canBeCancelled(): boolean {
+  public canBeCancelled(): boolean {
     return this.status === 'PROGRAMADA';
   }
-  private canBeReschedule(): boolean {
+  public canBeReschedule(): boolean {
     return this.status === 'PROGRAMADA';
   }
 
-  private canBeCompleted(): boolean {
+  public canBeCompleted(): boolean {
     return this.status === 'PROGRAMADA';
   }
 

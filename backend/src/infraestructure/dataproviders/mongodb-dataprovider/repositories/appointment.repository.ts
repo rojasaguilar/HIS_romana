@@ -1,3 +1,4 @@
+import { RescheduleAppointmentDTO } from '../../../../core/domain/dtos/appointmet.dto';
 import { AppointmentEntity } from '../../../../core/domain/entities/appointment.entity';
 import { IAppointmentRepository } from '../../../../core/domain/repositories/appointment.repository.interface';
 import { AppointmentMapper } from '../mappers/appointment.mapper';
@@ -11,12 +12,19 @@ export class AppointmentRepository implements IAppointmentRepository {
 
     return AppointmentMapper.toDomain(savedAppointment);
   }
-  findById(id: string): Promise<AppointmentEntity | null> {
-    throw new Error('Method not implemented.');
+
+  async findById(id: string): Promise<AppointmentEntity | null> {
+    const appointmentDoc = await appointmentModel.findById(id);
+
+    if (!appointmentDoc) return null;
+
+    return AppointmentMapper.toDomain(appointmentDoc);
   }
+
   getAll(): Promise<AppointmentEntity[]> {
     throw new Error('Method not implemented.');
   }
+
   async overlaps(
     patientId: string,
     medicId: string,
@@ -32,5 +40,20 @@ export class AppointmentRepository implements IAppointmentRepository {
     if (appointmentExists.length > 0) return true;
 
     return false;
+  }
+
+  async update(
+    id: string,
+    data: RescheduleAppointmentDTO,
+  ): Promise<AppointmentEntity | null> {
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      id,
+      data,
+      { new: true },
+    );
+
+    if (!updatedAppointment) return null;
+
+    return AppointmentMapper.toDomain(updatedAppointment);
   }
 }

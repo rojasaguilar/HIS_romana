@@ -19,8 +19,13 @@ export class AppointmentRouter {
         ),
       );
 
-    // this.router
-    //   .route('/:id')
+    this.router
+      .route('/:id/reschedule')
+      .patch(
+        this.AppointmentController.rescheduleAppointment.bind(
+          this.AppointmentController,
+        ),
+      );
     //   .get(this.AppointmentController.getMedicById.bind(this.AppointmentController));
   }
 }
