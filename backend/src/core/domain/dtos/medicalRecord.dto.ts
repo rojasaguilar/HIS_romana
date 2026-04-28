@@ -1,4 +1,4 @@
-export interface createMedicalRecordDTO {
+export interface CreateMedicalRecordDTO {
   patientId: string;
   allergies: string[];
   height: number;

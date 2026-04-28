@@ -1,4 +1,4 @@
-import { createMedicalRecordDTO } from '../dtos/medicalRecord.dto';
+import { CreateMedicalRecordDTO } from '../dtos/medicalRecord.dto';
 import { InconsistantMedicalRecordError } from '../errors/medicalRecord.error';
 import { ChronicMedication } from '../value-objects/chronicMedication.vo';
 import { CurrentCondition } from '../value-objects/currentCondition.vo';
@@ -35,7 +35,7 @@ export class MedicalRecordEntity {
     }
   }
 
-  public static create(data: createMedicalRecordDTO) {
+  public static create(data: CreateMedicalRecordDTO) {
     const currentConditions = data.currentConditions
       ? data.currentConditions.map(
           (condition) =>
