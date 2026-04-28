@@ -18,3 +18,10 @@ export class MedicalRecordAlreadyExistError extends Error {
     this.name = 'MedicalRecordAlreadyExistError';
   }
 }
+
+export class MedicalRecordCreationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'MedicalRecordCreationError';
+  }
+}

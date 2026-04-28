@@ -14,7 +14,7 @@ export interface CreateMedicalRecordDTO {
     frequency: { timesPerDay: number };
     startedAt: Date;
   }[];
-  familyHistory: { relation: string; diseaseId: string }[];
+  familyHistory: { relationship: string; diseaseId: string }[];
   riskFactors: string[];
   surgicalHistory: { surgeryName: string; surgeryDate: Date }[];
   summary?: string;

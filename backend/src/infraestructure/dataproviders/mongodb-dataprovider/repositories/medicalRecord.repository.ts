@@ -1,0 +1,25 @@
+import { MedicalRecordEntity } from '../../../../core/domain/entities/medicalRecord.entity';
+import { MedicalRecordCreationError } from '../../../../core/domain/errors/medicalRecord.error';
+import { IMedicalRecordRepository } from '../../../../core/domain/repositories/medicalRecord.repository.interface';
+import { MedicalRecordMapper } from '../mappers/medicalRecord.mapper';
+import medicalRecordModel from '../models/medicalRecord.model';
+
+export class MedicalRecordRepository implements IMedicalRecordRepository {
+  async save(medicalRecord: MedicalRecordEntity): Promise<MedicalRecordEntity> {
+    const medRecordData = MedicalRecordMapper.toPersistance(medicalRecord);
+
+    const medRecordDoc = await medicalRecordModel.insertOne(medRecordData);
+
+    if (!medRecordDoc)
+      throw new MedicalRecordCreationError(
+        `Error creating medical record, try again later`,
+      );
+    return MedicalRecordMapper.toDomain(medRecordDoc);
+  }
+  findById(id: string): Promise<MedicalRecordEntity | null> {
+    throw new Error('Method not implemented.');
+  }
+  getAll(): Promise<MedicalRecordEntity[]> {
+    throw new Error('Method not implemented.');
+  }
+}

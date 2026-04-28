@@ -2,7 +2,7 @@ import { Relationship } from './relationship.vo';
 
 export class FamilyHistory {
   constructor(
-    public relation: Relationship,
+    public relationship: Relationship,
     public diseaseId: string,
   ) {}
 }

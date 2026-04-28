@@ -4,8 +4,8 @@ import { Frecuency } from './frecuency.vo';
 export class ChronicMedication {
   constructor(
     public medicationName: string,
-    public doasge: Dosage,
-    public frecuency: Frecuency,
+    public dosage: Dosage,
+    public frequency: Frecuency,
     public startedAt: Date,
   ) {
     if (medicationName.length <= 0)

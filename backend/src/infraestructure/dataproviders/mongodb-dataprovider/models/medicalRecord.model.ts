@@ -50,7 +50,7 @@ const chronicMedicationSchema = new Schema({
     required: [true, 'A medication name must be specified'],
   },
   dosage: dosageSchema,
-  frecuency: {
+  frequency: {
     timesPerDay: { type: Number, min: [1, 'min 1 times per day'] },
   },
   startedAt: {
