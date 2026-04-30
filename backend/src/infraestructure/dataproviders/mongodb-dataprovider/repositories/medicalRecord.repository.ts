@@ -5,15 +5,15 @@ import { MedicalRecordMapper } from '../mappers/medicalRecord.mapper';
 import medicalRecordModel from '../models/medicalRecord.model';
 
 export class MedicalRecordRepository implements IMedicalRecordRepository {
-  async save(medicalRecord: MedicalRecordEntity): Promise<MedicalRecordEntity> {
+  async save(
+    medicalRecord: MedicalRecordEntity,
+  ): Promise<MedicalRecordEntity | null> {
     const medRecordData = MedicalRecordMapper.toPersistance(medicalRecord);
 
-    const medRecordDoc = await medicalRecordModel.insertOne(medRecordData);
+    const medRecordDoc = await medicalRecordModel.create(medRecordData);
 
-    if (!medRecordDoc)
-      throw new MedicalRecordCreationError(
-        `Error creating medical record, try again later`,
-      );
+    if (!medRecordDoc) return null;
+
     return MedicalRecordMapper.toDomain(medRecordDoc);
   }
   findById(id: string): Promise<MedicalRecordEntity | null> {

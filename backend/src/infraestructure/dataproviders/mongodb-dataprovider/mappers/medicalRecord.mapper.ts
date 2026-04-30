@@ -22,32 +22,17 @@ export class MedicalRecordMapper {
     return {
       patientId: medicalRecord.patientId,
       allergies: medicalRecord.allergies,
-      weight: medicalRecord.weight,
       height: medicalRecord.height,
-      currentConditions:
-        medicalRecord.currentConditions?.map((condition) => ({
-          diseaseId: condition.diseaseId,
-          since: condition.since,
-          diagnosedBy: condition.diagnosedBy ?? undefined,
-        })) ?? [],
-      chronicMedications:
-        medicalRecord.chronicMedications?.map((med) => ({
-          medicationName: med.medicationName,
-          dosage: { amount: med.dosage.amount, unit: med.dosage.unit },
-          frequency: { timesPerDay: med.frequency.timesPerDay },
-          startedAt: med.startedAt,
-        })) ?? [],
+      weight: medicalRecord.weight,
+      currentConditions: medicalRecord.currentConditions,
+      chronicMedications: medicalRecord.chronicMedications,
       riskFactors: medicalRecord.riskFactors,
-      surgicalHistory:
-        medicalRecord.surgicalHistory?.map((surgery) => ({
-          surgeryName: surgery.surgeryName,
-          surgeryDate: surgery.surgeryDate,
-        })) ?? [],
-      familyHistory: medicalRecord.familyHistory.map((fh) => ({
+      surgicalHistory: medicalRecord.surgicalHistory,
+      familyHistory: medicalRecord.familyHistory?.map((fh) => ({
         relationship: fh.relationship.getValue(),
         diseaseId: fh.diseaseId,
       })),
-      summary: medicalRecord.summary ?? undefined,
+      summary: medicalRecord.summary,
     };
   }
 }

@@ -69,7 +69,7 @@ export class MedicalRecordEntity {
     const familyHistory = data.familyHistory
       ? data.familyHistory.map((fh) => {
           //create relationship based on dto relationship
-          const relationShip = Relationship.create(fh.relation);
+          const relationShip = Relationship.create(fh.relationship);
           //return a Family member with it's disease
           return new FamilyHistory(relationShip, fh.diseaseId);
         })
