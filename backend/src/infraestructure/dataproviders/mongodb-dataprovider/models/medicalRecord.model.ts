@@ -16,9 +16,11 @@ const currentConditionSchema = new Schema({
 
 const dosageSchema = new Schema(
   {
-    amount: Number,
-    min: [1, 'too low dosage'],
-    max: [24, 'too much dosage'],
+    amount: {
+      type: Number,
+      min: [1, 'too low dosage'],
+      max: [24, 'too much dosage'],
+    },
     unit: String,
   },
   { _id: false },

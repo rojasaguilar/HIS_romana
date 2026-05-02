@@ -6,6 +6,7 @@ import { createServiceModule } from '../../modules/services/service.module';
 import { createSpecialityModule } from '../../modules/speciality.module';
 import { createMedicModule } from '../../modules/medic.module';
 import { createAppointmentModule } from '../../modules/appointment.module';
+import { createMedicalRecordModule } from '../../modules/medicalRecord.module';
 
 const app = express();
 const patientModule = createPatientModule();
@@ -13,6 +14,7 @@ const serviceModule = createServiceModule();
 const specialityModule = createSpecialityModule();
 const medicModule = createMedicModule();
 const appointmentModule = createAppointmentModule();
+const medicalRecordModule = createMedicalRecordModule();
 
 app.use(
   cors({
@@ -28,5 +30,6 @@ app.use('/services', serviceModule.router);
 app.use('/specialities', specialityModule.router);
 app.use('/medics', medicModule.router);
 app.use('/appointments', appointmentModule.router);
+app.use('/medicalRecords', medicalRecordModule.router);
 
 export default app;
