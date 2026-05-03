@@ -19,7 +19,10 @@ export class MedicalRecordRepository implements IMedicalRecordRepository {
   findById(id: string): Promise<MedicalRecordEntity | null> {
     throw new Error('Method not implemented.');
   }
-  getAll(): Promise<MedicalRecordEntity[]> {
-    throw new Error('Method not implemented.');
+  
+  async getAll(): Promise<MedicalRecordEntity[]> {
+    const recordDocs = await medicalRecordModel.find({});
+
+    return recordDocs?.map((record) => MedicalRecordMapper.toDomain(record));
   }
 }

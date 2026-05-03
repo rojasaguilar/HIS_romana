@@ -1,4 +1,5 @@
 import { GenerateMedicalRecordUseCase } from '../core/usecases/medicalRecord/generate-medicalRecord.usecase';
+import { GetAllMedicalRecordsUseCase } from '../core/usecases/medicalRecord/getAll-medicalRecord.usecase';
 import { MedicalRecordRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/medicalRecord.repository';
 import { MedicalRecordController } from '../presentation/http/controllers/medicalRecord.controller';
 import { MedicalRecordRouter } from '../presentation/http/routes/medicalRecord.routes';
@@ -6,14 +7,21 @@ import { MedicalRecordRouter } from '../presentation/http/routes/medicalRecord.r
 export const createMedicalRecordModule = () => {
   const medicalRecordRepository = new MedicalRecordRepository();
 
+  //USE CASES
   const generateMedicalRecordUseCase = new GenerateMedicalRecordUseCase(
     medicalRecordRepository,
   );
-
-  const medicalRecordController = new MedicalRecordController(
-    generateMedicalRecordUseCase,
+  const getAllMedicalRecordsUseCase = new GetAllMedicalRecordsUseCase(
+    medicalRecordRepository,
   );
 
+  //CONTROLLER
+  const medicalRecordController = new MedicalRecordController(
+    generateMedicalRecordUseCase,
+    getAllMedicalRecordsUseCase,
+  );
+
+  //ROUTER
   const medicalRecordRouter = new MedicalRecordRouter(medicalRecordController);
 
   return {

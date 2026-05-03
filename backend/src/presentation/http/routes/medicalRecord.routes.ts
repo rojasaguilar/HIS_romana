@@ -10,6 +10,9 @@ export class MedicalRecordRouter {
   private routes() {
     this.router
       .route('/')
+      .get(
+        this.medRecController.getAllMedicalRecords.bind(this.medRecController),
+      )
       .post(
         this.medRecController.generateMedicalRecord.bind(this.medRecController),
       );
