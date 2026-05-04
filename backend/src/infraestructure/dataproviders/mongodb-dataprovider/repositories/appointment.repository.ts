@@ -21,8 +21,10 @@ export class AppointmentRepository implements IAppointmentRepository {
     return AppointmentMapper.toDomain(appointmentDoc);
   }
 
-  getAll(): Promise<AppointmentEntity[]> {
-    throw new Error('Method not implemented.');
+  async getAll(): Promise<AppointmentEntity[]> {
+    const appointmentDocs = await appointmentModel.find();
+
+    return appointmentDocs.map((app) => AppointmentMapper.toDomain(app));
   }
 
   async overlaps(

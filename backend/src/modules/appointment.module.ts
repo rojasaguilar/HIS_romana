@@ -6,6 +6,7 @@ import { ServiceRepository } from '../infraestructure/dataproviders/mongodb-data
 import { MedicRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/medic.repository';
 import PatientRepository from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/patient.repository';
 import { RescheduleAppointmentUseCase } from '../core/usecases/appoitments/reschedule-appointment.usecase';
+import { GetAllAppointmentsUseCase } from '../core/usecases/appoitments/getAll-appointment.usecase';
 
 export const createAppointmentModule = () => {
   const appointmentRepository = new AppointmentRepository();
@@ -26,9 +27,14 @@ export const createAppointmentModule = () => {
     serviceRepository,
   );
 
+  const getAllAppointmentsUseCase = new GetAllAppointmentsUseCase(
+    appointmentRepository,
+  );
+
   const appointmentController = new AppointmentController(
     scheduleAppointmentUseCase,
     rescheduleAppointmentUseCase,
+    getAllAppointmentsUseCase,
   );
 
   const appointmentRouter = new AppointmentRouter(appointmentController);
