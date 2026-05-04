@@ -10,7 +10,7 @@ export class LoginUseCase {
     private readonly passwordService: IPasswordService,
     private readonly systemAccountRepository: ISystemAccountRepository,
     private readonly authService: AuthService,
-    private readonly refreshTokenRepository: RefreshTokenRepository,
+    // private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
   async execute(email: string, password: string): Promise<AuthResponseDto> {

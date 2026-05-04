@@ -20,13 +20,24 @@ export class SystemAccountRepository implements ISystemAccountRepository {
       savedAccount.profileType,
       savedAccount.isActive,
     );
-    
   }
   findById(id: string): Promise<SystemAccount | null> {
     throw new Error('Method not implemented.');
   }
-  findByEmail(email: string): Promise<SystemAccount | null> {
-    throw new Error('Method not implemented.');
+
+  async findByEmail(email: string): Promise<SystemAccount | null> {
+    const accountDoc = await systemAccountModel.findOne({ email });
+
+    if (!accountDoc) return null;
+
+    return new SystemAccount(
+      accountDoc.userId,
+      accountDoc.email,
+      accountDoc.roles,
+      accountDoc.password,
+      accountDoc.profileType,
+      accountDoc.isActive,
+    );
   }
   getAll(): Promise<SystemAccount[]> {
     throw new Error('Method not implemented.');

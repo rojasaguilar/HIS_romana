@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { SystemAccountController } from '../controllers/systemAccountController';
 
-export class AppointmentRouter {
+export class AuthRouter {
   router: Router;
 
   constructor(
@@ -13,7 +13,7 @@ export class AppointmentRouter {
 
   private routes() {
     this.router
-      .route('/')
+      .route('/login')
       //   .get(this.AppointmentController.getMedics.bind(this.AppointmentController))
       .post(
         this.systemAccountController.login.bind(this.systemAccountController),
