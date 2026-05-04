@@ -1,10 +1,15 @@
-import { UpdateAppointmentDTO } from '../dtos/appointmet.dto';
+import {
+  FilterAppointmentDTO,
+  UpdateAppointmentDTO,
+} from '../dtos/appointmet.dto';
 import { AppointmentEntity } from '../entities/appointment.entity';
 
 export interface IAppointmentRepository {
   save(appointment: AppointmentEntity): Promise<AppointmentEntity>;
 
   findById(id: string): Promise<AppointmentEntity | null>;
+
+  filter(filterObject: Partial<FilterAppointmentDTO>): Promise<AppointmentEntity[]>;
 
   getAll(): Promise<AppointmentEntity[]>;
 

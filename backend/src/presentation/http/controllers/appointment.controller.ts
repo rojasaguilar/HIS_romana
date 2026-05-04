@@ -6,20 +6,32 @@ import {
 } from '../../../core/domain/dtos/appointmet.dto';
 import { RescheduleAppointmentUseCase } from '../../../core/usecases/appoitments/reschedule-appointment.usecase';
 import { GetAllAppointmentsUseCase } from '../../../core/usecases/appoitments/getAll-appointment.usecase';
+import { FilterAppoinmentsUseCase } from '../../../core/usecases/appoitments/filter-appointments.usecase';
+import { buildAppointmentFilter } from '../helpers/build-filterAppointment';
 
 export class AppointmentController {
   constructor(
     private readonly scheduleAppointmentUseCase: ScheduleAppointmentUseCase,
     private readonly rescheduleAppointmentUseCase: RescheduleAppointmentUseCase,
     private readonly getAllAppointemtsUseCase: GetAllAppointmentsUseCase,
+    private readonly filterAppointmentsUseCase: FilterAppoinmentsUseCase,
   ) {}
 
   async getAllAppointments(req: Request, res: Response) {
-    const appointmets = await this.getAllAppointemtsUseCase.execute();
+    let appointments;
+
+    if (!req.query) {
+      appointments = await this.getAllAppointemtsUseCase.execute();
+    } else {
+      const filterObject = buildAppointmentFilter(req.query);
+
+      console.log('filter', filterObject);
+      appointments = await this.filterAppointmentsUseCase.execute(filterObject);
+    }
 
     res.status(200).json({
-      count: appointmets.length,
-      appointmets,
+      count: appointments.length,
+      appointments,
     });
   }
 

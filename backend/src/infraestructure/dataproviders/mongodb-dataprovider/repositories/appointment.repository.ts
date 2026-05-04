@@ -1,10 +1,20 @@
-import { RescheduleAppointmentDTO } from '../../../../core/domain/dtos/appointmet.dto';
+import {
+  FilterAppointmentDTO,
+  RescheduleAppointmentDTO,
+} from '../../../../core/domain/dtos/appointmet.dto';
 import { AppointmentEntity } from '../../../../core/domain/entities/appointment.entity';
 import { IAppointmentRepository } from '../../../../core/domain/repositories/appointment.repository.interface';
 import { AppointmentMapper } from '../mappers/appointment.mapper';
 import appointmentModel from '../models/appointment.model';
 
 export class AppointmentRepository implements IAppointmentRepository {
+  async filter(
+    filterObject: Partial<FilterAppointmentDTO>,
+  ): Promise<AppointmentEntity[]> {
+    const appointmentDocs = await appointmentModel.find(filterObject);
+
+    return appointmentDocs.map((app) => AppointmentMapper.toDomain(app));
+  }
   async save(appointment: AppointmentEntity): Promise<AppointmentEntity> {
     const appointmentData = AppointmentMapper.toPersistance(appointment);
 

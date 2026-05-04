@@ -39,6 +39,30 @@ export interface CreateAppointmentDTO {
   id?: string;
 }
 
+export interface FilterAppointmentDTO {
+  startDate: Date | string;
+  endTime: Date | string;
+
+  patientId: string;
+  medicId: string;
+  serviceId: string;
+
+  status: Status;
+  type: 'IN_PERSON' | 'ONLINE';
+
+  patientCharge: number;
+  medicEarning: number;
+
+  billing: Billing;
+
+  cancellation?: CancellationDTO;
+  preNotes?: string;
+  postNotes?: string;
+  completedAt?: Date | string;
+
+  id?: string;
+}
+
 export interface RescheduleAppointmentDTO {
   startDate: Date | string;
   endTime: Date | string;
