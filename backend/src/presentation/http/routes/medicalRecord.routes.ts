@@ -16,5 +16,14 @@ export class MedicalRecordRouter {
       .post(
         this.medRecController.generateMedicalRecord.bind(this.medRecController),
       );
+
+    this.router
+      .route('/:id')
+      // .get(
+      //   this.medRecController.getAllMedicalRecords.bind(this.medRecController),
+      // )
+      .patch(
+        this.medRecController.updateMedicalRecord.bind(this.medRecController),
+      );
   }
 }

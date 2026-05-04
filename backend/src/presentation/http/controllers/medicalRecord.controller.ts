@@ -1,12 +1,17 @@
 import { Request, Response } from 'express';
 import { GenerateMedicalRecordUseCase } from '../../../core/usecases/medicalRecord/generate-medicalRecord.usecase';
-import { CreateMedicalRecordDTO } from '../../../core/domain/dtos/medicalRecord.dto';
+import {
+  CreateMedicalRecordDTO,
+  UpdateMedicalRecordDTO,
+} from '../../../core/domain/dtos/medicalRecord.dto';
 import { GetAllMedicalRecordsUseCase } from '../../../core/usecases/medicalRecord/getAll-medicalRecord.usecase';
+import { UpdateMedicalRecordUseCase } from '../../../core/usecases/medicalRecord/update-medicalRecord.usecase';
 
 export class MedicalRecordController {
   constructor(
     private readonly generateMedRecUseCase: GenerateMedicalRecordUseCase,
     private readonly getAllMedicalRecordsUseCase: GetAllMedicalRecordsUseCase,
+    private readonly updateMedicalRecordUseCase: UpdateMedicalRecordUseCase,
   ) {}
 
   async generateMedicalRecord(
@@ -26,5 +31,23 @@ export class MedicalRecordController {
       count: records.length,
       records,
     });
+  }
+
+  async updateMedicalRecord(
+    req: Request<{ id: string }, UpdateMedicalRecordDTO>,
+    res: Response,
+  ) {
+    const { id } = req.params;
+    const data = req.body;
+
+    if (data.patientId) delete data.patientId;
+
+    console.log(data);
+    const updatedRecord = await this.updateMedicalRecordUseCase.execute(
+      id,
+      data,
+    );
+
+    res.status(200).json(updatedRecord);
   }
 }
