@@ -2,11 +2,22 @@ import { Request, Response } from 'express';
 import { RegisterRecepcionistUseCase } from '../../../core/usecases/recepcionist/register-recepcionist.usecase';
 import { CreateReceptionistDTO } from '../../../core/domain/dtos/receptionist.dto';
 import { env } from '../../../infraestructure/config/environment';
+import { GetAllReceptionistUseCase } from '../../../core/usecases/recepcionist/getAll-receptionist.usecase';
 
 export class ReceptionistController {
   constructor(
     private registerReceptionistUseCase: RegisterRecepcionistUseCase,
+    private getAllReceptionistUseCase: GetAllReceptionistUseCase,
   ) {}
+
+  async getAllReceptionists(req: Request, res: Response) {
+    const receptionists = await this.getAllReceptionistUseCase.execute();
+
+    res.status(200).json({
+      count: receptionists.length,
+      receptionists,
+    });
+  }
 
   async registerReceptionist(
     req: Request<CreateReceptionistDTO>,

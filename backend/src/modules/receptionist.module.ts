@@ -6,6 +6,7 @@ import { BcryptPasswordService } from '../infraestructure/services/BcryptPasswor
 import { JWTTokenService } from '../infraestructure/services/JWT.token.service';
 import { ReceptionistController } from '../presentation/http/controllers/receptionist.controller';
 import { ReceptionistRouter } from '../presentation/http/routes/receptionist.routes';
+import { GetAllReceptionistUseCase } from '../core/usecases/recepcionist/getAll-receptionist.usecase';
 
 export const createreceptionistModule = () => {
   const receptionistRepository = new ReceptionistRepository();
@@ -22,13 +23,14 @@ export const createreceptionistModule = () => {
     systemAccountRepository,
     passwordService,
   );
-  //   const getAllreceptionistsUseCase = new GetAllreceptionistsUseCase(
-  //     receptionistRepository,
-  //   );
+  const getAllreceptionistsUseCase = new GetAllReceptionistUseCase(
+    receptionistRepository,
+  );
 
   //CONTROLLER
   const receptionistController = new ReceptionistController(
     registerReceptionistUseCase,
+    getAllreceptionistsUseCase,
   );
 
   //ROUTER

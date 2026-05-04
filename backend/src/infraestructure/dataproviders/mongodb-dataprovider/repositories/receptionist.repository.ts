@@ -24,12 +24,25 @@ export class ReceptionistRepository implements IReceptionistRepository {
       newReceptionist.profilePictureUrl ?? '',
       newReceptionist._id.toString(),
     );
-    
   }
   findById(id: string): Promise<ReceptionistEntity | null> {
     throw new Error('Method not implemented.');
   }
-  getAll(): Promise<ReceptionistEntity[]> {
-    throw new Error('Method not implemented.');
+
+  async getAll(): Promise<ReceptionistEntity[]> {
+    const receptionistsDocs = await receptionistModel.find();
+
+    return receptionistsDocs.map(
+      (doc) =>
+        new ReceptionistEntity(
+          doc.name,
+          doc.email,
+          doc.phoneNumber,
+          doc.languages,
+          true,
+          doc.profilePictureUrl ?? '',
+          doc._id.toString(),
+        ),
+    );
   }
 }

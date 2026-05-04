@@ -12,7 +12,11 @@ export class ReceptionistRouter {
   private routes() {
     this.router
       .route('/')
-      //   .get(this.AppointmentController.getMedics.bind(this.AppointmentController))
+      .get(
+        this.receptionistController.getAllReceptionists.bind(
+          this.receptionistController,
+        ),
+      )
       .post(
         this.receptionistController.registerReceptionist.bind(
           this.receptionistController,
