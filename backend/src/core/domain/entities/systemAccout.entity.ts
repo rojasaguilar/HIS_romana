@@ -8,6 +8,7 @@ export class SystemAccount {
     public roles: Role[],
     private password: string,
     private profileType: 'MEDIC' | 'RECEPSIONIST',
+    public isActive: boolean,
     private readonly accountId?: string,
   ) {}
 

@@ -2,6 +2,7 @@ import { AuthService } from '../../domain/domain-services/auth.service';
 import { CreateReceptionistDTO } from '../../domain/dtos/receptionist.dto';
 import { ReceptionistEntity } from '../../domain/entities/receptionist.entity';
 import { SystemAccount } from '../../domain/entities/systemAccout.entity';
+import { IPasswordService } from '../../domain/interfaces/password.service.interface';
 import { IReceptionistRepository } from '../../domain/repositories/receptionist.repository.interface';
 import { ISystemAccountRepository } from '../../domain/repositories/systemAccount.repository.interface';
 
@@ -10,6 +11,7 @@ export class RegisterRecepcionistUseCase {
     private readonly recepcionistRepository: IReceptionistRepository,
     private readonly authService: AuthService,
     private readonly systemAccountRepository: ISystemAccountRepository,
+    private readonly passwordService: IPasswordService,
   ) {}
 
   async execute(data: CreateReceptionistDTO): Promise<{
@@ -31,12 +33,17 @@ export class RegisterRecepcionistUseCase {
 
     if (!registeredRec) throw new Error(`could not save rec`);
 
+    const hashedPassword = await this.passwordService.hashPassword(
+      data.password,
+    );
+
     const newAccount = new SystemAccount(
       registeredRec.id ?? '',
       registeredRec.email,
       ['RECEPTIONIST'],
-      data.password,
+      hashedPassword,
       'RECEPSIONIST',
+      true,
     );
 
     const savedAccount = await this.systemAccountRepository.save(newAccount);

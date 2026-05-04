@@ -2,12 +2,21 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+function getEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`Environment variable ${name} is required`);
+  }
+  return value;
+}
+
 export const env = {
-  DATABASE_URL: process.env.DATABASE_URL || 'undefined',
-  DATABASE_PASSWORD: process.env.DATABASE_PASSWORD || 'undefined',
-  PORT: process.env.PORT || 3100,
-  JWT_SECRET: process.env.JWT_SECRET || '',
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
-  JWT_COOKIE_EXPIRES_IN: process.env.JWT_COOKIE_EXPIRES_IN,
-  REFRESH_EXPIRES: process.env.REFRESH_EXPIRES,
+  DATABASE_URL: getEnv('DATABASE_URL'),
+  DATABASE_PASSWORD: getEnv('DATABASE_PASSWORD'),
+  PORT: Number(process.env.PORT) || 3100,
+
+  JWT_ACCESS_SECRET: getEnv('JWT_ACCESS_SECRET'),
+
+  JWT_EXPIRES_IN: getEnv('JWT_EXPIRES_IN'), // "15m"
+  REFRESH_EXPIRES: getEnv('REFRESH_EXPIRES'), // "7d"
 };

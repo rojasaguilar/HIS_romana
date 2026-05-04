@@ -2,7 +2,7 @@ import RefreshTokenRepository from '../../../infraestructure/dataproviders/mongo
 import { AuthService } from '../../domain/domain-services/auth.service';
 import { AuthResponseDto } from '../../domain/dtos/systemAccount.dto';
 import { CredentialsDoesNotMatchError } from '../../domain/errors/account.error';
-import { IPasswordService } from '../../domain/interfaces/password.service';
+import { IPasswordService } from '../../domain/interfaces/password.service.interface';
 import { ISystemAccountRepository } from '../../domain/repositories/systemAccount.repository.interface';
 
 export class LoginUseCase {

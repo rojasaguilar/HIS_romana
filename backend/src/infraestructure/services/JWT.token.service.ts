@@ -5,8 +5,9 @@ import { UserPayloadDTO } from '../../core/domain/dtos/systemAccount.dto';
 
 export class JWTTokenService implements ITokenService {
   signAccessToken(payload: UserPayloadDTO): string {
-    const accessToken = jwt.sign(payload, env.JWT_SECRET, {
-      expiresIn: Number(env.JWT_EXPIRES_IN),
+    console.log(env.JWT_EXPIRES_IN);
+    const accessToken = jwt.sign(payload, env.JWT_ACCESS_SECRET, {
+      expiresIn: env.JWT_EXPIRES_IN as jwt.SignOptions['expiresIn'],
     });
 
     return accessToken;
@@ -16,12 +17,8 @@ export class JWTTokenService implements ITokenService {
     userId: string;
     jti: string;
   }): string {
-    const refreshTokenExpiration = Number(
-      env.REFRESH_EXPIRES?.replace('d', ''),
-    );
-
-    const refreshToken = jwt.sign(payload, env.JWT_SECRET, {
-      expiresIn: refreshTokenExpiration,
+    const refreshToken = jwt.sign(payload, env.JWT_ACCESS_SECRET, {
+      expiresIn: env.REFRESH_EXPIRES as jwt.SignOptions['expiresIn'],
     });
 
     return refreshToken;
