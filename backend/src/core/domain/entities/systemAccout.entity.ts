@@ -1,19 +1,14 @@
-import {
-  InvalidPasswordError,
-  InvalidSystemAccountState,
-  PasswordsDoesNotMatchError,
-} from '../errors/account.error';
+import { InvalidSystemAccountState } from '../errors/account.error';
 import { Role } from '../types/role.type';
-import bcrypt from 'bcryptjs';
 
 export class SystemAccount {
   constructor(
-    public readonly id: string,
+    private readonly userId: string,
     public email: string,
     public roles: Role[],
     private password: string,
-    private readonly userId: string,
     private profileType: 'MEDIC' | 'RECEPSIONIST',
+    private readonly accountId?: string,
   ) {}
 
   public hasRole(requiredRole: Role) {
@@ -45,23 +40,13 @@ export class SystemAccount {
     return this.password;
   }
 
+  public getAccountId() {
+    return this.accountId;
+  }
+
   public getUserId() {
     return this.userId;
   }
-
-  // public async changePassword(newPassword: string, confirmPassword: string) {
-  //   if (newPassword !== confirmPassword)
-  //     throw new PasswordsDoesNotMatchError(`Passwords does not match`);
-
-  //   if (!this.isPasswordValid(newPassword))
-  //     throw new InvalidPasswordError(
-  //       `Password requires at least one symbol and number`,
-  //     );
-
-  //   const hashedPass = await bcrypt.hash(newPassword, 13);
-
-  //   this.password = hashedPass;
-  // }
 
   private isPasswordValid(candidatePassword: string) {
     return /^(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/.test(candidatePassword);
