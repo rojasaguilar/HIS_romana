@@ -3,7 +3,7 @@ export class PlanDescription {
     private readonly _durationInMonths: number,
     private readonly _price: number,
     private readonly _monthlyVisitsIncluded: {
-      service: string;
+      serviceId: string;
       visits: number;
     }[],
   ) {
@@ -24,7 +24,7 @@ export class PlanDescription {
     }
 
     for (const item of this._monthlyVisitsIncluded) {
-      if (!item.service) {
+      if (!item.serviceId) {
         throw new Error('Service es requerido');
       }
 

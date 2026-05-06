@@ -29,4 +29,16 @@ export class ServiceRepository implements IServicesRepository {
 
     return serviceDoc ? ServiceMapper.toDomain(serviceDoc) : null;
   }
+  async findByIds(ids: string[]): Promise<{ id: string }[]> {
+    const services = await serviceModel
+      .find({
+        _id: { $in: ids },
+      })
+      .select('_id')
+      .lean();
+
+    return services.map((s) => ({
+      id: s._id.toString(),
+    }));
+  }
 }

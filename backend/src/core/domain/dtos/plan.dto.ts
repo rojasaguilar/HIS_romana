@@ -6,7 +6,7 @@ export interface CreatePlanDTO {
     durationInMonths: number;
     price: number;
     monthlyVisitsIncluded: {
-      service: string;
+      serviceId: string;
       visits: number;
     }[];
   }[];
@@ -21,7 +21,7 @@ export interface UpdatePlanDTO {
     durationInMonths: number;
     price: number;
     monthlyVisitsIncluded: {
-      service: string;
+      serviceId: string;
       visits: number;
     }[];
   }[];

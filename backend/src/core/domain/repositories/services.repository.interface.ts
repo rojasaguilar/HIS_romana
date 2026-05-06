@@ -8,4 +8,6 @@ export interface IServicesRepository {
   findByName(name: string): Promise<ServiceEntity | null>;
 
   getAll(): Promise<ServiceEntity[]>;
+
+  findByIds(ids: string[]): Promise<{ id: string }[]>;
 }

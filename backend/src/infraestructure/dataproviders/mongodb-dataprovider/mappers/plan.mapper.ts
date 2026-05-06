@@ -11,7 +11,10 @@ export class PlanMapper {
           new PlanDescription(
             v.durationInMonths,
             v.price,
-            v.monthlyVisitsIncluded,
+            v.monthlyVisitsIncluded.map((m) => ({
+              serviceId: m.serviceId.toString(),
+              visits: m.visits,
+            })),
           ),
       ),
       doc.description,
@@ -28,7 +31,10 @@ export class PlanMapper {
       variants: plan.variants.map((v) => ({
         durationInMonths: v.durationInMonths,
         price: v.price,
-        monthlyVisitsIncluded: v.monthlyVisitsIncluded,
+        monthlyVisitsIncluded: v.monthlyVisitsIncluded.map((m) => ({
+          serviceId: m.serviceId, 
+          visits: m.visits,
+        })),
       })),
     };
   }

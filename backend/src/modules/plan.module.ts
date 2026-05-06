@@ -7,13 +7,18 @@ import { PlanController } from '../presentation/http/controllers/plan.controller
 import { PlanRouter } from '../presentation/http/routes/plan.routes';
 import { FindPlanByIdUseCase } from '../core/usecases/plan/get-planById.usecase';
 import { FindAllPlansUseCase } from '../core/usecases/plan/getAll-plan.usecase';
+import { ServiceRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/services.repository';
 
 export const createPlanModule = () => {
   // REPOSITORY
   const planRepository = new PlanRepository();
+  const serviceRepository = new ServiceRepository();
 
   // USE CASES
-  const createPlanUseCase = new CreatePlanUseCase(planRepository);
+  const createPlanUseCase = new CreatePlanUseCase(
+    planRepository,
+    serviceRepository,
+  );
   const findPlanByIdUseCase = new FindPlanByIdUseCase(planRepository);
   const findAllPlansUseCase = new FindAllPlansUseCase(planRepository);
   const updatePlanUseCase = new UpdatePlanUseCase(planRepository);
