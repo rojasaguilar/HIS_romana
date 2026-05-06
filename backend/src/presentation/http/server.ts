@@ -9,6 +9,7 @@ import { createAppointmentModule } from '../../modules/appointment.module';
 import { createMedicalRecordModule } from '../../modules/medicalRecord.module';
 import { createreceptionistModule } from '../../modules/receptionist.module';
 import { createAuthModule } from '../../modules/auth.module';
+import { createPlanModule } from '../../modules/plan.module';
 
 const app = express();
 const patientModule = createPatientModule();
@@ -19,6 +20,7 @@ const appointmentModule = createAppointmentModule();
 const medicalRecordModule = createMedicalRecordModule();
 const receptionistModule = createreceptionistModule();
 const authModule = createAuthModule();
+const planModule = createPlanModule();
 
 app.use(
   cors({
@@ -37,5 +39,15 @@ app.use('/appointments', appointmentModule.router);
 app.use('/medicalRecords', medicalRecordModule.router);
 app.use('/receptionists', receptionistModule.router);
 app.use('/auth', authModule.router);
+app.use('/plans', planModule.router);
+
+//cambiar de lugar y hacer mejor
+app.use((err, req, res, next) => {
+  console.error(err);
+
+  res.status(500).json({
+    message: err.message || 'Internal Server Error',
+  });
+});
 
 export default app;
