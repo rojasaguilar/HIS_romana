@@ -10,6 +10,7 @@ import { createMedicalRecordModule } from '../../modules/medicalRecord.module';
 import { createreceptionistModule } from '../../modules/receptionist.module';
 import { createAuthModule } from '../../modules/auth.module';
 import { createPlanModule } from '../../modules/plan.module';
+import { createSubscriptionModule } from '../../modules/subscription.module';
 
 const app = express();
 const patientModule = createPatientModule();
@@ -21,6 +22,7 @@ const medicalRecordModule = createMedicalRecordModule();
 const receptionistModule = createreceptionistModule();
 const authModule = createAuthModule();
 const planModule = createPlanModule();
+const subscriptionModule = createSubscriptionModule();
 
 app.use(
   cors({
@@ -40,6 +42,7 @@ app.use('/medicalRecords', medicalRecordModule.router);
 app.use('/receptionists', receptionistModule.router);
 app.use('/auth', authModule.router);
 app.use('/plans', planModule.router);
+app.use('/subscriptions', subscriptionModule.router);
 
 //cambiar de lugar y hacer mejor
 app.use((err, req, res, next) => {

@@ -1,5 +1,5 @@
-import { SubscriptionEntity } from "../../../../core/domain/entities/subscription.entity";
-import { SubscriptionDocument } from "../models/subscription.model";
+import { SubscriptionEntity } from '../../../../core/domain/entities/subscription.entity';
+import { SubscriptionDocument } from '../models/subscription.model';
 
 export class SubscriptionMapper {
   static toDomain(doc: SubscriptionDocument): SubscriptionEntity {
@@ -21,6 +21,7 @@ export class SubscriptionMapper {
         year: v.year,
       })),
       doc.status,
+      doc._id.toString(),
     );
   }
 

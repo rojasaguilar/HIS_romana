@@ -13,6 +13,7 @@ export class SubscriptionEntity {
     private _monthlyVisitsIncluded: MonthlyVisits[],
     private _visitsUsed: VisitUsage[],
     private _status: SubscriptionStatus = 'active',
+    public readonly id?: string,
   ) {
     this.validate();
   }
