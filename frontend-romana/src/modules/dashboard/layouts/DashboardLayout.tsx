@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 export const DashboardLayout = () => {
   return (
@@ -12,8 +12,7 @@ export const DashboardLayout = () => {
         style={{
           width: "250px",
           padding: "1rem",
-          borderRight:
-            "1px solid gray",
+          borderRight: "1px solid gray",
         }}
       >
         <h2>Romana</h2>
@@ -26,21 +25,9 @@ export const DashboardLayout = () => {
             marginTop: "2rem",
           }}
         >
-          <a href="/dashboard">
-            Dashboard
-          </a>
+          <Link to="/dashboard">Dashboard</Link>
 
-          <a href="/patients">
-            Patients
-          </a>
-
-          <a href="/doctors">
-            Doctors
-          </a>
-
-          <a href="/appointments">
-            Appointments
-          </a>
+          <Link to="/patients">Patients</Link>
         </nav>
       </aside>
 

@@ -1,6 +1,4 @@
-import {
-  createBrowserRouter,
-} from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 
 import { ProtectedRoute } from "./protected.routes";
 
@@ -10,30 +8,33 @@ import { DashboardPage } from "@/modules/dashboard/pages/DashboardPage";
 
 import { DashboardLayout } from "@/modules/dashboard/layouts/DashboardLayout";
 
-export const router =
-  createBrowserRouter([
-    {
-      path: "/login",
-      element: <LoginPage />,
-    },
+import { PatientsPage } from "@/modules/patients/pages/PatientsPage";
 
-    {
-      element: <ProtectedRoute />,
+export const router = createBrowserRouter([
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
 
-      children: [
-        {
-          element:
-            <DashboardLayout />,
+  {
+    element: <ProtectedRoute />,
 
-          children: [
-            {
-              path: "/dashboard",
+    children: [
+      {
+        element: <DashboardLayout />,
 
-              element:
-                <DashboardPage />,
-            },
-          ],
-        },
-      ],
-    },
-  ]);
+        children: [
+          {
+            path: "/dashboard",
+
+            element: <DashboardPage />,
+          },
+          {
+            path: "/patients",
+            element: <PatientsPage />,
+          },
+        ],
+      },
+    ],
+  },
+]);
