@@ -9,6 +9,7 @@ import { DashboardPage } from "@/modules/dashboard/pages/DashboardPage";
 import { DashboardLayout } from "@/modules/dashboard/layouts/DashboardLayout";
 
 import { PatientsPage } from "@/modules/patients/pages/PatientsPage";
+import { CreatePatientPage } from "@/modules/patients/pages/CreatePatientPage";
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
           {
             path: "/patients",
             element: <PatientsPage />,
+          },
+          {
+            path: "/patients/create",
+            element: <CreatePatientPage />,
           },
         ],
       },

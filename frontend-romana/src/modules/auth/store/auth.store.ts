@@ -1,14 +1,13 @@
 import { create } from "zustand";
 
+import { persist } from "zustand/middleware";
+
 export interface AuthUser {
   accountId: string;
   userId: string;
   email: string;
   roles: string[];
-  profileType:
-    | "ADMIN"
-    | "DOCTOR"
-    | "RECEPTIONIST";
+  profileType: "ADMIN" | "DOCTOR" | "RECEPTIONIST";
 }
 
 interface AuthState {
@@ -16,13 +15,9 @@ interface AuthState {
 
   user: AuthUser | null;
 
-  setAccessToken: (
-    token: string | null
-  ) => void;
+  setAccessToken: (token: string | null) => void;
 
-  setUser: (
-    user: AuthUser | null
-  ) => void;
+  setUser: (user: AuthUser | null) => void;
 
   logout: () => void;
 
@@ -30,28 +25,41 @@ interface AuthState {
 }
 
 export const useAuthStore =
-  create<AuthState>((set, get) => ({
-    accessToken: null,
-
-    user: null,
-
-    setAccessToken: (token) =>
-      set({
-        accessToken: token,
-      }),
-
-    setUser: (user) =>
-      set({
-        user,
-      }),
-
-    logout: () =>
-      set({
+  create<AuthState>()(
+    persist(
+      (set, get) => ({
         accessToken: null,
+
         user: null,
+
+        setAccessToken: (
+          token
+        ) =>
+          set({
+            accessToken: token,
+          }),
+
+        setUser: (user) =>
+          set({
+            user,
+          }),
+
+        logout: () =>
+          set({
+            accessToken: null,
+
+            user: null,
+          }),
+
+        isAuthenticated:
+          () => {
+            return !!get()
+              .accessToken;
+          },
       }),
 
-    isAuthenticated: () => {
-      return !!get().accessToken;
-    },
-  }));
+      {
+        name: "auth-storage",
+      }
+    )
+  );

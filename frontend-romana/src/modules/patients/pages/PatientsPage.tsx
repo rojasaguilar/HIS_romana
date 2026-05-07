@@ -1,37 +1,59 @@
+import { Link } from "react-router-dom";
+
 import { usePatients } from "../hooks/usePatients";
 
-import { PatientsTable } from "../components/PatientsTable";
-
 export const PatientsPage = () => {
-  const {
-    data,
-    isLoading,
-    isError,
-  } = usePatients();
+  const { data, isLoading } =
+    usePatients();
 
   if (isLoading) {
-    return (
-      <p>
-        Loading patients...
-      </p>
-    );
-  }
-
-  if (isError) {
-    return (
-      <p>
-        Error loading patients
-      </p>
-    );
+    return <p>Loading...</p>;
   }
 
   return (
     <div>
-      <h1>Patients</h1>
+      <div
+        style={{
+          display: "flex",
+          justifyContent:
+            "space-between",
+          alignItems: "center",
+          marginBottom: "1rem",
+        }}
+      >
+        <h1>Patients</h1>
 
-      <PatientsTable
-        patients={data ?? []}
-      />
+        <Link to="/patients/create">
+          <button>
+            Create Patient
+          </button>
+        </Link>
+      </div>
+
+      {data?.map((patient) => (
+        <div
+          key={patient.id}
+          style={{
+            border:
+              "1px solid gray",
+            padding: "1rem",
+            marginBottom:
+              "1rem",
+          }}
+        >
+          <p>
+            {patient.name}
+          </p>
+
+          <p>
+            {patient.email}
+          </p>
+
+          <p>
+            {patient.phoneNumber}
+          </p>
+        </div>
+      ))}
     </div>
   );
 };
