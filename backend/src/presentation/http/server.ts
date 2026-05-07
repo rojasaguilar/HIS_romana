@@ -1,3 +1,4 @@
+import { env } from '../../infraestructure/config/environment';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -26,7 +27,7 @@ const subscriptionModule = createSubscriptionModule();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: env.FRONTEND_URL_DEV,
     credentials: true,
   }),
 );

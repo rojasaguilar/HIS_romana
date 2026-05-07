@@ -19,4 +19,6 @@ export const env = {
 
   JWT_EXPIRES_IN: getEnv('JWT_EXPIRES_IN'), // "15m"
   REFRESH_EXPIRES: getEnv('REFRESH_EXPIRES'), // "7d"
+  FRONTEND_URL_DEV: getEnv('FRONTEND_URL_DEV'),
+  FRONTEND_URL_PROD: getEnv('FRONTEND_URL_PROD'),
 };
