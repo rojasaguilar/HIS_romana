@@ -14,6 +14,8 @@ import { MedicsPage } from "@/modules/medics/pages/MedicsPage";
 import { CreateMedicPage } from "@/modules/medics/pages/CreateMedicPage";
 import { ServicesPage } from "@/modules/services/pages/ServicesPage";
 import { CreateServicePage } from "@/modules/services/pages/CreateServicePage";
+import { AppointmentsPage } from "@/modules/appointments/pages/AppointmentsPage";
+import { CreateAppointmentPage } from "@/modules/appointments/pages/CreateAppointmentPage";
 
 export const router = createBrowserRouter([
   {
@@ -62,6 +64,14 @@ export const router = createBrowserRouter([
           {
             path: "/services/create",
             element: <CreateServicePage />,
+          },
+          {
+            path: "/appointments",
+            element: <AppointmentsPage />,
+          },
+          {
+            path: "/appointments/schedule",
+            element: <CreateAppointmentPage />,
           },
         ],
       },

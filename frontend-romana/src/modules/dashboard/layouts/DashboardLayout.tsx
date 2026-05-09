@@ -33,7 +33,7 @@ export const DashboardLayout = () => {
 
           <Link to="/services">Services</Link>
 
-          {/* <Link to="/patients">Patients</Link> */}
+          <Link to="/appointments">Appointments</Link>
         </nav>
       </aside>
 
