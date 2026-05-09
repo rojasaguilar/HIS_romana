@@ -31,6 +31,8 @@ export const DashboardLayout = () => {
 
           <Link to="/medics">Medics</Link>
 
+          <Link to="/services">Services</Link>
+
           {/* <Link to="/patients">Patients</Link> */}
         </nav>
       </aside>

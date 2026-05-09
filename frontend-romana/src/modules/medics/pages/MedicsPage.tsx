@@ -1,8 +1,14 @@
 import { Link } from "react-router-dom";
 import { useMedics } from "../hooks/useMedics";
+import { useSpecialities } from "@/modules/specialities/hooks/useSpecialities";
 
 export const MedicsPage = () => {
   const { data, isLoading, isError } = useMedics();
+
+  const { data: specialities } = useSpecialities();
+
+  const getSpecialityName = (specialityId: string) =>
+    specialities?.find((spec) => spec.id === specialityId)?.name ?? "GENERAL";
 
   if (isLoading) {
     return <p>Loading medics...</p>;
@@ -92,6 +98,15 @@ export const MedicsPage = () => {
                 padding: "0.75rem",
               }}
             >
+              Speciality
+            </th>
+
+            <th
+              style={{
+                border: "1px solid gray",
+                padding: "0.75rem",
+              }}
+            >
               Consultation Fee
             </th>
 
@@ -152,6 +167,17 @@ export const MedicsPage = () => {
                 }}
               >
                 {medic.medicalSchool}
+              </td>
+
+              <td
+                style={{
+                  border: "1px solid gray",
+                  padding: "0.75rem",
+                }}
+              >
+                {medic.specialityIds
+                  ?.map((spec) => getSpecialityName(spec))
+                  .join(", ")}
               </td>
 
               <td
