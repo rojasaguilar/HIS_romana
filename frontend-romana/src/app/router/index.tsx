@@ -10,6 +10,8 @@ import { DashboardLayout } from "@/modules/dashboard/layouts/DashboardLayout";
 
 import { PatientsPage } from "@/modules/patients/pages/PatientsPage";
 import { CreatePatientPage } from "@/modules/patients/pages/CreatePatientPage";
+import { MedicsPage } from "@/modules/medics/pages/MedicsPage";
+import { CreateMedicPage } from "@/modules/medics/pages/CreateMedicPage";
 
 export const router = createBrowserRouter([
   {
@@ -31,12 +33,25 @@ export const router = createBrowserRouter([
             element: <DashboardPage />,
           },
           {
+            path: "/",
+
+            element: <DashboardPage />,
+          },
+          {
             path: "/patients",
             element: <PatientsPage />,
           },
           {
             path: "/patients/create",
             element: <CreatePatientPage />,
+          },
+          {
+            path: "/medics",
+            element: <MedicsPage />,
+          },
+          {
+            path: "/medics/create",
+            element: <CreateMedicPage />,
           },
         ],
       },

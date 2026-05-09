@@ -1,0 +1,17 @@
+import { api } from "@/shared/lib/axios";
+
+import type {
+  Speciality,
+} from "../types/speciality.types";
+
+export const getSpecialitiesRequest =
+  async (): Promise<
+    Speciality[]
+  > => {
+    const response =
+      await api.get(
+        "/specialities"
+      );
+
+    return response.data;
+  };
