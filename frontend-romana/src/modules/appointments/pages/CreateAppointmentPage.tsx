@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type SetStateAction } from "react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -175,7 +175,7 @@ export const CreateAppointmentPage = () => {
 
           <DatePicker
             selected={startDate}
-            onChange={(date) => setStartDate(date)}
+            onChange={(date: SetStateAction<Date | null>) => setStartDate(date)}
             showTimeSelect
             timeIntervals={30}
             dateFormat="MMMM d, yyyy h:mm aa"
