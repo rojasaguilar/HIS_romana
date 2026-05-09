@@ -1,5 +1,4 @@
 import type {
-  AppointmentStatus,
   AppointmentType,
   Billing,
 } from "../types/appointment.types";
@@ -7,15 +6,11 @@ import type {
 export interface CreateAppointmentDTO {
   startDate: string;
 
-  endTime: string;
-
   patientId: string;
 
   medicId: string;
 
   serviceId: string;
-
-  status: AppointmentStatus;
 
   type: AppointmentType;
 

@@ -2,6 +2,10 @@ import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
+
 import { useCreateAppointment } from "../hooks/useCreateAppointment";
 
 import { usePatients } from "@/modules/patients/hooks/usePatients";
@@ -20,8 +24,6 @@ export const CreateAppointmentPage = () => {
 
   const createAppointment = useCreateAppointment();
 
-  const [billingSource, setBillingSource] = useState<BillingSource>("DIRECT");
-
   const { data: patients } = usePatients();
 
   const { data: medics } = useMedics();
@@ -34,16 +36,18 @@ export const CreateAppointmentPage = () => {
 
   const [serviceId, setServiceId] = useState("");
 
-  const [startDate, setStartDate] = useState("");
-
-  const [endTime, setEndTime] = useState("");
+  const [startDate, setStartDate] = useState<Date | null>(null);
 
   const [type, setType] = useState<AppointmentType>("IN_PERSON");
+
+  const [billingSource, setBillingSource] = useState<BillingSource>("DIRECT");
 
   const [preNotes, setPreNotes] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!startDate) return;
 
     createAppointment.mutate(
       {
@@ -53,15 +57,11 @@ export const CreateAppointmentPage = () => {
 
         serviceId,
 
-        startDate,
-
-        endTime,
+        startDate: startDate.toISOString(),
 
         type,
 
         preNotes,
-
-        status: "PROGRAMADA",
 
         patientCharge: 0,
 
@@ -93,21 +93,26 @@ export const CreateAppointmentPage = () => {
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: "1rem",
+          gap: "1.5rem",
+          maxWidth: "800px",
         }}
       >
-        <select
-          value={patientId}
-          onChange={(e) => setPatientId(e.target.value)}
-        >
-          <option value="">Select patient</option>
+        <div>
+          <h3>Patient</h3>
 
-          {patients?.map((patient) => (
-            <option key={patient.id} value={patient.id}>
-              {patient.name}
-            </option>
-          ))}
-        </select>
+          <select
+            value={patientId}
+            onChange={(e) => setPatientId(e.target.value)}
+          >
+            <option value="">Select patient</option>
+
+            {patients?.map((patient) => (
+              <option key={patient.id} value={patient.id}>
+                {patient.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div>
           <h3>Select Medic</h3>
@@ -115,7 +120,9 @@ export const CreateAppointmentPage = () => {
           <div
             style={{
               display: "grid",
+
               gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+
               gap: "1rem",
             }}
           >
@@ -127,11 +134,11 @@ export const CreateAppointmentPage = () => {
                   border:
                     medicId === medic.id ? "3px solid blue" : "1px solid gray",
 
+                  borderRadius: "10px",
+
                   padding: "1rem",
 
                   cursor: "pointer",
-
-                  borderRadius: "10px",
                 }}
               >
                 <h4>{medic.name}</h4>
@@ -139,63 +146,93 @@ export const CreateAppointmentPage = () => {
                 <p>{medic.email}</p>
 
                 <p>{medic.medicalSchool}</p>
+
+                <p>{medic.specialityIds}</p>
               </div>
             ))}
           </div>
         </div>
 
-        <select
-          value={serviceId}
-          onChange={(e) => setServiceId(e.target.value)}
+        <div>
+          <h3>Service</h3>
+
+          <select
+            value={serviceId}
+            onChange={(e) => setServiceId(e.target.value)}
+          >
+            <option value="">Select service</option>
+
+            {services?.map((service) => (
+              <option key={service.id} value={service.id}>
+                {service.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <h3>Appointment Date</h3>
+
+          <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            showTimeSelect
+            timeIntervals={30}
+            dateFormat="MMMM d, yyyy h:mm aa"
+            minDate={new Date()}
+            placeholderText="Select appointment date"
+            inline
+          />
+        </div>
+
+        <div>
+          <h3>Appointment Type</h3>
+
+          <select
+            value={type}
+            onChange={(e) => setType(e.target.value as AppointmentType)}
+          >
+            <option value="IN_PERSON">IN PERSON</option>
+
+            <option value="ONLINE">ONLINE</option>
+          </select>
+        </div>
+
+        <div>
+          <h3>Billing Source</h3>
+
+          <select
+            value={billingSource}
+            onChange={(e) => setBillingSource(e.target.value as BillingSource)}
+          >
+            <option value="DIRECT">DIRECT</option>
+
+            <option value="PROMOTION">PROMOTION</option>
+
+            <option value="SUBSCRIPTION">SUBSCRIPTION</option>
+          </select>
+        </div>
+
+        <div>
+          <h3>Pre Notes</h3>
+
+          <textarea
+            placeholder="Appointment notes..."
+            value={preNotes}
+            onChange={(e) => setPreNotes(e.target.value)}
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={createAppointment.isPending}
+          style={{
+            padding: "1rem",
+            cursor: "pointer",
+          }}
         >
-          <option value="">Select service</option>
-
-          {services?.map((service) => (
-            <option key={service.id} value={service.id}>
-              {service.name}
-            </option>
-          ))}
-        </select>
-
-        <input
-          type="datetime-local"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-        />
-
-        <input
-          type="datetime-local"
-          value={endTime}
-          onChange={(e) => setEndTime(e.target.value)}
-        />
-
-        <textarea
-          placeholder="Pre notes"
-          value={preNotes}
-          onChange={(e) => setPreNotes(e.target.value)}
-        />
-
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value as AppointmentType)}
-        >
-          <option value="IN_PERSON">IN PERSON</option>
-
-          <option value="ONLINE">ONLINE</option>
-        </select>
-
-        <select
-          value={billingSource}
-          onChange={(e) => setBillingSource(e.target.value as BillingSource)}
-        >
-          <option value="DIRECT">DIRECT</option>
-
-          <option value="PROMOTION">PROMOTION</option>
-
-          <option value="SUBSCRIPTION">SUBSCRIPTION</option>
-        </select>
-
-        <button type="submit">Save Appointment</button>
+          {createAppointment.isPending ? "Saving..." : "Save Appointment"}
+        </button>
       </form>
     </div>
   );
