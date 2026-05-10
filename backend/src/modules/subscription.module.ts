@@ -10,16 +10,19 @@ import { UpdateSubscriptionUseCase } from '../core/usecases/subscription/update-
 import { SubscriptionController } from '../presentation/http/controllers/subscription.controller';
 import { SubscriptionRouter } from '../presentation/http/routes/subscription.routes';
 import { ServiceRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/services.repository';
+import { PlanRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/plan.repository';
 
 export const createSubscriptionModule = () => {
-  // 🧩 REPOSITORIES
+  // REPOSITORIES
   const subscriptionRepository = new SubscriptionRepository();
   const serviceRepository = new ServiceRepository();
+  const planRepository = new PlanRepository();
 
-  // 🧠 USE CASES
+  // USE CASES
   const createSubscriptionUseCase = new CreateSubscriptionUseCase(
     subscriptionRepository,
     serviceRepository,
+    planRepository,
   );
 
   const findSubscriptionByIdUseCase = new FindSubscriptionByIdUseCase(
@@ -35,7 +38,7 @@ export const createSubscriptionModule = () => {
     serviceRepository,
   );
 
-  // 🎯 CONTROLLER
+  // CONTROLLER
   const subscriptionController = new SubscriptionController(
     createSubscriptionUseCase,
     findSubscriptionByIdUseCase,
@@ -43,7 +46,7 @@ export const createSubscriptionModule = () => {
     updateSubscriptionUseCase,
   );
 
-  // 🌐 ROUTER
+  // ROUTER
   const subscriptionRouter = new SubscriptionRouter(subscriptionController);
 
   return {

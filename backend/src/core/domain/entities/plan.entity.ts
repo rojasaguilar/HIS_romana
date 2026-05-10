@@ -42,6 +42,10 @@ export class PlanEntity {
     return this._name;
   }
 
+  public getVariants() {
+    return this._variants;
+  }
+
   get variants(): PlanDescription[] {
     return [...this._variants];
   }

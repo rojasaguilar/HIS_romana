@@ -6,6 +6,7 @@ export class PlanDescription {
       serviceId: string;
       visits: number;
     }[],
+    public readonly id?: string,
   ) {
     this.validate();
   }

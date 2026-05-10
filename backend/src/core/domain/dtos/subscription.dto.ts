@@ -14,12 +14,10 @@ export interface UpdateSubscriptionDTO {
 
 export interface CreateSubscriptionDTO {
   patientId: string;
+
   planId: string;
-  durationInMonths: number;
-  price: number;
+
+  variantId: string;
+
   startDate: Date;
-  monthlyVisitsIncluded: {
-    serviceId: string;
-    visits: number;
-  }[];
 }

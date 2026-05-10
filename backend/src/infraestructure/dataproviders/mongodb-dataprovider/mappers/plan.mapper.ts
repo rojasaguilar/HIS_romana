@@ -15,6 +15,7 @@ export class PlanMapper {
               serviceId: m.serviceId.toString(),
               visits: m.visits,
             })),
+            v._id.toString(),
           ),
       ),
       doc.description,
@@ -32,7 +33,7 @@ export class PlanMapper {
         durationInMonths: v.durationInMonths,
         price: v.price,
         monthlyVisitsIncluded: v.monthlyVisitsIncluded.map((m) => ({
-          serviceId: m.serviceId, 
+          serviceId: m.serviceId,
           visits: m.visits,
         })),
       })),
