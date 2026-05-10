@@ -35,6 +35,8 @@ import { UnauthorizedPage } from "@/shared/pages/UnauthorizedPage";
 import { ProtectedRoute } from "./protected.routes";
 
 import { RoleGuard } from "./guards/RoleGuard";
+import { SubscriptionsPage } from "@/modules/subscriptions/pages/SubscriptionsPage";
+import { CreateSubscriptionPage } from "@/modules/subscriptions/pages/CreateSubscriptionPage";
 
 export const router = createBrowserRouter([
   /**
@@ -147,17 +149,23 @@ export const router = createBrowserRouter([
             element: <PlansPage />,
           },
 
+          {
+            path: "/subscriptions",
+
+            element: <SubscriptionsPage />,
+          },
+
+          {
+            path: "/subscriptions/create",
+
+            element: <CreateSubscriptionPage />,
+          },
+
           /**
            * ADMIN ROUTES
            */
           {
-            element: (
-              <RoleGuard
-                allowedRoles={[
-                  "ADMIN",
-                ]}
-              />
-            ),
+            element: <RoleGuard allowedRoles={["ADMIN"]} />,
 
             children: [
               /**
@@ -166,8 +174,7 @@ export const router = createBrowserRouter([
               {
                 path: "/services/create",
 
-                element:
-                  <CreateServicePage />,
+                element: <CreateServicePage />,
               },
 
               /**
@@ -176,15 +183,13 @@ export const router = createBrowserRouter([
               {
                 path: "/plans/admin",
 
-                element:
-                  <AdminPlansPage />,
+                element: <AdminPlansPage />,
               },
 
               {
                 path: "/plans/create",
 
-                element:
-                  <CreatePlanPage />,
+                element: <CreatePlanPage />,
               },
             ],
           },

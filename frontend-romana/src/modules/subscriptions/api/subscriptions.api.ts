@@ -1,33 +1,27 @@
 import { api } from "@/shared/lib/axios";
 
 import type {
-  Subscription,
+  CreateSubscriptionDTO,
 } from "../types/subscription.types";
 
-import type {
-  CreateSubscriptionDTO,
-} from "../dtos/create-subscription.dto";
-
-export const getSubscriptionsRequest =
-  async (): Promise<
-    Subscription[]
-  > => {
+export const createSubscriptionRequest =
+  async (
+    data: CreateSubscriptionDTO,
+  ) => {
     const response =
-      await api.get(
-        "/subscriptions"
+      await api.post(
+        "/subscriptions",
+        data,
       );
 
     return response.data;
   };
 
-export const createSubscriptionRequest =
-  async (
-    data: CreateSubscriptionDTO
-  ): Promise<Subscription> => {
+export const getSubscriptionsRequest =
+  async () => {
     const response =
-      await api.post(
+      await api.get(
         "/subscriptions",
-        data
       );
 
     return response.data;

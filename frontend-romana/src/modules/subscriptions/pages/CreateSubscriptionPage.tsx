@@ -2,343 +2,189 @@ import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import DatePicker from "react-datepicker";
-
 import { usePatients } from "@/modules/patients/hooks/usePatients";
 
-import { useServices } from "@/modules/services/hooks/useServices";
+import { usePlans } from "@/modules/plans/hooks/usePlans";
 
 import { useCreateSubscription } from "../hooks/useCreateSubscription";
 
-export const CreateSubscriptionPage =
-  () => {
-    const navigate =
-      useNavigate();
+export const CreateSubscriptionPage = () => {
+  const navigate = useNavigate();
 
-    const createSubscription =
-      useCreateSubscription();
+  const createSubscription = useCreateSubscription();
 
-    const {
-      data: patients,
-    } = usePatients();
+  const { data: patients } = usePatients();
 
-    const {
-      data: services,
-    } = useServices();
+  const { data: plans } = usePlans();
 
-    const [
-      patientId,
-      setPatientId,
-    ] = useState("");
+  const [patientId, setPatientId] = useState("");
 
-    const [planId,
-      setPlanId] =
-      useState("");
+  const [planId, setPlanId] = useState("");
 
-    const [
-      durationInMonths,
-      setDurationInMonths,
-    ] = useState(1);
+  const [variantId, setVariantId] = useState("");
 
-    const [price,
-      setPrice] =
-      useState(0);
+  const [startDate, setStartDate] = useState("");
 
-    const [startDate,
-      setStartDate] =
-      useState<Date | null>(
-        new Date()
-      );
+  const selectedPlan = plans?.find((plan) => plan.id === planId);
 
-    const [
-      monthlyVisitsIncluded,
-      setMonthlyVisitsIncluded,
-    ] = useState<
+  console.log({ patientId, planId, variantId, startDate });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    createSubscription.mutate(
       {
-        serviceId: string;
+        patientId,
 
-        visits: number;
-      }[]
-    >([]);
+        planId,
 
-    const handleVisitsChange =
-      (
-        serviceId: string,
-        visits: number
-      ) => {
-        setMonthlyVisitsIncluded(
-          (prev) => {
-            const existing =
-              prev.find(
-                (
-                  service
-                ) =>
-                  service.serviceId ===
-                  serviceId
-              );
+        variantId,
 
-            if (
-              existing
-            ) {
-              return prev.map(
-                (
-                  service
-                ) =>
-                  service.serviceId ===
-                  serviceId
-                    ? {
-                        ...service,
-                        visits,
-                      }
-                    : service
-              );
-            }
+        startDate,
+      },
 
-            return [
-              ...prev,
-              {
-                serviceId,
-                visits,
-              },
-            ];
-          }
-        );
-      };
+      {
+        onSuccess: () => {
+          navigate("/subscriptions");
+        },
+      },
+    );
+  };
 
-    const handleSubmit =
-      async (
-        e: React.FormEvent
-      ) => {
-        e.preventDefault();
+  return (
+    <div
+      style={{
+        padding: "2rem",
 
-        createSubscription.mutate(
-          {
-            patientId,
+        maxWidth: "1000px",
 
-            planId,
+        margin: "0 auto",
+      }}
+    >
+      <h1>Create Subscription</h1>
 
-            durationInMonths,
-
-            price,
-
-            startDate:
-              startDate?.toISOString() ??
-              "",
-
-            monthlyVisitsIncluded,
-          },
-
-          {
-            onSuccess: () => {
-              navigate(
-                "/subscriptions"
-              );
-            },
-          }
-        );
-      };
-
-    return (
-      <div
+      <form
+        onSubmit={handleSubmit}
         style={{
-          padding: "2rem",
+          display: "flex",
+
+          flexDirection: "column",
+
+          gap: "2rem",
         }}
       >
-        <h1>
-          Create Subscription
-        </h1>
+        <div>
+          <h3>Patient</h3>
 
-        <form
-          onSubmit={
-            handleSubmit
-          }
-          style={{
-            display: "flex",
-            flexDirection:
-              "column",
-            gap: "1.5rem",
-            maxWidth:
-              "900px",
-          }}
-        >
-          <div>
-            <h3>
-              Patient
-            </h3>
+          <select
+            value={patientId}
+            onChange={(e) => setPatientId(e.target.value)}
+          >
+            <option value="">Select patient</option>
 
-            <select
-              value={
-                patientId
-              }
-              onChange={(e) =>
-                setPatientId(
-                  e.target.value
-                )
-              }
-            >
-              <option value="">
-                Select patient
+            {patients?.map((patient) => (
+              <option key={patient.id} value={patient.id}>
+                {patient.name}
               </option>
+            ))}
+          </select>
+        </div>
 
-              {patients?.map(
-                (
-                  patient
-                ) => (
-                  <option
-                    key={
-                      patient.id
-                    }
-                    value={
-                      patient.id
-                    }
-                  >
-                    {
-                      patient.name
-                    }
-                  </option>
-                )
-              )}
-            </select>
-          </div>
+        <section>
+          <h3>Plan</h3>
 
-          <input
-            placeholder="Plan ID"
-            value={planId}
-            onChange={(e) =>
-              setPlanId(
-                e.target.value
-              )
-            }
-          />
+          <section
+            style={{
+              display: "grid",
 
-          <input
-            type="number"
-            placeholder="Duration in months"
-            value={
-              durationInMonths
-            }
-            onChange={(e) =>
-              setDurationInMonths(
-                Number(
-                  e.target.value
-                )
-              )
-            }
-          />
+              gridTemplateColumns: "repeat(auto-fill,minmax(250px,1fr))",
 
-          <input
-            type="number"
-            placeholder="Price"
-            value={price}
-            onChange={(e) =>
-              setPrice(
-                Number(
-                  e.target.value
-                )
-              )
-            }
-          />
+              gap: "1rem",
+            }}
+          >
+            {plans?.map((plan) => (
+              <div
+                key={plan.id}
+                onClick={() => setPlanId(plan.id)}
+                style={{
+                  border:
+                    planId === plan.id ? "2px solid blue" : "1px solid #ccc",
 
+                  borderRadius: "16px",
+
+                  padding: "1rem",
+
+                  cursor: "pointer",
+                }}
+              >
+                <h3>{plan.name}</h3>
+
+                <p>{plan.description}</p>
+              </div>
+            ))}
+          </section>
+        </section>
+
+        {selectedPlan && (
           <div>
-            <h3>
-              Start Date
-            </h3>
-
-            <DatePicker
-              selected={
-                startDate
-              }
-              onChange={(
-                date
-              ) =>
-                setStartDate(
-                  date
-                )
-              }
-            />
-          </div>
-
-          <div>
-            <h3>
-              Included Services
-            </h3>
+            <h3>Select Variant</h3>
 
             <div
               style={{
                 display: "grid",
+
+                gridTemplateColumns: "repeat(auto-fill,minmax(250px,1fr))",
+
                 gap: "1rem",
               }}
             >
-              {services?.map(
-                (
-                  service
-                ) => (
-                  <div
-                    key={
-                      service.id
-                    }
-                    style={{
-                      border:
-                        "1px solid gray",
-                      padding:
-                        "1rem",
-                      borderRadius:
-                        "10px",
-                    }}
-                  >
-                    <h4>
-                      {
-                        service.name
-                      }
-                    </h4>
+              {selectedPlan.variants.map((variant) => (
+                <div
+                  key={variant.id}
+                  onClick={() => setVariantId(variant.id)}
+                  style={{
+                    border:
+                      variantId === variant.id
+                        ? "2px solid green"
+                        : "1px solid #ccc",
 
-                    <p>
-                      Duration:{" "}
-                      {
-                        service.duration
-                      }{" "}
-                      min
-                    </p>
+                    borderRadius: "16px",
 
-                    <p>
-                      Cost: $
-                      {
-                        service.cost
-                      }
-                    </p>
+                    padding: "1rem",
 
-                    <label>
-                      Monthly visits:
-                    </label>
+                    cursor: "pointer",
+                  }}
+                >
+                  <h3>{variant.durationInMonths} months</h3>
 
-                    <input
-                      type="number"
-                      min={0}
-                      onChange={(
-                        e
-                      ) =>
-                        handleVisitsChange(
-                          service.id,
-                          Number(
-                            e
-                              .target
-                              .value
-                          )
-                        )
-                      }
-                    />
+                  <h2>${variant.price}</h2>
+
+                  <div>
+                    {variant.monthlyVisitsIncluded.map((service) => (
+                      <p>
+                        {" "}
+                        {service.serviceId}• {service.visits} visits
+                      </p>
+                    ))}
                   </div>
-                )
-              )}
+                </div>
+              ))}
             </div>
           </div>
+        )}
 
-          <button
-            type="submit"
-          >
-            Save Subscription
-          </button>
-        </form>
-      </div>
-    );
-  };
+        <div>
+          <h3>Start Date</h3>
+
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+
+        <button type="submit">Create Subscription</button>
+      </form>
+    </div>
+  );
+};

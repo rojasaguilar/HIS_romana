@@ -9,8 +9,9 @@ export interface PlanVariant {
 
   price: number;
 
-  monthlyVisitsIncluded:
-    MonthlyVisit[];
+  monthlyVisitsIncluded: MonthlyVisit[];
+
+  id: string;
 }
 
 export interface Plan {

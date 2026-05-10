@@ -1,20 +1,3 @@
-export type SubscriptionStatus =
-  | "active"
-  | "expired"
-  | "cancelled";
-
-export interface MonthlyVisits {
-  serviceId: string;
-
-  visits: number;
-}
-
-export interface VisitUsage {
-  serviceId: string;
-
-  used: number;
-}
-
 export interface Subscription {
   id: string;
 
@@ -30,10 +13,15 @@ export interface Subscription {
 
   endDate: string;
 
-  monthlyVisitsIncluded:
-    MonthlyVisits[];
+  status: string;
+}
 
-  visitsUsed: VisitUsage[];
+export interface CreateSubscriptionDTO {
+  patientId: string;
 
-  status: SubscriptionStatus;
+  planId: string;
+
+  variantId: string;
+
+  startDate: string;
 }
