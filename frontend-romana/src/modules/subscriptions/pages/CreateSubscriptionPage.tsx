@@ -7,6 +7,7 @@ import { usePatients } from "@/modules/patients/hooks/usePatients";
 import { usePlans } from "@/modules/plans/hooks/usePlans";
 
 import { useCreateSubscription } from "../hooks/useCreateSubscription";
+import { useServices } from "@/modules/services/hooks/useServices";
 
 export const CreateSubscriptionPage = () => {
   const navigate = useNavigate();
@@ -17,17 +18,20 @@ export const CreateSubscriptionPage = () => {
 
   const { data: plans } = usePlans();
 
+  const { data: services } = useServices();
+
   const [patientId, setPatientId] = useState("");
 
   const [planId, setPlanId] = useState("");
 
   const [variantId, setVariantId] = useState("");
 
-  const [startDate, setStartDate] = useState("");
-
   const selectedPlan = plans?.find((plan) => plan.id === planId);
 
-  console.log({ patientId, planId, variantId, startDate });
+  // console.log({ patientId, planId, variantId, startDate });
+
+  const getServiceName = (serviceId) =>
+    services?.find((s) => s.id === serviceId)?.name;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,8 +43,6 @@ export const CreateSubscriptionPage = () => {
         planId,
 
         variantId,
-
-        startDate,
       },
 
       {
@@ -163,7 +165,8 @@ export const CreateSubscriptionPage = () => {
                     {variant.monthlyVisitsIncluded.map((service) => (
                       <p>
                         {" "}
-                        {service.serviceId}• {service.visits} visits
+                        {getServiceName(service.serviceId)} • {service.visits}{" "}
+                        visits
                       </p>
                     ))}
                   </div>
@@ -173,7 +176,7 @@ export const CreateSubscriptionPage = () => {
           </div>
         )}
 
-        <div>
+        {/* <div>
           <h3>Start Date</h3>
 
           <input
@@ -181,7 +184,7 @@ export const CreateSubscriptionPage = () => {
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
-        </div>
+        </div> */}
 
         <button type="submit">Create Subscription</button>
       </form>

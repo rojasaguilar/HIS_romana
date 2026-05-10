@@ -15,13 +15,3 @@ export interface Subscription {
 
   status: string;
 }
-
-export interface CreateSubscriptionDTO {
-  patientId: string;
-
-  planId: string;
-
-  variantId: string;
-
-  startDate: string;
-}

@@ -65,7 +65,7 @@ export class CreateSubscriptionUseCase {
     /**
      * CALCULAR FECHAS
      */
-    const startDate = new Date(dto.startDate);
+    const startDate = new Date();
 
     const endDate = new Date(startDate);
 
