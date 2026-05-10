@@ -4,6 +4,8 @@ import { LoginPage } from "@/modules/auth/pages/LoginPage";
 
 import { DashboardPage } from "@/modules/dashboard/pages/DashboardPage";
 
+import { DashboardLayout } from "@/modules/dashboard/layouts/DashboardLayout";
+
 import { PatientsPage } from "@/modules/patients/pages/PatientsPage";
 
 import { CreatePatientPage } from "@/modules/patients/pages/CreatePatientPage";
@@ -20,11 +22,13 @@ import { AppointmentsPage } from "@/modules/appointments/pages/AppointmentsPage"
 
 import { CreateAppointmentPage } from "@/modules/appointments/pages/CreateAppointmentPage";
 
-import { AvailableSubscriptionsPage } from "@/modules/subscriptions/pages/AvailableSubscriptionsPage";
+import { PlansPage } from "@/modules/plans/pages/PlansPage";
 
-import { AdminSubscriptionsPage } from "@/modules/subscriptions/pages/AdminSubscriptionsPage";
+import { AdminPlansPage } from "@/modules/plans/pages/AdminPlansPage";
 
-import { CreateSubscriptionPage } from "@/modules/subscriptions/pages/CreateSubscriptionPage";
+import { CreatePlanPage } from "@/modules/plans/pages/CreatePlanPage";
+
+import { PlansRedirectPage } from "@/modules/plans/pages/PlansRedirectPage";
 
 import { UnauthorizedPage } from "@/shared/pages/UnauthorizedPage";
 
@@ -32,9 +36,10 @@ import { ProtectedRoute } from "./protected.routes";
 
 import { RoleGuard } from "./guards/RoleGuard";
 
-import { DashboardLayout } from "@/modules/dashboard/layouts/DashboardLayout";
-
 export const router = createBrowserRouter([
+  /**
+   * PUBLIC ROUTES
+   */
   {
     path: "/login",
 
@@ -47,6 +52,9 @@ export const router = createBrowserRouter([
     element: <UnauthorizedPage />,
   },
 
+  /**
+   * PROTECTED ROUTES
+   */
   {
     element: <ProtectedRoute />,
 
@@ -55,12 +63,24 @@ export const router = createBrowserRouter([
         element: <DashboardLayout />,
 
         children: [
+          /**
+           * DASHBOARD
+           */
           {
             path: "/",
 
             element: <DashboardPage />,
           },
 
+          {
+            path: "/dashboard",
+
+            element: <DashboardPage />,
+          },
+
+          /**
+           * PATIENTS
+           */
           {
             path: "/patients",
 
@@ -73,6 +93,9 @@ export const router = createBrowserRouter([
             element: <CreatePatientPage />,
           },
 
+          /**
+           * MEDICS
+           */
           {
             path: "/medics",
 
@@ -85,12 +108,18 @@ export const router = createBrowserRouter([
             element: <CreateMedicPage />,
           },
 
+          /**
+           * SERVICES
+           */
           {
             path: "/services",
 
             element: <ServicesPage />,
           },
 
+          /**
+           * APPOINTMENTS
+           */
           {
             path: "/appointments",
 
@@ -103,32 +132,59 @@ export const router = createBrowserRouter([
             element: <CreateAppointmentPage />,
           },
 
+          /**
+           * PLANS
+           */
           {
-            path: "/subscriptions",
+            path: "/plans",
 
-            element: <AvailableSubscriptionsPage />,
+            element: <PlansRedirectPage />,
           },
 
           {
-            element: <RoleGuard allowedRoles={["ADMIN"]} />,
+            path: "/plans/available",
+
+            element: <PlansPage />,
+          },
+
+          /**
+           * ADMIN ROUTES
+           */
+          {
+            element: (
+              <RoleGuard
+                allowedRoles={[
+                  "ADMIN",
+                ]}
+              />
+            ),
 
             children: [
+              /**
+               * SERVICES ADMIN
+               */
               {
                 path: "/services/create",
 
-                element: <CreateServicePage />,
+                element:
+                  <CreateServicePage />,
+              },
+
+              /**
+               * PLANS ADMIN
+               */
+              {
+                path: "/plans/admin",
+
+                element:
+                  <AdminPlansPage />,
               },
 
               {
-                path: "/subscriptions/admin",
+                path: "/plans/create",
 
-                element: <AdminSubscriptionsPage />,
-              },
-
-              {
-                path: "/subscriptions/create",
-
-                element: <CreateSubscriptionPage />,
+                element:
+                  <CreatePlanPage />,
               },
             ],
           },
