@@ -18,6 +18,7 @@ import type {
   AppointmentType,
   BillingSource,
 } from "../types/appointment.types";
+import { useSpecialities } from "@/modules/specialities/hooks/useSpecialities";
 
 export const CreateAppointmentPage = () => {
   const navigate = useNavigate();
@@ -29,6 +30,11 @@ export const CreateAppointmentPage = () => {
   const { data: medics } = useMedics();
 
   const { data: services } = useServices();
+
+  const { data: specialities } = useSpecialities();
+
+  const getSpecialityName = (specialityId: string) =>
+    specialities?.find((spec) => spec.id === specialityId)?.name ?? "GENERAL";
 
   const [patientId, setPatientId] = useState("");
 
@@ -147,7 +153,11 @@ export const CreateAppointmentPage = () => {
 
                 <p>{medic.medicalSchool}</p>
 
-                <p>{medic.specialityIds}</p>
+                <p>
+                  {medic.specialityIds
+                    ?.map((spec) => getSpecialityName(spec))
+                    .join(", ")}
+                </p>
               </div>
             ))}
           </div>
