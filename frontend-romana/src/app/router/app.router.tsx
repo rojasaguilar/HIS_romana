@@ -38,6 +38,7 @@ import { RoleGuard } from "./guards/RoleGuard";
 import { SubscriptionsPage } from "@/modules/subscriptions/pages/SubscriptionsPage";
 import { CreateSubscriptionPage } from "@/modules/subscriptions/pages/CreateSubscriptionPage";
 import { PatientDetailsPage } from "@/modules/patients/pages/PatientDetailsPage";
+import { MedicDetailsPage } from "@/modules/medics/pages/MedicDetailsPage";
 
 export const router = createBrowserRouter([
   /**
@@ -109,6 +110,11 @@ export const router = createBrowserRouter([
             path: "/medics",
 
             element: <MedicsPage />,
+          },
+          {
+            path: "/medics/:id",
+
+            element: <MedicDetailsPage />,
           },
 
           {

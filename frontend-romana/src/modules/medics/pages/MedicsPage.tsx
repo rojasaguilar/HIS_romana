@@ -123,81 +123,83 @@ export const MedicsPage = () => {
 
         <tbody>
           {data?.map((medic) => (
-            <tr key={medic.id}>
-              <td
-                style={{
-                  border: "1px solid gray",
-                  padding: "0.75rem",
-                }}
-              >
-                {medic.name}
-              </td>
+            <Link to={`/medics/${medic.id}`}>
+              <tr key={medic.id}>
+                <td
+                  style={{
+                    border: "1px solid gray",
+                    padding: "0.75rem",
+                  }}
+                >
+                  {medic.name}
+                </td>
 
-              <td
-                style={{
-                  border: "1px solid gray",
-                  padding: "0.75rem",
-                }}
-              >
-                {medic.email}
-              </td>
+                <td
+                  style={{
+                    border: "1px solid gray",
+                    padding: "0.75rem",
+                  }}
+                >
+                  {medic.email}
+                </td>
 
-              <td
-                style={{
-                  border: "1px solid gray",
-                  padding: "0.75rem",
-                }}
-              >
-                {medic.phoneNumber}
-              </td>
+                <td
+                  style={{
+                    border: "1px solid gray",
+                    padding: "0.75rem",
+                  }}
+                >
+                  {medic.phoneNumber}
+                </td>
 
-              <td
-                style={{
-                  border: "1px solid gray",
-                  padding: "0.75rem",
-                }}
-              >
-                {medic.type}
-              </td>
+                <td
+                  style={{
+                    border: "1px solid gray",
+                    padding: "0.75rem",
+                  }}
+                >
+                  {medic.type}
+                </td>
 
-              <td
-                style={{
-                  border: "1px solid gray",
-                  padding: "0.75rem",
-                }}
-              >
-                {medic.medicalSchool}
-              </td>
+                <td
+                  style={{
+                    border: "1px solid gray",
+                    padding: "0.75rem",
+                  }}
+                >
+                  {medic.medicalSchool}
+                </td>
 
-              <td
-                style={{
-                  border: "1px solid gray",
-                  padding: "0.75rem",
-                }}
-              >
-                {medic.specialityIds
-                  ?.map((spec) => getSpecialityName(spec))
-                  .join(", ")}
-              </td>
+                <td
+                  style={{
+                    border: "1px solid gray",
+                    padding: "0.75rem",
+                  }}
+                >
+                  {medic.specialityIds
+                    ?.map((spec) => getSpecialityName(spec))
+                    .join(", ")}
+                </td>
 
-              <td
-                style={{
-                  border: "1px solid gray",
-                  padding: "0.75rem",
-                }}
-              >
-                {medic.consultationFee}%
-              </td>
+                <td
+                  style={{
+                    border: "1px solid gray",
+                    padding: "0.75rem",
+                  }}
+                >
+                  {medic.consultationFee}%
+                </td>
 
-              <td
-                style={{
-                  border: "1px solid gray",
-                  padding: "0.75rem",
-                }}
-              >
-                {medic.isActive ? "Active" : "Inactive"}
-              </td>
-            </tr>
+                <td
+                  style={{
+                    border: "1px solid gray",
+                    padding: "0.75rem",
+                  }}
+                >
+                  {medic.isActive ? "Active" : "Inactive"}
+                </td>
+              </tr>
+            </Link>
           ))}
         </tbody>
       </table>
