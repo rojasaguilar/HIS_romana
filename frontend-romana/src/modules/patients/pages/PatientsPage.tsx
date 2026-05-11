@@ -3,8 +3,7 @@ import { Link } from "react-router-dom";
 import { usePatients } from "../hooks/usePatients";
 
 export const PatientsPage = () => {
-  const { data, isLoading } =
-    usePatients();
+  const { data, isLoading } = usePatients();
 
   if (isLoading) {
     return <p>Loading...</p>;
@@ -15,8 +14,7 @@ export const PatientsPage = () => {
       <div
         style={{
           display: "flex",
-          justifyContent:
-            "space-between",
+          justifyContent: "space-between",
           alignItems: "center",
           marginBottom: "1rem",
         }}
@@ -24,35 +22,33 @@ export const PatientsPage = () => {
         <h1>Patients</h1>
 
         <Link to="/patients/create">
-          <button>
-            Create Patient
-          </button>
+          <button>Create Patient</button>
         </Link>
       </div>
 
       {data?.map((patient) => (
-        <div
-          key={patient.id}
+        <Link
+          to={`/patients/${patient.id}`}
           style={{
-            border:
-              "1px solid gray",
-            padding: "1rem",
-            marginBottom:
-              "1rem",
+            textDecoration: "none",
+            color: "inherit",
           }}
         >
-          <p>
-            {patient.name}
-          </p>
+          <div
+            key={patient.id}
+            style={{
+              border: "1px solid gray",
+              padding: "1rem",
+              marginBottom: "1rem",
+            }}
+          >
+            <p>{patient.name}</p>
 
-          <p>
-            {patient.email}
-          </p>
+            <p>{patient.email}</p>
 
-          <p>
-            {patient.phoneNumber}
-          </p>
-        </div>
+            <p>{patient.phoneNumber}</p>
+          </div>
+        </Link>
       ))}
     </div>
   );

@@ -37,6 +37,7 @@ import { ProtectedRoute } from "./protected.routes";
 import { RoleGuard } from "./guards/RoleGuard";
 import { SubscriptionsPage } from "@/modules/subscriptions/pages/SubscriptionsPage";
 import { CreateSubscriptionPage } from "@/modules/subscriptions/pages/CreateSubscriptionPage";
+import { PatientDetailsPage } from "@/modules/patients/pages/PatientDetailsPage";
 
 export const router = createBrowserRouter([
   /**
@@ -87,6 +88,12 @@ export const router = createBrowserRouter([
             path: "/patients",
 
             element: <PatientsPage />,
+          },
+
+          {
+            path: "/patients/:id",
+
+            element: <PatientDetailsPage />,
           },
 
           {
