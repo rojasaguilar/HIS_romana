@@ -24,42 +24,41 @@ interface AuthState {
   isAuthenticated: () => boolean;
 }
 
-export const useAuthStore =
-  create<AuthState>()(
-    persist(
-      (set, get) => ({
-        accessToken: null,
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set, get) => ({
+      accessToken: null,
 
-        user: null,
+      user: null,
 
-        setAccessToken: (
-          token
-        ) =>
-          set({
-            accessToken: token,
-          }),
+      setAccessToken: (token) =>
+        set({
+          accessToken: token,
+        }),
 
-        setUser: (user) =>
-          set({
-            user,
-          }),
+      setUser: (user) =>
+        set({
+          user,
+        }),
 
-        logout: () =>
-          set({
-            accessToken: null,
+      logout: () => {
+        localStorage.removeItem("token");
 
-            user: null,
-          }),
+        localStorage.removeItem("user");
 
-        isAuthenticated:
-          () => {
-            return !!get()
-              .accessToken;
-          },
-      }),
+        set({
+          accessToken: null,
+          user: null,
+        });
+      },
 
-      {
-        name: "auth-storage",
-      }
-    )
-  );
+      isAuthenticated: () => {
+        return !!get().accessToken;
+      },
+    }),
+
+    {
+      name: "auth-storage",
+    },
+  ),
+);
