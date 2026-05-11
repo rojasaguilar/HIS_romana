@@ -1,6 +1,7 @@
 import { env } from '../../infraestructure/config/environment';
 import express from 'express';
 import cors from 'cors';
+import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import { createPatientModule } from '../../modules/patient/patient.module';
 import { createServiceModule } from '../../modules/services/service.module';
@@ -31,6 +32,8 @@ app.use(
     credentials: true,
   }),
 );
+
+app.use(morgan('dev'));
 
 app.use(cookieParser());
 app.use(express.json());

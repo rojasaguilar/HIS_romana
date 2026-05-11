@@ -39,6 +39,9 @@ import { SubscriptionsPage } from "@/modules/subscriptions/pages/SubscriptionsPa
 import { CreateSubscriptionPage } from "@/modules/subscriptions/pages/CreateSubscriptionPage";
 import { PatientDetailsPage } from "@/modules/patients/pages/PatientDetailsPage";
 import { MedicDetailsPage } from "@/modules/medics/pages/MedicDetailsPage";
+import { AppointmentDetailsPage } from "@/modules/appointments/pages/AppointmentDetailsPage";
+import { ServiceDetailsPage } from "@/modules/services/pages/ServicePage";
+import { PlanDetailsPage } from "@/modules/plans/pages/PlanDetailsPage";
 
 export const router = createBrowserRouter([
   /**
@@ -132,6 +135,12 @@ export const router = createBrowserRouter([
             element: <ServicesPage />,
           },
 
+          {
+            path: "/services/:id",
+
+            element: <ServiceDetailsPage />,
+          },
+
           /**
            * APPOINTMENTS
            */
@@ -139,6 +148,12 @@ export const router = createBrowserRouter([
             path: "/appointments",
 
             element: <AppointmentsPage />,
+          },
+
+          {
+            path: "/appointments/:id",
+
+            element: <AppointmentDetailsPage />,
           },
 
           {
@@ -154,6 +169,12 @@ export const router = createBrowserRouter([
             path: "/plans",
 
             element: <PlansRedirectPage />,
+          },
+
+          {
+            path: "/plans/:id",
+
+            element: <PlanDetailsPage />,
           },
 
           {

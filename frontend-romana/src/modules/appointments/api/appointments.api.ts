@@ -10,6 +10,11 @@ export const getAppointmentsRequest = async (): Promise<Appointment[]> => {
   return response.data.appointments;
 };
 
+export const getAppointmentByIdRequest = async (id: string) => {
+  const response = await api.get(`/appointments/${id}`);
+  return response.data;
+};
+
 export const createAppointmentRequest = async (
   data: CreateAppointmentDTO,
 ): Promise<Appointment> => {

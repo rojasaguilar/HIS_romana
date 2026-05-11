@@ -24,6 +24,14 @@ export class AppointmentRouter {
       );
 
     this.router
+      .route('/:id')
+      .get(
+        this.AppointmentController.getAppointment.bind(
+          this.AppointmentController,
+        ),
+      );
+
+    this.router
       .route('/:id/reschedule')
       .patch(
         this.AppointmentController.rescheduleAppointment.bind(

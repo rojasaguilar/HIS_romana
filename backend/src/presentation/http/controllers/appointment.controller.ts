@@ -8,6 +8,7 @@ import { RescheduleAppointmentUseCase } from '../../../core/usecases/appoitments
 import { GetAllAppointmentsUseCase } from '../../../core/usecases/appoitments/getAll-appointment.usecase';
 import { FilterAppoinmentsUseCase } from '../../../core/usecases/appoitments/filter-appointments.usecase';
 import { buildAppointmentFilter } from '../helpers/build-filterAppointment';
+import { GetAppointmentByIdUseCase } from '../../../core/usecases/appoitments/get-appointment.usecase';
 
 export class AppointmentController {
   constructor(
@@ -15,6 +16,7 @@ export class AppointmentController {
     private readonly rescheduleAppointmentUseCase: RescheduleAppointmentUseCase,
     private readonly getAllAppointemtsUseCase: GetAllAppointmentsUseCase,
     private readonly filterAppointmentsUseCase: FilterAppoinmentsUseCase,
+    private readonly getAppointemtUseCase: GetAppointmentByIdUseCase,
   ) {}
 
   async getAllAppointments(req: Request, res: Response) {
@@ -33,6 +35,14 @@ export class AppointmentController {
       count: appointments.length,
       appointments,
     });
+  }
+
+  async getAppointment(req: Request<{ id: string }>, res: Response) {
+    const { id } = req.params;
+
+    const appointment = await this.getAppointemtUseCase.execute(id);
+
+    res.status(200).json(appointment);
   }
 
   async scheduleAppointment(req: Request<AppointmentDTO>, res: Response) {

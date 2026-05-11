@@ -9,5 +9,7 @@ export interface IServicesRepository {
 
   getAll(): Promise<ServiceEntity[]>;
 
+  update(id:string, service:ServiceEntity): Promise<ServiceEntity | null>;
+
   findByIds(ids: string[]): Promise<{ id: string }[]>;
 }

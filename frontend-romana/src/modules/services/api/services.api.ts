@@ -24,6 +24,11 @@ export const getServicesRequest =
     return response.data;
   };
 
+  export const getServiceByIdRequest = async (id: string): Promise<Service> => {
+  const response = await api.get(`/services/${id}`);
+  return response.data;
+};
+
 export const createServiceRequest =
   async (
     data: CreateServiceDTO
@@ -50,6 +55,8 @@ export const updateServiceRequest =
 
     return response.data;
   };
+
+  
 
 export const deleteServiceRequest =
   async (

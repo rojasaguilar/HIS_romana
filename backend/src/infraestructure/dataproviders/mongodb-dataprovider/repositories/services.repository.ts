@@ -4,6 +4,9 @@ import { ServiceMapper } from '../mappers/service.mapper';
 import serviceModel from './../models/service.model';
 
 export class ServiceRepository implements IServicesRepository {
+  update(id: string, service: ServiceEntity): Promise<ServiceEntity | null> {
+    throw new Error('Method not implemented.');
+  }
   async save(service: ServiceEntity): Promise<ServiceEntity> {
     const data = ServiceMapper.toPersistence(service);
 
