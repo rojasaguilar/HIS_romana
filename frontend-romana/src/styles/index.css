@@ -82,6 +82,17 @@
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
 }
+/* En tu index.css o App.css */
+.react-datepicker {
+  border: none !important;
+}
+.react-datepicker__header {
+  background-color: transparent !important;
+  border-bottom: 1px solid #f3f4f6 !important; /* gray-100 */
+}
+.react-datepicker__time-container {
+  border-left: 1px solid #f3f4f6 !important;
+}
 
 .dark {
     --background: oklch(0.145 0 0);
