@@ -19,8 +19,11 @@ export const createPlanRequest = async (data: CreatePlanDTO): Promise<Plan> => {
 
 export const getPlanByIdRequest = async (id: string): Promise<Plan> => {
   const response = await api.get(`/plans/${id}`);
+  console.log("respuesta", planMapper(response.data));
 
-  return response.data.map(planMapper);
+  return planMapper(response.data);
+  // return response.data.map();
+  // return response.data.map(planMapper);
 };
 
 /**

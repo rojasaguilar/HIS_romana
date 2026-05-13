@@ -21,3 +21,25 @@ export interface CreateSubscriptionDTO {
 
   startDate: Date;
 }
+
+export interface ActiveSubscriptionResponseDTO {
+  id: string;
+
+  patientId: string;
+
+  planId: string;
+
+  status: string;
+
+  monthlyVisitsIncluded: {
+    serviceId: string;
+
+    serviceName: string;
+
+    allowed: number;
+
+    used: number;
+
+    remaining: number;
+  }[];
+}

@@ -9,7 +9,7 @@ const systemAccountSchema = new Schema(
     isActive: { type: Boolean, default: true },
     profileType: {
       type: String,
-      enum: ['MEDIC', 'RECEPSIONIST'],
+      enum: ['MEDIC', 'RECEPTIONIST'],
       required: [true, 'Receptionist must be either internal or external'],
     },
   },

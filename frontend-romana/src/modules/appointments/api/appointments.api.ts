@@ -22,3 +22,13 @@ export const createAppointmentRequest = async (
 
   return response.data;
 };
+
+export const completeAppointmentRequest = async (
+  id: string,
+) => {
+  const response = await api.patch(
+    `/appointments/${id}/complete`,
+  );
+
+  return response.data;
+};

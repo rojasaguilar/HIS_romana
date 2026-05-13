@@ -17,11 +17,25 @@ import {
   CheckCircle2,
   Clock4,
 } from "lucide-react";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
+import { useCompleteAppointment } from "../hooks/useCompleteAppointment";
+import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
+import { useState } from "react";
+import { ConfirmModal } from "@/shared/components/feedback/modal/ConfirmModal";
 
 export const AppointmentDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
+  const completeAppointment = useCompleteAppointment();
+
+  const [openCompleteModal, setOpenCompleteModal] = useState(false);
+
+  const { showToast } = useToast();
 
   console.log(id);
+
+  const user = useAuthStore((state) => state.user);
+
+  const isMedic = user?.roles.includes("MEDIC");
 
   // 1. Obtenemos la data de la cita
   const { data: appointment, isLoading: loadingAppointment } =
@@ -81,11 +95,24 @@ export const AppointmentDetailsPage = () => {
             Detalles de la Cita
           </h1>
 
-          {/* BOTÓN REAGENDAR */}
-          <button className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
-            <CalendarClock className="w-4 h-4" />
-            Reagendar Cita
-          </button>
+          <div className="flex items-center gap-3">
+            {/* REAGENDAR */}
+            <button className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
+              <CalendarClock className="w-4 h-4" />
+              Reagendar Cita
+            </button>
+
+            {/* COMPLETE APPOINTMENT */}
+            {isMedic && appointment.status === "PROGRAMADA" && (
+              <button
+                onClick={() => setOpenCompleteModal(true)}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                Marcar como completada
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -191,6 +218,27 @@ export const AppointmentDetailsPage = () => {
           </div>
         )}
       </div>
+      <ConfirmModal
+        open={openCompleteModal}
+        title="Completar cita"
+        message="¿Seguro que deseas marcar esta cita como completada?"
+        confirmText="Completar"
+        loading={completeAppointment.isPending}
+        onCancel={() => setOpenCompleteModal(false)}
+        onConfirm={() => {
+          completeAppointment.mutate(appointment.id, {
+            onSuccess: () => {
+              setOpenCompleteModal(false);
+
+              showToast("Cita completada correctamente", "success");
+            },
+
+            onError: () => {
+              showToast("Error al completar cita", "error");
+            },
+          });
+        }}
+      />
     </div>
   );
 };

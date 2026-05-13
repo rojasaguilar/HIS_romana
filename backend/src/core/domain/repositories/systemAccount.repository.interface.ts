@@ -1,7 +1,11 @@
+import { ClientSession } from 'mongoose';
 import { SystemAccount } from '../entities/systemAccout.entity';
 
 export interface ISystemAccountRepository {
-  save(account: SystemAccount): Promise<SystemAccount>;
+  save(
+  entity: SystemAccount,
+  session?: ClientSession,
+): Promise<SystemAccount>;
 
   findById(id: string): Promise<SystemAccount | null>;
 

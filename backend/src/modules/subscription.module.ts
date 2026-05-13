@@ -11,6 +11,7 @@ import { SubscriptionController } from '../presentation/http/controllers/subscri
 import { SubscriptionRouter } from '../presentation/http/routes/subscription.routes';
 import { ServiceRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/services.repository';
 import { PlanRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/plan.repository';
+import { GetActiveSubscriptionByPatientUseCase } from '../core/usecases/appoitments/get-active-subscription-by-patient.usecase';
 
 export const createSubscriptionModule = () => {
   // REPOSITORIES
@@ -38,12 +39,19 @@ export const createSubscriptionModule = () => {
     serviceRepository,
   );
 
+  const getActiveSubscriptionByPatientUseCase =
+    new GetActiveSubscriptionByPatientUseCase(
+      subscriptionRepository,
+      serviceRepository,
+    );
+
   // CONTROLLER
   const subscriptionController = new SubscriptionController(
     createSubscriptionUseCase,
     findSubscriptionByIdUseCase,
     findAllSubscriptionsUseCase,
     updateSubscriptionUseCase,
+    getActiveSubscriptionByPatientUseCase
   );
 
   // ROUTER

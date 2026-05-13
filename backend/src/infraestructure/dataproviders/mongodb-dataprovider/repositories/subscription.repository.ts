@@ -1,12 +1,11 @@
+import { ClientSession } from 'mongoose';
 import { SubscriptionEntity } from '../../../../core/domain/entities/subscription.entity';
 import { ISubscriptionRepository } from '../../../../core/domain/repositories/subscription.repository.interface';
 import { SubscriptionMapper } from '../mappers/subscription.mapper';
 import { SubscriptionModel } from '../models/subscription.model';
 
 export class SubscriptionRepository implements ISubscriptionRepository {
-  async create(
-    subscription: SubscriptionEntity,
-  ): Promise<SubscriptionEntity> {
+  async create(subscription: SubscriptionEntity): Promise<SubscriptionEntity> {
     const data = SubscriptionMapper.toPersistence(subscription);
 
     const created = await SubscriptionModel.create(data);
@@ -30,7 +29,7 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     const doc = await SubscriptionModel.findOne({
       patientId,
       status: 'active',
-      endDate: { $gte: new Date() }, // 🔥 evita traer expiradas
+      endDate: { $gte: new Date() },
     });
 
     return doc ? SubscriptionMapper.toDomain(doc) : null;
@@ -44,11 +43,13 @@ export class SubscriptionRepository implements ISubscriptionRepository {
   async update(
     id: string,
     subscription: SubscriptionEntity,
+    session?: ClientSession,
   ): Promise<SubscriptionEntity | null> {
     const data = SubscriptionMapper.toPersistence(subscription);
 
     const updated = await SubscriptionModel.findByIdAndUpdate(id, data, {
       new: true,
+      session,
     });
 
     return updated ? SubscriptionMapper.toDomain(updated) : null;

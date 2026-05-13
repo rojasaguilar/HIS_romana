@@ -1,3 +1,4 @@
+import { ClientSession } from 'mongoose';
 import {
   FilterAppointmentDTO,
   RescheduleAppointmentDTO,
@@ -15,12 +16,17 @@ export class AppointmentRepository implements IAppointmentRepository {
 
     return appointmentDocs.map((app) => AppointmentMapper.toDomain(app));
   }
-  async save(appointment: AppointmentEntity): Promise<AppointmentEntity> {
+  async save(
+    appointment: AppointmentEntity,
+    session?: ClientSession,
+  ): Promise<AppointmentEntity> {
     const appointmentData = AppointmentMapper.toPersistance(appointment);
 
-    const savedAppointment = await appointmentModel.create(appointmentData);
+    const savedAppointment = await appointmentModel.create([appointmentData], {
+      session,
+    });
 
-    return AppointmentMapper.toDomain(savedAppointment);
+    return AppointmentMapper.toDomain(savedAppointment[0]);
   }
 
   async findById(id: string): Promise<AppointmentEntity | null> {
@@ -42,16 +48,23 @@ export class AppointmentRepository implements IAppointmentRepository {
     medicId: string,
     newStartDate: Date,
     newEndTime: Date,
+    session?: ClientSession,
   ): Promise<boolean> {
-    const appointmentExists = await appointmentModel.find({
-      $or: [{ medicId: medicId }, { patientId: patientId }],
-      startDate: { $lt: newEndTime },
-      endTime: { $gt: newStartDate },
-    });
+    const appointmentExists = await appointmentModel
+      .exists({
+        $or: [{ medicId }, { patientId }],
 
-    if (appointmentExists.length > 0) return true;
+        startDate: {
+          $lt: newEndTime,
+        },
 
-    return false;
+        endTime: {
+          $gt: newStartDate,
+        },
+      })
+      .session(session || null);
+
+    return !!appointmentExists;
   }
 
   async update(

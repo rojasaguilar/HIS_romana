@@ -81,9 +81,8 @@ export class SubscriptionEntity {
     return this._status;
   }
 
-  // 🔥 ahora usa serviceId + valida estado
   canUseVisit(serviceId: string, date: Date): boolean {
-    if (!this.isActive()) return false;
+    if (!this.isActive(date)) return false;
 
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
@@ -135,7 +134,7 @@ export class SubscriptionEntity {
     this._status = 'cancelled';
   }
 
-  isActive(): boolean {
-    return this._status === 'active' && new Date() <= this._endDate;
+  isActive(date: Date = new Date()): boolean {
+    return this._status === 'active' && date <= this._endDate;
   }
 }

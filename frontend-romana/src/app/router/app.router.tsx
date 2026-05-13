@@ -172,12 +172,6 @@ export const router = createBrowserRouter([
           },
 
           {
-            path: "/plans/:id",
-
-            element: <PlanDetailsPage />,
-          },
-
-          {
             path: "/plans/available",
 
             element: <PlansPage />,
@@ -226,6 +220,11 @@ export const router = createBrowserRouter([
                 element: <CreatePlanPage />,
               },
             ],
+          },
+          {
+            path: "/plans/:id",
+
+            element: <PlanDetailsPage />,
           },
         ],
       },

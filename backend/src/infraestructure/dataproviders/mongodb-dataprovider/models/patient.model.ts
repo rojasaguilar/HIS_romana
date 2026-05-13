@@ -15,4 +15,6 @@ const patientSchema = new Schema(
   { timestamps: true },
 );
 
+patientSchema.index({ email: 1 }, { unique: true });
+
 export default model('Patient', patientSchema);

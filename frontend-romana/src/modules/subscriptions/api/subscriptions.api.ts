@@ -15,3 +15,9 @@ export const getSubscriptionsRequest = async () => {
 
   return response.data;
 };
+
+export const getActiveSubscriptionRequest = async (patientId: string) => {
+  const response = await api.get(`/subscriptions/patient/${patientId}/active`);
+
+  return response.data;
+};

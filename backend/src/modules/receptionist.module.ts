@@ -7,6 +7,7 @@ import { JWTTokenService } from '../infraestructure/services/JWT.token.service';
 import { ReceptionistController } from '../presentation/http/controllers/receptionist.controller';
 import { ReceptionistRouter } from '../presentation/http/routes/receptionist.routes';
 import { GetAllReceptionistUseCase } from '../core/usecases/recepcionist/getAll-receptionist.usecase';
+import { MongooseTransactionManager } from '../infraestructure/dataproviders/mongodb-dataprovider/mongoose-transaction.manager';
 
 export const createreceptionistModule = () => {
   const receptionistRepository = new ReceptionistRepository();
@@ -15,6 +16,7 @@ export const createreceptionistModule = () => {
   const tokenService = new JWTTokenService();
   const authService = new AuthService(tokenService);
   const passwordService = new BcryptPasswordService();
+  const transactionManager = new MongooseTransactionManager();
 
   //USE CASES
   const registerReceptionistUseCase = new RegisterRecepcionistUseCase(
@@ -22,6 +24,7 @@ export const createreceptionistModule = () => {
     authService,
     systemAccountRepository,
     passwordService,
+    transactionManager,
   );
   const getAllreceptionistsUseCase = new GetAllReceptionistUseCase(
     receptionistRepository,

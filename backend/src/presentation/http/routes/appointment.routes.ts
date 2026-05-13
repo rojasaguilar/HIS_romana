@@ -38,6 +38,13 @@ export class AppointmentRouter {
           this.AppointmentController,
         ),
       );
+
+    this.router.patch(
+      '/:id/complete',
+      this.AppointmentController.completeAppointment.bind(
+        this.AppointmentController,
+      ),
+    );
     //   .get(this.AppointmentController.getMedicById.bind(this.AppointmentController));
   }
 }

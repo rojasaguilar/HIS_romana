@@ -1,3 +1,4 @@
+import { ClientSession } from 'mongoose';
 import {
   FilterAppointmentDTO,
   UpdateAppointmentDTO,
@@ -5,11 +6,16 @@ import {
 import { AppointmentEntity } from '../entities/appointment.entity';
 
 export interface IAppointmentRepository {
-  save(appointment: AppointmentEntity): Promise<AppointmentEntity>;
+  save(
+    appointment: AppointmentEntity,
+    session?: ClientSession,
+  ): Promise<AppointmentEntity>;
 
   findById(id: string): Promise<AppointmentEntity | null>;
 
-  filter(filterObject: Partial<FilterAppointmentDTO>): Promise<AppointmentEntity[]>;
+  filter(
+    filterObject: Partial<FilterAppointmentDTO>,
+  ): Promise<AppointmentEntity[]>;
 
   getAll(): Promise<AppointmentEntity[]>;
 
@@ -18,6 +24,7 @@ export interface IAppointmentRepository {
     medicId: string,
     startDate: Date,
     endTime: Date,
+    session?:ClientSession
   ): Promise<boolean>;
 
   update(

@@ -5,6 +5,7 @@ import { FindSubscriptionByIdUseCase } from '../../../core/usecases/subscription
 import { FindAllSubscriptionsUseCase } from '../../../core/usecases/subscription/find-all-subscriptions.usecase';
 import { UpdateSubscriptionUseCase } from '../../../core/usecases/subscription/update-subscription.usecase';
 import { asyncHandler } from '../middlewares/asyncHandler';
+import { GetActiveSubscriptionByPatientUseCase } from '../../../core/usecases/appoitments/get-active-subscription-by-patient.usecase';
 
 export class SubscriptionController {
   constructor(
@@ -12,15 +13,14 @@ export class SubscriptionController {
     private findSubscriptionByIdUseCase: FindSubscriptionByIdUseCase,
     private findAllSubscriptionsUseCase: FindAllSubscriptionsUseCase,
     private updateSubscriptionUseCase: UpdateSubscriptionUseCase,
+    private getActiveSubscriptionByPatientUseCase: GetActiveSubscriptionByPatientUseCase,
   ) {}
 
-  // 🔥 Crear suscripción
   createSubscription = asyncHandler(async (req: Request, res: Response) => {
     const subscription = await this.createSubscriptionUseCase.execute(req.body);
     res.status(201).json(subscription);
   });
 
-  // 🔍 Obtener por ID
   getSubscriptionById = asyncHandler<{ id: string }>(async (req, res) => {
     const { id } = req.params;
 
@@ -29,14 +29,12 @@ export class SubscriptionController {
     res.status(200).json(subscription);
   });
 
-  // 📄 Obtener todas
   getSubscriptions = asyncHandler(async (_req: Request, res: Response) => {
     const subscriptions = await this.findAllSubscriptionsUseCase.execute();
 
     res.status(200).json(subscriptions);
   });
 
-  // ✏️ Actualizar
   updateSubscription = asyncHandler<{ id: string }>(async (req, res) => {
     const { id } = req.params;
 
@@ -47,4 +45,17 @@ export class SubscriptionController {
 
     res.status(200).json(updated);
   });
+
+  getActiveByPatient = async (req: Request<{ patientId: string }>, res: Response) => {
+    const { patientId } = req.params;
+
+    const subscription =
+      await this.getActiveSubscriptionByPatientUseCase.execute(patientId);
+
+    if (!subscription) {
+      return res.status(404).json(null);
+    }
+
+    return res.json(subscription);
+  };
 }

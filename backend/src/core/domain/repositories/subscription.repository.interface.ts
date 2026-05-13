@@ -1,3 +1,4 @@
+import { ClientSession } from 'mongoose';
 import { SubscriptionEntity } from '../../domain/entities/subscription.entity';
 
 export interface ISubscriptionRepository {
@@ -33,6 +34,7 @@ export interface ISubscriptionRepository {
   update(
     id: string,
     subscription: SubscriptionEntity,
+    session?:ClientSession
   ): Promise<SubscriptionEntity | null>;
 
   /**

@@ -1,24 +1,33 @@
+import { ClientSession } from 'mongoose';
 import { SystemAccount } from '../../../../core/domain/entities/systemAccout.entity';
 import { ISystemAccountRepository } from '../../../../core/domain/repositories/systemAccount.repository.interface';
 import systemAccountModel from '../models/systemAccount.model';
 
 export class SystemAccountRepository implements ISystemAccountRepository {
-  async save(account: SystemAccount): Promise<SystemAccount> {
-    const savedAccount = await systemAccountModel.create({
-      userId: account.getUserId(),
-      email: account.email,
-      roles: account.roles,
-      password: account.getPassword(),
-      profileType: account.getProfileType(),
-    });
+  async save(
+    account: SystemAccount,
+    session?: ClientSession,
+  ): Promise<SystemAccount> {
+    const savedAccount = await systemAccountModel.create(
+      [
+        {
+          userId: account.getUserId(),
+          email: account.email,
+          roles: account.roles,
+          password: account.getPassword(),
+          profileType: account.getProfileType(),
+        },
+      ],
+      { session },
+    );
 
     return new SystemAccount(
-      savedAccount.userId,
-      savedAccount.email,
-      savedAccount.roles,
-      savedAccount.password,
-      savedAccount.profileType,
-      savedAccount.isActive,
+      savedAccount[0].userId,
+      savedAccount[0].email,
+      savedAccount[0].roles,
+      savedAccount[0].password,
+      savedAccount[0].profileType,
+      savedAccount[0].isActive,
     );
   }
   findById(id: string): Promise<SystemAccount | null> {

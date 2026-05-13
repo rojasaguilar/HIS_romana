@@ -11,8 +11,9 @@ export interface UserPayloadDTO {
   userId: string;
   email: string;
   roles: Role[];
+  // name: string;
   // roles: Role[];/
-  profileType: 'MEDIC' | 'RECEPSIONIST';
+  profileType: 'MEDIC' | 'RECEPTIONIST';
 }
 
 export interface CreateSystemAccountDTO {

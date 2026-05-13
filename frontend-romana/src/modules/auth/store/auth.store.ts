@@ -7,7 +7,7 @@ export interface AuthUser {
   userId: string;
   email: string;
   roles: string[];
-  profileType: "ADMIN" | "DOCTOR" | "RECEPTIONIST";
+  profileType: "ADMIN" | "MEDIC" | "RECEPTIONIST";
 }
 
 interface AuthState {

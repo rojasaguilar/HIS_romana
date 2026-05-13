@@ -15,3 +15,25 @@ export interface Subscription {
 
   status: string;
 }
+
+export interface ActiveSubscription {
+  id: string;
+
+  patientId: string;
+
+  planId: string;
+
+  status: string;
+
+  monthlyVisitsIncluded: {
+    serviceId: string;
+
+    serviceName: string;
+
+    allowed: number;
+
+    used: number;
+
+    remaining: number;
+  }[];
+}

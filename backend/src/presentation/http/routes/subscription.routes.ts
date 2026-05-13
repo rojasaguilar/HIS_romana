@@ -4,15 +4,12 @@ import { SubscriptionController } from '../controllers/subscription.controller';
 export class SubscriptionRouter {
   router: Router;
 
-  constructor(
-    private readonly subscriptionController: SubscriptionController,
-  ) {
+  constructor(private readonly subscriptionController: SubscriptionController) {
     this.router = Router();
     this.routes();
   }
 
   private routes() {
-    // 📄 colección
     this.router
       .route('/')
       .get(
@@ -26,7 +23,6 @@ export class SubscriptionRouter {
         ),
       );
 
-    // 🔍 recurso por id + update
     this.router
       .route('/:id')
       .get(
@@ -40,7 +36,13 @@ export class SubscriptionRouter {
         ),
       );
 
-    // 🔥 mejoras opcionales (recomendadas a futuro)
+    this.router.get(
+      '/patient/:patientId/active',
+      this.subscriptionController.getActiveByPatient.bind(
+        this.subscriptionController,
+      ),
+    );
+
     /*
     this.router.patch(
       '/:id/cancel',

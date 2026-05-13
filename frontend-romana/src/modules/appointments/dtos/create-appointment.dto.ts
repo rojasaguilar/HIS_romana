@@ -1,7 +1,4 @@
-import type {
-  AppointmentType,
-  Billing,
-} from "../types/appointment.types";
+import type { AppointmentType } from "../types/appointment.types";
 
 export interface CreateAppointmentDTO {
   startDate: string;
@@ -14,11 +11,11 @@ export interface CreateAppointmentDTO {
 
   type: AppointmentType;
 
-  patientCharge: number;
+  // patientCharge: number;
 
-  medicEarning: number;
+  // medicEarning: number;
 
-  billing: Billing;
+  // billing: Billing;
 
   preNotes?: string;
 }

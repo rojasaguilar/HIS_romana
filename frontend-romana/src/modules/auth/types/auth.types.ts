@@ -14,7 +14,7 @@ export interface JwtPayload {
 
   profileType:
     | "ADMIN"
-    | "DOCTOR"
+    | "MEDIC"
     | "RECEPTIONIST";
 
   iat: number;
@@ -33,7 +33,7 @@ export interface AuthUser {
 
   profileType:
     | "ADMIN"
-    | "DOCTOR"
+    | "MEDIC"
     | "RECEPTIONIST";
 }
 

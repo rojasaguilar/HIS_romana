@@ -9,6 +9,7 @@ import { GetAllAppointmentsUseCase } from '../../../core/usecases/appoitments/ge
 import { FilterAppoinmentsUseCase } from '../../../core/usecases/appoitments/filter-appointments.usecase';
 import { buildAppointmentFilter } from '../helpers/build-filterAppointment';
 import { GetAppointmentByIdUseCase } from '../../../core/usecases/appoitments/get-appointment.usecase';
+import { CompleteAppointmentUseCase } from '../../../core/usecases/appoitments/complete-appointment.use-case';
 
 export class AppointmentController {
   constructor(
@@ -17,6 +18,7 @@ export class AppointmentController {
     private readonly getAllAppointemtsUseCase: GetAllAppointmentsUseCase,
     private readonly filterAppointmentsUseCase: FilterAppoinmentsUseCase,
     private readonly getAppointemtUseCase: GetAppointmentByIdUseCase,
+    private readonly completeAppointmentUseCase: CompleteAppointmentUseCase,
   ) {}
 
   async getAllAppointments(req: Request, res: Response) {
@@ -68,5 +70,12 @@ export class AppointmentController {
     );
 
     res.status(201).json(appointment);
+  }
+  async completeAppointment(req: Request<{ id: string }>, res: Response) {
+    const { id } = req.params;
+
+    const appointment = await this.completeAppointmentUseCase.execute(id);
+
+    return res.status(200).json(appointment);
   }
 }

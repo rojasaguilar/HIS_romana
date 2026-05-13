@@ -1,7 +1,11 @@
 import { ReceptionistEntity } from '../entities/receptionist.entity';
+import { ClientSession } from 'mongoose';
 
 export interface IReceptionistRepository {
-  save(recepcionist: ReceptionistEntity): Promise<ReceptionistEntity>;
+  save(
+  entity: ReceptionistEntity,
+  session?: ClientSession,
+): Promise<ReceptionistEntity>;
 
   findById(id: string): Promise<ReceptionistEntity | null>;
 

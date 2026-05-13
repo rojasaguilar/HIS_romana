@@ -141,7 +141,7 @@ export class AppointmentEntity {
         `A completed appointment must have a conclussion date`,
       );
 
-    if (!this.patientCharge)
+    if (this.patientCharge === undefined || this.patientCharge === null)
       throw new AppointmentInconsistentStateError(
         'A completed appointment must have a patient charge',
       );
