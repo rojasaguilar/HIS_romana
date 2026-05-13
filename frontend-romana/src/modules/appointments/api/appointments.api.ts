@@ -23,6 +23,13 @@ export const createAppointmentRequest = async (
   return response.data;
 };
 
+export const rescheduleAppointmentRequest = async (
+ appointment: { id:string, startDate: Date}
+): Promise<Appointment> => {
+  const response = await api.patch(`/appointments/${appointment.id}/reschedule`,{startDate: appointment.startDate})
+  return response.data;
+}
+
 export const completeAppointmentRequest = async (
   id: string,
 ) => {

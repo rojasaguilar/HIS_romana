@@ -1,6 +1,5 @@
 import { useParams, Link } from "react-router-dom";
 import { useAppointmentDetails } from "../hooks/useAppointment";
-// Asumiendo las rutas de tus otros módulos:
 import { useServices } from "@/modules/services/hooks/useServices";
 import { usePatients } from "@/modules/patients/hooks/usePatients";
 import { format } from "date-fns";
@@ -19,29 +18,29 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { useCompleteAppointment } from "../hooks/useCompleteAppointment";
+// Importamos el hook que acabamos de arreglar
+import { useRescheduleAppointment } from "../hooks/useRescheduleAppointment"
 import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
 import { useState } from "react";
 import { ConfirmModal } from "@/shared/components/feedback/modal/ConfirmModal";
 
 export const AppointmentDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
+  
   const completeAppointment = useCompleteAppointment();
+  const rescheduleAppointment = useRescheduleAppointment();
 
   const [openCompleteModal, setOpenCompleteModal] = useState(false);
+  
+  // Estados para reagendar
+  const [openRescheduleModal, setOpenRescheduleModal] = useState(false);
+  const [newStartDate, setNewStartDate] = useState("");
 
   const { showToast } = useToast();
-
-  console.log(id);
-
   const user = useAuthStore((state) => state.user);
-
   const isMedic = user?.roles.includes("MEDIC");
 
-  // 1. Obtenemos la data de la cita
-  const { data: appointment, isLoading: loadingAppointment } =
-    useAppointmentDetails(id!);
-
-  // 2. Obtenemos los catálogos para cruzar la info
+  const { data: appointment, isLoading: loadingAppointment } = useAppointmentDetails(id!);
   const { data: services, isLoading: loadingServices } = useServices();
   const { data: patients, isLoading: loadingPatients } = usePatients();
 
@@ -61,16 +60,12 @@ export const AppointmentDetailsPage = () => {
     );
   }
 
-  // Funciones de cruce
   const getServiceName = (serviceId: string) =>
-    services?.find((s: any) => s.id === serviceId)?.name ||
-    "Servicio no encontrado";
+    services?.find((s: any) => s.id === serviceId)?.name || "Servicio no encontrado";
 
   const getPatientName = (patientId: string) =>
-    patients?.find((p: any) => p.id === patientId)?.name ||
-    "Paciente no encontrado";
+    patients?.find((p: any) => p.id === patientId)?.name || "Paciente no encontrado";
 
-  // Helpers visuales
   const startDate = new Date(appointment.startDate);
   const endTime = new Date(appointment.endTime);
   const serviceName = getServiceName(appointment.serviceId);
@@ -78,7 +73,6 @@ export const AppointmentDetailsPage = () => {
 
   return (
     <div className="flex flex-col gap-6 p-6 bg-gray-50 min-h-screen">
-      {/* HEADER DE LA PÁGINA Y NAVEGACIÓN */}
       <div className="flex flex-col gap-4">
         <div>
           <Link
@@ -96,11 +90,16 @@ export const AppointmentDetailsPage = () => {
           </h1>
 
           <div className="flex items-center gap-3">
-            {/* REAGENDAR */}
-            <button className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
-              <CalendarClock className="w-4 h-4" />
-              Reagendar Cita
-            </button>
+            {/* REAGENDAR - SOLO SE MUESTRA SI ESTÁ PROGRAMADA */}
+            {appointment.status === "PROGRAMADA" && (
+              <button 
+                onClick={() => setOpenRescheduleModal(true)}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+              >
+                <CalendarClock className="w-4 h-4" />
+                Reagendar Cita
+              </button>
+            )}
 
             {/* COMPLETE APPOINTMENT */}
             {isMedic && appointment.status === "PROGRAMADA" && (
@@ -116,9 +115,7 @@ export const AppointmentDetailsPage = () => {
         </div>
       </div>
 
-      {/* TARJETA PRINCIPAL DE INFORMACIÓN */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 flex flex-col gap-6">
-        {/* Cabecera de la Tarjeta (Servicio y Estado) */}
         <div className="flex items-center justify-between border-b border-gray-100 pb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
@@ -133,7 +130,6 @@ export const AppointmentDetailsPage = () => {
             </div>
           </div>
 
-          {/* Badge de Estado Dinámico */}
           {appointment.status === "PROGRAMADA" ? (
             <span className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-50 rounded-full border border-blue-100">
               <Clock4 className="w-4 h-4" /> Programada
@@ -145,9 +141,7 @@ export const AppointmentDetailsPage = () => {
           )}
         </div>
 
-        {/* Grid de Detalles */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Columna Izquierda: Paciente y Finanzas */}
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -170,7 +164,6 @@ export const AppointmentDetailsPage = () => {
             </div>
           </div>
 
-          {/* Columna Derecha: Fechas y Horas */}
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
@@ -205,7 +198,6 @@ export const AppointmentDetailsPage = () => {
           </div>
         </div>
 
-        {/* Sección de Notas (Si existen) */}
         {appointment.preNotes && (
           <div className="mt-4 p-4 bg-gray-50 border border-gray-100 rounded-xl">
             <div className="flex items-center gap-2 mb-2">
@@ -218,6 +210,8 @@ export const AppointmentDetailsPage = () => {
           </div>
         )}
       </div>
+
+      {/* MODAL COMPLETAR */}
       <ConfirmModal
         open={openCompleteModal}
         title="Completar cita"
@@ -229,16 +223,69 @@ export const AppointmentDetailsPage = () => {
           completeAppointment.mutate(appointment.id, {
             onSuccess: () => {
               setOpenCompleteModal(false);
-
               showToast("Cita completada correctamente", "success");
             },
-
             onError: () => {
               showToast("Error al completar cita", "error");
             },
           });
         }}
       />
+
+      {/* MODAL REAGENDAR */}
+      {openRescheduleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-2">Reagendar Cita</h3>
+            <p className="text-sm text-gray-500 mb-4">Selecciona la nueva fecha y hora de inicio para esta cita.</p>
+
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Nueva Fecha y Hora</label>
+              <input
+                type="datetime-local"
+                value={newStartDate}
+                onChange={(e) => setNewStartDate(e.target.value)}
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setOpenRescheduleModal(false)}
+                className="px-4 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  if (!newStartDate) {
+                    showToast("Selecciona una fecha válida", "error");
+                    return;
+                  }
+                  
+                  rescheduleAppointment.mutate(
+                    { id: appointment.id, startDate: new Date(newStartDate) },
+                    {
+                      onSuccess: () => {
+                        setOpenRescheduleModal(false);
+                        setNewStartDate(""); // Limpiamos el input
+                        showToast("Cita reagendada correctamente", "success");
+                      },
+                      onError: () => {
+                        showToast("Error al reagendar la cita", "error");
+                      },
+                    }
+                  );
+                }}
+                disabled={rescheduleAppointment.isPending}
+                className="px-4 py-2 text-sm font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {rescheduleAppointment.isPending ? "Guardando..." : "Confirmar"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
