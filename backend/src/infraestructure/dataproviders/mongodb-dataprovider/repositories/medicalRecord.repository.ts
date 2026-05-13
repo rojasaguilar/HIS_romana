@@ -6,6 +6,16 @@ import { MedicalRecordMapper } from '../mappers/medicalRecord.mapper';
 import medicalRecordModel from '../models/medicalRecord.model';
 
 export class MedicalRecordRepository implements IMedicalRecordRepository {
+  async findByPatientId(
+    patientId: string,
+  ): Promise<MedicalRecordEntity | null> {
+    const medRecDoc = await medicalRecordModel.findOne({ patientId });
+
+    if (!medRecDoc) return null;
+
+    return MedicalRecordMapper.toDomain(medRecDoc);
+  }
+  
   async update(
     id: string,
     data: UpdateMedicalRecordDTO,

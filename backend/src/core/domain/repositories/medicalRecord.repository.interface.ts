@@ -6,6 +6,8 @@ export interface IMedicalRecordRepository {
 
   findById(id: string): Promise<MedicalRecordEntity | null>;
 
+  findByPatientId(patientId: string): Promise<MedicalRecordEntity | null>;
+
   getAll(): Promise<MedicalRecordEntity[]>;
 
   update(

@@ -25,5 +25,13 @@ export class MedicalRecordRouter {
       .patch(
         this.medRecController.updateMedicalRecord.bind(this.medRecController),
       );
+
+    this.router
+      .route('/patients/:patientId')
+      .get(
+        this.medRecController.getMedicalRecordByPatientId.bind(
+          this.medRecController,
+        ),
+      );
   }
 }

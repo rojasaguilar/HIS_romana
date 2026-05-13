@@ -42,6 +42,8 @@ import { MedicDetailsPage } from "@/modules/medics/pages/MedicDetailsPage";
 import { AppointmentDetailsPage } from "@/modules/appointments/pages/AppointmentDetailsPage";
 import { ServiceDetailsPage } from "@/modules/services/pages/ServicePage";
 import { PlanDetailsPage } from "@/modules/plans/pages/PlanDetailsPage";
+import { CreateReceptionistPage } from "@/modules/receptionists/pages/CreateReceptionistPage";
+import { ReceptionistsPage } from "@/modules/receptionists/pages/ReceptionistsPage";
 
 export const router = createBrowserRouter([
   /**
@@ -109,22 +111,6 @@ export const router = createBrowserRouter([
           /**
            * MEDICS
            */
-          {
-            path: "/medics",
-
-            element: <MedicsPage />,
-          },
-          {
-            path: "/medics/:id",
-
-            element: <MedicDetailsPage />,
-          },
-
-          {
-            path: "/medics/create",
-
-            element: <CreateMedicPage />,
-          },
 
           /**
            * SERVICES
@@ -218,6 +204,31 @@ export const router = createBrowserRouter([
                 path: "/plans/create",
 
                 element: <CreatePlanPage />,
+              },
+              {
+                path: "/receptionists",
+
+                element: <ReceptionistsPage />,
+              },
+              {
+                path: "receptionists/create",
+                element: <CreateReceptionistPage />,
+              },
+              {
+                path: "/medics",
+
+                element: <MedicsPage />,
+              },
+              {
+                path: "/medics/:id",
+
+                element: <MedicDetailsPage />,
+              },
+
+              {
+                path: "/medics/create",
+
+                element: <CreateMedicPage />,
               },
             ],
           },

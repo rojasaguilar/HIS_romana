@@ -1,28 +1,48 @@
 // src/modules/patients/pages/PatientDetailsPage.tsx
 
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-
 import { usePatient } from "../hooks/usePatient";
-
 import { useSubscriptions } from "@/modules/subscriptions/hooks/useSubscriptions";
-
 import { usePlans } from "@/modules/plans/hooks/usePlans";
-
 import { useAppointments } from "@/modules/appointments/hooks/useAppointments";
+import { useMedicalRecordByPatient } from "@/modules/medicalRecords/hooks/useMedicalRecord";
+
+import {
+  MoveLeft,
+  Activity,
+  AlertTriangle,
+  Pill,
+  Scissors,
+  HeartPulse,
+  Scale,
+  Ruler,
+  FileText,
+  User,
+} from "lucide-react";
 
 export const PatientDetailsPage = () => {
   const { id } = useParams();
 
+  // Estado para controlar qué pestaña está visible
+  const [activeTab, setActiveTab] = useState<"general" | "medical_record">(
+    "general",
+  );
+
   const { data: patient, isLoading } = usePatient(id!);
-
   const { data: subscriptions } = useSubscriptions();
-
   const { data: plans } = usePlans();
-
   const { data: appointments } = useAppointments();
 
+  // Obtenemos la historia médica del paciente
+  const { data: medicalRecord, isLoading: isLoadingMR } = useMedicalRecordByPatient(
+    patient?.id,
+  );
+
   if (isLoading || !patient) {
-    return <p>Loading patient...</p>;
+    return (
+      <p className="p-8 text-center text-gray-500">Cargando paciente...</p>
+    );
   }
 
   const patientSubscription = subscriptions?.find(
@@ -49,7 +69,7 @@ export const PatientDetailsPage = () => {
         )
       : 0;
 
-  const formatDate = (date: string) => {
+  const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleDateString("es-MX", {
       day: "2-digit",
       month: "short",
@@ -58,139 +78,28 @@ export const PatientDetailsPage = () => {
   };
 
   return (
-    <div
-      style={{
-        padding: "2rem",
-
-        background: "#f8fafc",
-
-        minHeight: "100vh",
-      }}
-    >
-      {/* HEADER */}
-      {/* <div
-        style={{
-          marginBottom: "2rem",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "2rem",
-
-            fontWeight: 700,
-
-            marginBottom: ".3rem",
-          }}
-        >
-          {patient.name}
-        </h1>
-
-        <p
-          style={{
-            color: "#64748b",
-          }}
-        >
-          Información del cliente
-        </p>
-      </div> */}
+    <div className="p-8 bg-slate-50 min-h-screen">
       {/* BACK */}
       <Link
         to="/patients"
-        style={{
-          textDecoration: "none",
-
-          color: "#64748b",
-
-          display: "inline-block",
-
-          marginBottom: "1.5rem",
-        }}
+        className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-colors mb-6 decoration-transparent"
       >
-        ← Volver a Pacientes
+        <MoveLeft className="w-4 h-4" /> Volver a Pacientes
       </Link>
 
       {/* PROFILE CARD */}
-
-      <div
-        style={{
-          background: "white",
-
-          borderRadius: "1rem",
-
-          padding: "2rem",
-
-          display: "flex",
-
-          justifyContent: "space-between",
-
-          alignItems: "center",
-
-          border: "1px solid #e2e8f0",
-
-          marginBottom: "1.5rem",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-
-            gap: "1.5rem",
-
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              width: "80px",
-
-              height: "80px",
-
-              borderRadius: "999px",
-
-              background: "#ede9fe",
-
-              display: "flex",
-
-              alignItems: "center",
-
-              justifyContent: "center",
-
-              fontSize: "2rem",
-
-              color: "#7c3aed",
-
-              fontWeight: 700,
-            }}
-          >
+      <div className="bg-white rounded-2xl p-8 flex justify-between items-center border border-slate-200 mb-6 shadow-sm">
+        <div className="flex gap-6 items-center">
+          <div className="w-20 h-20 rounded-full bg-violet-100 flex items-center justify-center text-3xl text-violet-600 font-bold">
             {patient.name.charAt(0)}
           </div>
-
           <div>
-            <h2
-              style={{
-                fontSize: "1.8rem",
-
-                marginBottom: ".5rem",
-              }}
-            >
+            <h2 className="text-3xl font-bold mb-2 text-slate-900">
               {patient.name}
             </h2>
-
-            <div
-              style={{
-                display: "flex",
-
-                flexDirection: "column",
-
-                gap: ".4rem",
-
-                color: "#64748b",
-              }}
-            >
+            <div className="flex flex-col gap-1 text-slate-500 font-medium">
               <span>{patient.email}</span>
-
               <span>{patient.phoneNumber}</span>
-
               <span>
                 {patient.address.street}, {patient.address.city}
               </span>
@@ -200,270 +109,349 @@ export const PatientDetailsPage = () => {
 
         <div>
           <span
-            style={{
-              background: patient.isActive ? "#dcfce7" : "#fee2e2",
-
-              color: patient.isActive ? "#166534" : "#991b1b",
-
-              padding: ".5rem 1rem",
-
-              borderRadius: "999px",
-
-              fontWeight: 600,
-            }}
+            className={`px-4 py-2 rounded-full font-semibold text-sm ${
+              patient.isActive
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            }`}
           >
-            {patient.isActive ? "activo" : "inactivo"}
+            {patient.isActive ? "Activo" : "Inactivo"}
           </span>
         </div>
       </div>
 
       {/* STATS */}
-      <div
-        style={{
-          display: "grid",
-
-          gridTemplateColumns: "repeat(3, 1fr)",
-
-          gap: "1rem",
-
-          marginBottom: "1.5rem",
-        }}
-      >
-        {/* PLAN */}
-        <div
-          style={{
-            background: "white",
-
-            borderRadius: "1rem",
-
-            padding: "1.5rem",
-
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              color: "#64748b",
-
-              marginBottom: ".5rem",
-            }}
-          >
-            Suscripción
-          </p>
-
-          <h3>{plan?.name || "Sin plan"}</h3>
-
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <p className="text-slate-500 mb-2 font-medium">Suscripción</p>
+          <h3 className="text-xl font-bold text-slate-900">
+            {plan?.name || "Sin plan"}
+          </h3>
           {patientSubscription && (
-            <p
-              style={{
-                color: "#64748b",
-
-                marginTop: ".5rem",
-              }}
-            >
+            <p className="text-slate-500 mt-2 text-sm">
               Vence: {formatDate(patientSubscription._endDate)}
             </p>
           )}
         </div>
-
-        {/* APPOINTMENTS */}
-        <div
-          style={{
-            background: "white",
-
-            borderRadius: "1rem",
-
-            padding: "1.5rem",
-
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              color: "#64748b",
-
-              marginBottom: ".5rem",
-            }}
-          >
-            Total Citas
-          </p>
-
-          <h3>{patientAppointments.length}</h3>
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <p className="text-slate-500 mb-2 font-medium">Total Citas</p>
+          <h3 className="text-xl font-bold text-slate-900">
+            {patientAppointments.length}
+          </h3>
         </div>
-
-        {/* COMPLETED */}
-        <div
-          style={{
-            background: "white",
-
-            borderRadius: "1rem",
-
-            padding: "1.5rem",
-
-            border: "1px solid #e2e8f0",
-          }}
-        >
-          <p
-            style={{
-              color: "#64748b",
-
-              marginBottom: ".5rem",
-            }}
-          >
-            Citas Completadas
-          </p>
-
-          <h3>{completedAppointments.length}</h3>
-
-          <p
-            style={{
-              marginTop: ".5rem",
-
-              color: "#64748b",
-            }}
-          >
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+          <p className="text-slate-500 mb-2 font-medium">Citas Completadas</p>
+          <h3 className="text-xl font-bold text-slate-900">
+            {completedAppointments.length}
+          </h3>
+          <p className="text-slate-500 mt-2 text-sm">
             Asistencia: {attendance}%
           </p>
         </div>
       </div>
 
-      {/* CONTENT */}
-      <div
-        style={{
-          background: "white",
-
-          borderRadius: "1rem",
-
-          padding: "2rem",
-
-          border: "1px solid #e2e8f0",
-        }}
-      >
-        <h2
-          style={{
-            marginBottom: "2rem",
-          }}
-        >
-          Información General
-        </h2>
-
-        {/* PERSONAL INFO */}
-        <div
-          style={{
-            marginBottom: "2rem",
-          }}
-        >
-          <h3
-            style={{
-              marginBottom: "1rem",
-            }}
+      {/* CONTENEDOR DE PESTAÑAS */}
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        {/* HEADER DE PESTAÑAS */}
+        <div className="flex border-b border-slate-200 bg-slate-50/50">
+          <button
+            onClick={() => setActiveTab("general")}
+            className={`px-8 py-4 text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+              activeTab === "general"
+                ? "border-indigo-600 text-indigo-700 bg-white"
+                : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            }`}
           >
-            Datos Personales
-          </h3>
-
-          <div
-            style={{
-              display: "grid",
-
-              gridTemplateColumns: "repeat(2, 1fr)",
-
-              gap: "1rem",
-            }}
+            <User className="w-4 h-4" /> Información General
+          </button>
+          <button
+            onClick={() => setActiveTab("medical_record")}
+            className={`px-8 py-4 text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+              activeTab === "medical_record"
+                ? "border-indigo-600 text-indigo-700 bg-white"
+                : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            }`}
           >
-            <div>
-              <p
-                style={{
-                  color: "#64748b",
-                }}
-              >
-                Fecha de Nacimiento
-              </p>
-
-              <strong>{formatDate(patient.birthDate)}</strong>
-            </div>
-
-            <div>
-              <p
-                style={{
-                  color: "#64748b",
-                }}
-              >
-                Tipo de Sangre
-              </p>
-
-              <strong>{patient.bloodType}</strong>
-            </div>
-
-            <div>
-              <p
-                style={{
-                  color: "#64748b",
-                }}
-              >
-                Alergias
-              </p>
-
-              <strong>{patient.allergies.join(", ") || "Sin alergias"}</strong>
-            </div>
-
-            <div>
-              <p
-                style={{
-                  color: "#64748b",
-                }}
-              >
-                Contacto de Emergencia
-              </p>
-
-              <strong>
-                {patient.emergencyContact?.name} -{" "}
-                {patient.emergencyContact?.phoneNumber}
-              </strong>
-            </div>
-          </div>
+            <Activity className="w-4 h-4" /> Historia Médica
+          </button>
         </div>
 
-        {/* SUBSCRIPTION */}
-        {patientSubscription && (
-          <div>
-            <h3
-              style={{
-                marginBottom: "1rem",
-              }}
-            >
-              Información de Suscripción
-            </h3>
+        {/* CONTENIDO DINÁMICO */}
+        <div className="p-8">
+          {/* VISTA: INFORMACIÓN GENERAL */}
+          {activeTab === "general" && (
+            <div className="animate-in fade-in duration-300">
+              <div className="mb-8">
+                <h3 className="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
+                  Datos Personales
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-slate-500 text-sm">
+                      Fecha de Nacimiento
+                    </p>
+                    <strong className="text-slate-900">
+                      {formatDate(patient.birthDate)}
+                    </strong>
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-sm">Tipo de Sangre</p>
+                    <strong className="text-slate-900">
+                      {patient.bloodType}
+                    </strong>
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-sm">Alergias</p>
+                    <strong className="text-slate-900">
+                      {patient.allergies?.join(", ") || "Sin alergias"}
+                    </strong>
+                  </div>
+                  <div>
+                    <p className="text-slate-500 text-sm">
+                      Contacto de Emergencia
+                    </p>
+                    <strong className="text-slate-900">
+                      {patient.emergencyContact?.name} -{" "}
+                      {patient.emergencyContact?.phoneNumber}
+                    </strong>
+                  </div>
+                </div>
+              </div>
 
-            <div
-              style={{
-                borderTop: "1px solid #e2e8f0",
-
-                paddingTop: "1rem",
-              }}
-            >
-              <h4>{plan?.name}</h4>
-
-              <p
-                style={{
-                  color: "#22c55e",
-
-                  margin: ".5rem 0",
-                }}
-              >
-                Estado: activa
-              </p>
-
-              <p
-                style={{
-                  color: "#64748b",
-                }}
-              >
-                Periodo: {formatDate(patientSubscription._startDate)} -{" "}
-                {formatDate(patientSubscription._endDate)}
-              </p>
+              {patientSubscription && (
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
+                    Información de Suscripción
+                  </h3>
+                  <div>
+                    <h4 className="font-bold text-slate-900">{plan?.name}</h4>
+                    <p className="text-green-600 font-medium my-2">
+                      Estado: activa
+                    </p>
+                    <p className="text-slate-500 text-sm">
+                      Periodo: {formatDate(patientSubscription._startDate)} -{" "}
+                      {formatDate(patientSubscription._endDate)}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
-        )}
+          )}
+
+          {/* VISTA: HISTORIA MÉDICA */}
+          {activeTab === "medical_record" && (
+            <div className="animate-in fade-in duration-300">
+              {isLoadingMR ? (
+                <p className="text-slate-500 text-center py-8">
+                  Cargando expediente médico...
+                </p>
+              ) : !medicalRecord ? (
+                <div className="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                  <Activity className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-bold text-slate-900">
+                    Sin Historia Médica
+                  </h3>
+                  <p className="text-slate-500 mt-2">
+                    Este paciente aún no tiene un expediente clínico registrado.
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-6">
+                  {/* Fila 1: Biometría y Alertas */}
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="col-span-2 bg-red-50/50 border border-red-100 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-3 text-red-600">
+                        <AlertTriangle className="w-5 h-5" />
+                        <h4 className="font-bold">
+                          Alertas y Factores de Riesgo
+                        </h4>
+                      </div>
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <p className="text-xs text-slate-500 font-bold uppercase mb-2">
+                            Alergias Clínicas
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {medicalRecord.allergies?.length > 0 ? (
+                              medicalRecord.allergies.map((a, i) => (
+                                <span
+                                  key={i}
+                                  className="px-2 py-1 bg-red-100 text-red-700 text-xs font-bold rounded"
+                                >
+                                  {a}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-sm text-slate-500">
+                                Ninguna
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-xs text-slate-500 font-bold uppercase mb-2">
+                            Factores de Riesgo
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {medicalRecord.riskFactors?.length > 0 ? (
+                              medicalRecord.riskFactors.map((r, i) => (
+                                <span
+                                  key={i}
+                                  className="px-2 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded"
+                                >
+                                  {r}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-sm text-slate-500">
+                                Ninguno reportado
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-sky-50/50 border border-sky-100 rounded-xl p-5 flex flex-col justify-center gap-4">
+                      <div className="flex justify-between items-center pb-2 border-b border-sky-100">
+                        <div className="flex items-center gap-2 text-sky-700">
+                          <Ruler className="w-4 h-4" />{" "}
+                          <span className="font-semibold text-sm">
+                            Estatura
+                          </span>
+                        </div>
+                        <span className="font-bold text-lg text-sky-900">
+                          {medicalRecord.height}{" "}
+                          <span className="text-sm font-normal text-sky-600">
+                            cm
+                          </span>
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2 text-sky-700">
+                          <Scale className="w-4 h-4" />{" "}
+                          <span className="font-semibold text-sm">Peso</span>
+                        </div>
+                        <span className="font-bold text-lg text-sky-900">
+                          {medicalRecord.weight}{" "}
+                          <span className="text-sm font-normal text-sky-600">
+                            kg
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Fila 2: Condiciones y Medicamentos */}
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="border border-slate-200 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-4 text-indigo-600">
+                        <HeartPulse className="w-5 h-5" />
+                        <h4 className="font-bold text-slate-900">
+                          Condiciones Actuales
+                        </h4>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        {medicalRecord.currentConditions?.length > 0 ? (
+                          medicalRecord.currentConditions.map((cond, i) => (
+                            <div key={i} className="p-3 bg-slate-50 rounded-lg">
+                              <p className="font-bold text-slate-900 text-sm">
+                                CIE: {cond.diseaseId}
+                              </p>
+                              <p className="text-xs text-slate-500 mt-1">
+                                Diagnosticado por {cond.diagnosedBy || "N/A"} el{" "}
+                                {formatDate(cond.since)}
+                              </p>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-slate-500">
+                            Sin condiciones actuales registradas.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="border border-slate-200 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-4 text-indigo-600">
+                        <Pill className="w-5 h-5" />
+                        <h4 className="font-bold text-slate-900">
+                          Medicación Crónica
+                        </h4>
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        {medicalRecord.chronicMedications?.length > 0 ? (
+                          medicalRecord.chronicMedications.map((med, i) => (
+                            <div
+                              key={i}
+                              className="p-3 bg-slate-50 rounded-lg flex justify-between items-center"
+                            >
+                              <div>
+                                <p className="font-bold text-slate-900 text-sm">
+                                  {med.medicationName}
+                                </p>
+                                <p className="text-xs text-slate-500 mt-1">
+                                  {med.dosage.amount}
+                                  {med.dosage.unit} •{" "}
+                                  {med.frequency.timesPerDay} al día
+                                </p>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-sm text-slate-500">
+                            Sin medicación crónica.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Fila 3: Quirúrgico y Resumen */}
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="border border-slate-200 rounded-xl p-5">
+                      <div className="flex items-center gap-2 mb-4 text-indigo-600">
+                        <Scissors className="w-5 h-5" />
+                        <h4 className="font-bold text-slate-900">
+                          Antecedentes Quirúrgicos
+                        </h4>
+                      </div>
+                      <ul className="list-disc list-inside text-sm text-slate-700 flex flex-col gap-2">
+                        {medicalRecord.surgicalHistory?.length > 0 ? (
+                          medicalRecord.surgicalHistory.map((surg, i) => (
+                            <li key={i}>
+                              <span className="font-semibold">
+                                {surg.surgeryName}
+                              </span>{" "}
+                              ({formatDate(surg.surgeryDate)})
+                            </li>
+                          ))
+                        ) : (
+                          <p className="text-sm text-slate-500">
+                            Sin antecedentes quirúrgicos.
+                          </p>
+                        )}
+                      </ul>
+                    </div>
+
+                    <div className="border border-slate-200 rounded-xl p-5 bg-slate-50/50">
+                      <div className="flex items-center gap-2 mb-3 text-indigo-600">
+                        <FileText className="w-5 h-5" />
+                        <h4 className="font-bold text-slate-900">
+                          Resumen Clínico
+                        </h4>
+                      </div>
+                      <p className="text-sm text-slate-600 leading-relaxed">
+                        {medicalRecord.summary ||
+                          "No hay resumen clínico disponible."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

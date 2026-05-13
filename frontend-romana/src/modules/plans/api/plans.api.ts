@@ -14,7 +14,7 @@ export const getPlansRequest = async (): Promise<Plan[]> => {
 export const createPlanRequest = async (data: CreatePlanDTO): Promise<Plan> => {
   const response = await api.post("/plans", data);
 
-  return response.data.map(planMapper);
+  return planMapper(response.data);
 };
 
 export const getPlanByIdRequest = async (id: string): Promise<Plan> => {
@@ -22,8 +22,6 @@ export const getPlanByIdRequest = async (id: string): Promise<Plan> => {
   console.log("respuesta", planMapper(response.data));
 
   return planMapper(response.data);
-  // return response.data.map();
-  // return response.data.map(planMapper);
 };
 
 /**
@@ -36,5 +34,5 @@ export const updatePlanRequest = async (
 ): Promise<Plan> => {
   const response = await api.patch(`/plans/${id}`, data);
 
-  return response.data.map(planMapper);
+  return planMapper(response.data);
 };

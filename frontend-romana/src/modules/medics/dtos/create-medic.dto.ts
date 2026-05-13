@@ -1,6 +1,4 @@
-import type {
-  MedicType,
-} from "../types/medic.types";
+import type { MedicType } from "../types/medic.types";
 
 export interface CreateMedicDTO {
   name: string;
@@ -28,6 +26,8 @@ export interface CreateMedicDTO {
   profilePictureUrl: string;
 
   type: MedicType;
+
+  password?: string;
 
   organizationId?: string;
 }
