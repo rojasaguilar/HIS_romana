@@ -28,7 +28,6 @@ export class EncounterEntity {
   public readonly differentialDiagnosis: string;
   public readonly prescriptions: PrescriptionProps[];
 
-  // El constructor es privado para forzar el uso del método estático 'create'
   private constructor(props: EncounterProps) {
     this.patientId = props.patientId;
     this.medicId = props.medicId;
@@ -40,7 +39,6 @@ export class EncounterEntity {
     this.id = props.id;
   }
 
-  // Factory method con las validaciones de dominio
   public static create(props: EncounterProps): EncounterEntity {
     // 1. Validaciones de campos obligatorios
     if (!props.patientId) throw new Error('El patientId es obligatorio.');

@@ -15,7 +15,6 @@ export class PlanRouter {
       .get(this.planController.getPlans.bind(this.planController))
       .post(this.planController.createPlan.bind(this.planController));
 
-    // 🔧 get by id + update
     this.router
       .route('/:id')
       .get(this.planController.getPlanById.bind(this.planController))

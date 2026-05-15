@@ -13,6 +13,7 @@ import { createreceptionistModule } from '../../modules/receptionist.module';
 import { createAuthModule } from '../../modules/auth.module';
 import { createPlanModule } from '../../modules/plan.module';
 import { createSubscriptionModule } from '../../modules/subscription.module';
+import { createEncounterModule } from '../../modules/encounter.module';
 
 const app = express();
 const patientModule = createPatientModule();
@@ -25,6 +26,7 @@ const receptionistModule = createreceptionistModule();
 const authModule = createAuthModule();
 const planModule = createPlanModule();
 const subscriptionModule = createSubscriptionModule();
+const encounterModule = createEncounterModule();
 
 app.use(
   cors({
@@ -48,6 +50,7 @@ app.use('/receptionists', receptionistModule.router);
 app.use('/auth', authModule.router);
 app.use('/plans', planModule.router);
 app.use('/subscriptions', subscriptionModule.router);
+app.use('/encounters', encounterModule.router);
 
 //cambiar de lugar y hacer mejor
 app.use((err, req, res, next) => {

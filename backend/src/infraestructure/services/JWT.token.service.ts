@@ -2,6 +2,7 @@ import { env } from './../config/environment';
 import jwt from 'jsonwebtoken';
 import { ITokenService } from '../../core/domain/interfaces/token.service.interface';
 import { UserPayloadDTO } from '../../core/domain/dtos/systemAccount.dto';
+import { promisify } from 'util';
 
 export class JWTTokenService implements ITokenService {
   signAccessToken(payload: UserPayloadDTO): string {
@@ -23,7 +24,19 @@ export class JWTTokenService implements ITokenService {
 
     return refreshToken;
   }
-  decodeAccessToken(token: string): Promise<UserPayloadDTO> {
-    throw new Error('Method not implemented.');
+  
+  async decodeAccessToken(token: string): Promise<UserPayloadDTO> {
+    const decoded = (jwt.verify(
+      token,
+      env.JWT_ACCESS_SECRET,
+    )) as UserPayloadDTO;
+
+    return {
+      accountId: decoded.accountId,
+      userId: decoded.userId,
+      email: decoded.email,
+      roles: decoded.roles,
+      profileType: decoded.profileType,
+    };
   }
 }
