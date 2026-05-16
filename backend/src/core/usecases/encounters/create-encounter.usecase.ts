@@ -20,6 +20,8 @@ export class CreateEncounterUseCase {
   public async execute(data: EncounterProps): Promise<EncounterEntity> {
     const encounter = EncounterEntity.create(data);
 
+    console.log('encounter', encounter)
+
     //VALIDAR QUE EXISTAN LOS DATOS
     // const { medicId, patientId, appointmentId } = data;
 

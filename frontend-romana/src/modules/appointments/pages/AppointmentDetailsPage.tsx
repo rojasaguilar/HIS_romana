@@ -18,29 +18,32 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { useCompleteAppointment } from "../hooks/useCompleteAppointment";
-// Importamos el hook que acabamos de arreglar
-import { useRescheduleAppointment } from "../hooks/useRescheduleAppointment"
+import { useRescheduleAppointment } from "../hooks/useRescheduleAppointment";
 import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
 import { useState } from "react";
 import { ConfirmModal } from "@/shared/components/feedback/modal/ConfirmModal";
+import { EncounterSection } from "@/modules/encounters/components/EncounterSection";
+
+// IMPORTAMOS EL NUEVO COMPONENTE CLINICO
 
 export const AppointmentDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
-  
+
   const completeAppointment = useCompleteAppointment();
   const rescheduleAppointment = useRescheduleAppointment();
 
   const [openCompleteModal, setOpenCompleteModal] = useState(false);
-  
-  // Estados para reagendar
   const [openRescheduleModal, setOpenRescheduleModal] = useState(false);
   const [newStartDate, setNewStartDate] = useState("");
 
   const { showToast } = useToast();
   const user = useAuthStore((state) => state.user);
-  const isMedic = user?.roles.includes("MEDIC");
+  const isMedic = user?.roles.includes("MEDIC") ?? false;
 
-  const { data: appointment, isLoading: loadingAppointment } = useAppointmentDetails(id!);
+  console.log(isMedic);
+
+  const { data: appointment, isLoading: loadingAppointment } =
+    useAppointmentDetails(id!);
   const { data: services, isLoading: loadingServices } = useServices();
   const { data: patients, isLoading: loadingPatients } = usePatients();
 
@@ -61,10 +64,12 @@ export const AppointmentDetailsPage = () => {
   }
 
   const getServiceName = (serviceId: string) =>
-    services?.find((s: any) => s.id === serviceId)?.name || "Servicio no encontrado";
+    services?.find((s: any) => s.id === serviceId)?.name ||
+    "Servicio no encontrado";
 
   const getPatientName = (patientId: string) =>
-    patients?.find((p: any) => p.id === patientId)?.name || "Paciente no encontrado";
+    patients?.find((p: any) => p.id === patientId)?.name ||
+    "Paciente no encontrado";
 
   const startDate = new Date(appointment.startDate);
   const endTime = new Date(appointment.endTime);
@@ -90,9 +95,8 @@ export const AppointmentDetailsPage = () => {
           </h1>
 
           <div className="flex items-center gap-3">
-            {/* REAGENDAR - SOLO SE MUESTRA SI ESTÁ PROGRAMADA */}
             {appointment.status === "PROGRAMADA" && (
-              <button 
+              <button
                 onClick={() => setOpenRescheduleModal(true)}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
               >
@@ -101,7 +105,6 @@ export const AppointmentDetailsPage = () => {
               </button>
             )}
 
-            {/* COMPLETE APPOINTMENT */}
             {isMedic && appointment.status === "PROGRAMADA" && (
               <button
                 onClick={() => setOpenCompleteModal(true)}
@@ -115,6 +118,7 @@ export const AppointmentDetailsPage = () => {
         </div>
       </div>
 
+      {/* TARJETA DE LA CITA ADMINISTRATIVA */}
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 flex flex-col gap-6">
         <div className="flex items-center justify-between border-b border-gray-100 pb-4">
           <div className="flex items-center gap-3">
@@ -211,7 +215,13 @@ export const AppointmentDetailsPage = () => {
         )}
       </div>
 
-      {/* MODAL COMPLETAR */}
+      {/* SECCIÓN CLÍNICA (ENCOUNTER) - SE MUESTRA SI LA CITA ESTÁ COMPLETADA */}
+      {/* {appointment.status === "COMPLETADA" && (
+        <EncounterSection appointment={appointment} isMedic={isMedic} />
+        )} */}
+      <EncounterSection appointment={appointment} isMedic={isMedic} />
+
+      {/* MODALES */}
       <ConfirmModal
         open={openCompleteModal}
         title="Completar cita"
@@ -232,15 +242,20 @@ export const AppointmentDetailsPage = () => {
         }}
       />
 
-      {/* MODAL REAGENDAR */}
       {openRescheduleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Reagendar Cita</h3>
-            <p className="text-sm text-gray-500 mb-4">Selecciona la nueva fecha y hora de inicio para esta cita.</p>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              Reagendar Cita
+            </h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Selecciona la nueva fecha y hora de inicio para esta cita.
+            </p>
 
             <div className="mb-6">
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Nueva Fecha y Hora</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Nueva Fecha y Hora
+              </label>
               <input
                 type="datetime-local"
                 value={newStartDate}
@@ -262,19 +277,19 @@ export const AppointmentDetailsPage = () => {
                     showToast("Selecciona una fecha válida", "error");
                     return;
                   }
-                  
+
                   rescheduleAppointment.mutate(
                     { id: appointment.id, startDate: new Date(newStartDate) },
                     {
                       onSuccess: () => {
                         setOpenRescheduleModal(false);
-                        setNewStartDate(""); // Limpiamos el input
+                        setNewStartDate("");
                         showToast("Cita reagendada correctamente", "success");
                       },
                       onError: () => {
                         showToast("Error al reagendar la cita", "error");
                       },
-                    }
+                    },
                   );
                 }}
                 disabled={rescheduleAppointment.isPending}

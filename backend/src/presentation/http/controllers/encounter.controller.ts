@@ -3,6 +3,7 @@ import { CreateEncounterUseCase } from '../../../core/usecases/encounters/create
 import { GetEncounterByAppointmentUseCase } from '../../../core/usecases/encounters/getEncounterByAppointment-usecse';
 import { GetPatientEncountersUseCase } from '../../../core/usecases/encounters/getPatient-encounters.usecase';
 import { asyncHandler } from '../middlewares/asyncHandler';
+import { EncounterProps } from '../../../core/domain/entities/encounter.entity';
 
 export class EncounterController {
   constructor(
@@ -11,12 +12,14 @@ export class EncounterController {
     private readonly getEncounterByAppointmentUseCase: GetEncounterByAppointmentUseCase,
   ) {}
 
-  createEncounter = asyncHandler(async (req: Request, res: Response) => {
-    const data = req.body;
-    const encounter = await this.createEncounterUseCase.execute(data);
+  createEncounter = asyncHandler(
+    async (req: Request, res: Response) => {
+      const data = req.body;
+      const encounter = await this.createEncounterUseCase.execute(data);
 
-    res.status(201).json(encounter);
-  });
+      res.status(201).json(encounter);
+    },
+  );
 
   getPatientEncounters = asyncHandler(
     async (req: Request<{ patientId: string }>, res: Response) => {

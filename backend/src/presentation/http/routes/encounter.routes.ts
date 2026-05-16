@@ -15,7 +15,7 @@ export class EncounterRouter {
     this.router
       .route('/')
       .post(
-        this.authMiddleware,
+        // this.authMiddleware,
         this.encounterController.createEncounter.bind(this.encounterController),
       );
 

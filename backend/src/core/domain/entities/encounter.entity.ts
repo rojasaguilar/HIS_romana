@@ -1,6 +1,8 @@
+import { Dosage } from '../value-objects/dosage.vo';
+
 export interface PrescriptionProps {
   medicationName: string;
-  dosage: string;
+  dosage: Dosage;
   frequency: string;
   startDate: Date;
   endDate: Date;
@@ -13,6 +15,7 @@ export interface EncounterProps {
   appointmentId: string;
   symptoms: string;
   notes?: string;
+  preliminaryDiagnosis: string;
   differentialDiagnosis: string;
   prescriptions: PrescriptionProps[];
   id?: string;
@@ -25,8 +28,9 @@ export class EncounterEntity {
   public readonly appointmentId: string;
   public readonly symptoms: string;
   public readonly notes?: string;
-  public readonly differentialDiagnosis: string;
+  public readonly preliminaryDiagnosis: string;
   public readonly prescriptions: PrescriptionProps[];
+  public readonly differentialDiagnosis: string;
 
   private constructor(props: EncounterProps) {
     this.patientId = props.patientId;
@@ -34,6 +38,7 @@ export class EncounterEntity {
     this.appointmentId = props.appointmentId;
     this.symptoms = props.symptoms;
     this.notes = props.notes;
+    this.preliminaryDiagnosis = props.preliminaryDiagnosis;
     this.differentialDiagnosis = props.differentialDiagnosis;
     this.prescriptions = props.prescriptions;
     this.id = props.id;
@@ -46,8 +51,8 @@ export class EncounterEntity {
     if (!props.appointmentId)
       throw new Error('El appointmentId es obligatorio.');
     if (!props.symptoms) throw new Error('Los síntomas son obligatorios.');
-    if (!props.differentialDiagnosis)
-      throw new Error('El diagnóstico diferencial es obligatorio.');
+    if (!props.preliminaryDiagnosis)
+      throw new Error('El diagnóstico preeliminar es obligatorio.');
 
     // 2. Validación de la estructura de las recetas (prescriptions)
     if (props.prescriptions && !Array.isArray(props.prescriptions)) {

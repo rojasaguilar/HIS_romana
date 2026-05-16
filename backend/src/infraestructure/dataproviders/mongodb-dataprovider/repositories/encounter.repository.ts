@@ -1,87 +1,95 @@
 import { EncounterEntity } from '../../../../core/domain/entities/encounter.entity';
 import { IEncounterRepository } from '../../../../core/domain/repositories/encounter.repository.interface';
-import EncounterModel from '../models/encounter.model'; // Tu modelo de Mongoose
+import EncounterModel from '../models/encounter.model';
 
 export class EncounterRepository implements IEncounterRepository {
   public async create(encounter: EncounterEntity): Promise<EncounterEntity> {
-    // 1. Mapear de Entidad a objeto para Mongoose
     const encounterData = {
       patientId: encounter.patientId,
       medicId: encounter.medicId,
       appointmentId: encounter.appointmentId,
       symptoms: encounter.symptoms,
       notes: encounter.notes,
+      preliminaryDiagnosis: encounter.preliminaryDiagnosis,
       differentialDiagnosis: encounter.differentialDiagnosis,
       prescriptions: encounter.prescriptions,
     };
 
-    // 2. Guardar en la BD
     const createdEncounter = await EncounterModel.create(encounterData);
 
-    // 3. Devolver la Entidad reconstruida desde el documento guardado
+    const plain = createdEncounter.toObject();
+
     return EncounterEntity.create({
-      id: createdEncounter.id,
-      patientId: createdEncounter.patientId.toString(),
-      medicId: createdEncounter.medicId.toString(),
-      appointmentId: createdEncounter.appointmentId.toString(),
-      symptoms: createdEncounter.symptoms,
-      notes: createdEncounter.notes || undefined,
-      differentialDiagnosis: createdEncounter.differentialDiagnosis,
-      prescriptions: createdEncounter.prescriptions,
+      id: plain._id.toString(),
+      patientId: plain.patientId.toString(),
+      medicId: plain.medicId.toString(),
+      appointmentId: plain.appointmentId.toString(),
+      symptoms: plain.symptoms,
+      notes: plain.notes || undefined,
+      preliminaryDiagnosis: plain.preliminaryDiagnosis,
+      differentialDiagnosis: plain.differentialDiagnosis ?? '',
+      prescriptions: plain.prescriptions ?? [],
     });
   }
 
   public async findById(id: string): Promise<EncounterEntity | null> {
-    const encounterDoc = await EncounterModel.findById(id);
+    const encounterDoc = await EncounterModel.findById(id).lean();
 
     if (!encounterDoc) return null;
 
     return EncounterEntity.create({
-      id: encounterDoc.id,
+      id: encounterDoc._id.toString(),
       patientId: encounterDoc.patientId.toString(),
       medicId: encounterDoc.medicId.toString(),
       appointmentId: encounterDoc.appointmentId.toString(),
       symptoms: encounterDoc.symptoms,
       notes: encounterDoc.notes || undefined,
-      differentialDiagnosis: encounterDoc.differentialDiagnosis,
-      prescriptions: encounterDoc.prescriptions,
+      preliminaryDiagnosis: encounterDoc.preliminaryDiagnosis,
+      differentialDiagnosis: encounterDoc.differentialDiagnosis ?? '',
+      prescriptions: encounterDoc.prescriptions ?? [],
     });
   }
 
   public async findByAppointmentId(
     appointmentId: string,
   ): Promise<EncounterEntity | null> {
-    const encounterDoc = await EncounterModel.findOne({ appointmentId });
+    const encounterDoc = await EncounterModel.findOne({
+      appointmentId,
+    }).lean();
 
     if (!encounterDoc) return null;
 
     return EncounterEntity.create({
-      id: encounterDoc.id,
+      id: encounterDoc._id.toString(),
       patientId: encounterDoc.patientId.toString(),
       medicId: encounterDoc.medicId.toString(),
       appointmentId: encounterDoc.appointmentId.toString(),
       symptoms: encounterDoc.symptoms,
       notes: encounterDoc.notes || undefined,
-      differentialDiagnosis: encounterDoc.differentialDiagnosis,
-      prescriptions: encounterDoc.prescriptions,
+      preliminaryDiagnosis: encounterDoc.preliminaryDiagnosis,
+      differentialDiagnosis: encounterDoc.differentialDiagnosis ?? '',
+      prescriptions: encounterDoc.prescriptions ?? [],
     });
   }
 
   public async findByPatientId(patientId: string): Promise<EncounterEntity[]> {
-    const encountersDocs = await EncounterModel.find({ patientId }).sort({
-      createdAt: -1,
-    }); // Los más recientes primero
+    const encountersDocs = await EncounterModel.find({ patientId })
+      .sort({
+        createdAt: -1,
+      })
+      .lean();
 
     return encountersDocs.map((doc) =>
       EncounterEntity.create({
-        id: doc.id,
+        id: doc._id.toString(),
         patientId: doc.patientId.toString(),
         medicId: doc.medicId.toString(),
         appointmentId: doc.appointmentId.toString(),
         symptoms: doc.symptoms,
         notes: doc.notes || undefined,
-        differentialDiagnosis: doc.differentialDiagnosis,
-        prescriptions: doc.prescriptions,
+        preliminaryDiagnosis: doc.preliminaryDiagnosis,
+        differentialDiagnosis: doc.differentialDiagnosis ?? '',
+        prescriptions: doc.prescriptions ?? [],
       }),
     );
   }
