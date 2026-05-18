@@ -5,5 +5,7 @@ export interface IPatientRepository {
 
   findById(id: string): Promise<PatientEntity | null>;
 
+  findByIds(ids: string[]): Promise<PatientEntity[]>;
+
   getAll(): Promise<PatientEntity[]>;
 }

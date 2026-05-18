@@ -12,6 +12,8 @@ import { GetAppointmentByIdUseCase } from '../core/usecases/appoitments/get-appo
 import { MongooseTransactionManager } from '../infraestructure/dataproviders/mongodb-dataprovider/mongoose-transaction.manager';
 import { SubscriptionRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/subscription.repository';
 import { CompleteAppointmentUseCase } from '../core/usecases/appoitments/complete-appointment.use-case';
+import { JWTTokenService } from '../infraestructure/services/JWT.token.service';
+import { AuthMiddleware } from '../presentation/http/middlewares/protect-route';
 
 export const createAppointmentModule = () => {
   const appointmentRepository = new AppointmentRepository();
@@ -20,6 +22,10 @@ export const createAppointmentModule = () => {
   const medicRepository = new MedicRepository();
   const subscriptionRepository = new SubscriptionRepository();
   const transactionManager = new MongooseTransactionManager();
+
+  const jwtTokenService = new JWTTokenService();
+
+  const authMiddleware = AuthMiddleware(jwtTokenService);
 
   //USE CASES
   const scheduleAppointmentUseCase = new ScheduleAppointmentUseCase(
@@ -61,7 +67,10 @@ export const createAppointmentModule = () => {
     completeAppointmentUseCase,
   );
 
-  const appointmentRouter = new AppointmentRouter(appointmentController);
+  const appointmentRouter = new AppointmentRouter(
+    appointmentController,
+    authMiddleware,
+  );
 
   return {
     router: appointmentRouter.router,

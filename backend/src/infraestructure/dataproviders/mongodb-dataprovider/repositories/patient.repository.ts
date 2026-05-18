@@ -1,11 +1,18 @@
 import PatientModel from '../models/patient.model';
-import Patient from './../../../../core/domain/entities/patient.entity';
+import { PatientEntity } from './../../../../core/domain/entities/patient.entity';
 import { IPatientRepository } from '../../../../core/domain/repositories/patient.repository.interface';
 import { PatientMapper } from '../mappers/patient.mapper';
 //persist the data
 
 export class PatientRepository implements IPatientRepository {
-  async save(patient: Patient): Promise<Patient> {
+  async findByIds(ids: string[]): Promise<PatientEntity[]> {
+    const patients = await PatientModel.find({
+      _id: { $in: ids },
+    });
+
+    return patients.map((patient) => PatientMapper.toDomain(patient));
+  }
+  async save(patient: PatientEntity): Promise<PatientEntity> {
     const data = PatientMapper.toPersistance(patient);
 
     const savedPatient = await PatientModel.create(data);
@@ -13,7 +20,7 @@ export class PatientRepository implements IPatientRepository {
     return PatientMapper.toDomain(savedPatient);
   }
 
-  async findById(id: string): Promise<Patient | null> {
+  async findById(id: string): Promise<PatientEntity | null> {
     const patient = await PatientModel.findById(id);
 
     if (!patient) {
@@ -23,7 +30,7 @@ export class PatientRepository implements IPatientRepository {
     return PatientMapper.toDomain(patient);
   }
 
-  async getAll(): Promise<Patient[]> {
+  async getAll(): Promise<PatientEntity[]> {
     const patients = await PatientModel.find();
 
     if (patients.length === 0) return [];

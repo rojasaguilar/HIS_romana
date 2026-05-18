@@ -1,10 +1,13 @@
-import { Router } from 'express';
+import { RequestHandler, Router } from 'express';
 import { AppointmentController } from '../controllers/appointment.controller';
 
 export class AppointmentRouter {
   router: Router;
 
-  constructor(private readonly AppointmentController: AppointmentController) {
+  constructor(
+    private readonly AppointmentController: AppointmentController,
+    private readonly authMiddleware: RequestHandler,
+  ) {
     this.router = Router();
     this.routes();
   }
@@ -13,6 +16,7 @@ export class AppointmentRouter {
     this.router
       .route('/')
       .get(
+        this.authMiddleware,
         this.AppointmentController.getAllAppointments.bind(
           this.AppointmentController,
         ),

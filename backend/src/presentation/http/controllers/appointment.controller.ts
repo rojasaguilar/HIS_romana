@@ -10,6 +10,7 @@ import { FilterAppoinmentsUseCase } from '../../../core/usecases/appoitments/fil
 import { buildAppointmentFilter } from '../helpers/build-filterAppointment';
 import { GetAppointmentByIdUseCase } from '../../../core/usecases/appoitments/get-appointment.usecase';
 import { CompleteAppointmentUseCase } from '../../../core/usecases/appoitments/complete-appointment.use-case';
+import { asyncHandler } from '../middlewares/asyncHandler';
 
 export class AppointmentController {
   constructor(
@@ -21,15 +22,22 @@ export class AppointmentController {
     private readonly completeAppointmentUseCase: CompleteAppointmentUseCase,
   ) {}
 
-  async getAllAppointments(req: Request, res: Response) {
+  getAllAppointments = asyncHandler(async (req: Request, res: Response) => {
     let appointments;
 
-    if (!req.query) {
+    // Construimos filtros desde query
+    const filterObject = buildAppointmentFilter(req.query);
+
+    // Si es médico, SOLO puede ver sus citas
+    if (req.user?.roles?.includes('MEDIC')) {
+      filterObject.medicId = req.user.userId;
+    }
+
+    const hasFilters = Object.keys(filterObject).length > 0;
+
+    if (!hasFilters) {
       appointments = await this.getAllAppointemtsUseCase.execute();
     } else {
-      const filterObject = buildAppointmentFilter(req.query);
-
-      console.log('filter', filterObject);
       appointments = await this.filterAppointmentsUseCase.execute(filterObject);
     }
 
@@ -37,7 +45,7 @@ export class AppointmentController {
       count: appointments.length,
       appointments,
     });
-  }
+  });
 
   async getAppointment(req: Request<{ id: string }>, res: Response) {
     const { id } = req.params;

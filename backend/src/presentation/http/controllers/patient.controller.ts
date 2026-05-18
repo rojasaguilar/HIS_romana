@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { RegisterPatientUseCase } from '../../../core/usecases/patients/register-patient.usecase';
 import { GetPatientUseCase } from '../../../core/usecases/patients/get-patient.usecase';
+import { asyncHandler } from '../middlewares/asyncHandler';
+import { GetMedicPatientsUseCase } from '../../../core/usecases/patients/get-medic-patients.usecase';
 // import PatientEntity from '../../../core/domain/entities/patient.entity';
 // import PatientEntity just to know if my useCase returns that type
 
@@ -8,6 +10,7 @@ export class PatientController {
   constructor(
     private registerPatient: RegisterPatientUseCase,
     private getPatient: GetPatientUseCase,
+    private getMedicPatientsUseCase: GetMedicPatientsUseCase,
   ) {}
 
   async createPatient(req: Request, res: Response) {
@@ -28,9 +31,15 @@ export class PatientController {
     res.status(200).json(patient);
   }
 
-  async getPatients(req: Request, res: Response) {
-    const patients = await this.getPatient.getAll();
+  getPatients = asyncHandler(async (req: Request, res: Response) => {
+    let patients;
+
+    if (req.user?.roles?.includes('MEDIC')) {
+      patients = await this.getMedicPatientsUseCase.execute(req.user.userId);
+    } else {
+      patients = await this.getPatient.getAll();
+    }
 
     res.status(200).json(patients);
-  }
+  });
 }
