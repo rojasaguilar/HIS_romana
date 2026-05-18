@@ -6,7 +6,7 @@ export const getEncounterByPatientIdRequest = async (
   patientId: string,
 ): Promise<Encounter> => {
   // Ajusta la ruta si en tu backend la dejaste como /medical-records/patient/:patientId
-  const response = await api.get(`/encounters/patients/${patientId}`);
+  const response = await api.get(`/encounters/patient/${patientId}`);
   return response.data;
 };
 

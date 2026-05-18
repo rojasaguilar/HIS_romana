@@ -127,7 +127,9 @@ export const AppointmentDetailsPage = () => {
               <Stethoscope className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">{serviceName}</h2>
+              <h2 className="text-lg font-bold text-gray-900">
+                Servicio a realizar: {serviceName}
+              </h2>
               <span className="text-sm font-medium text-gray-500">
                 Modalidad:{" "}
                 {appointment.type === "IN_PERSON" ? "Presencial" : "En línea"}
@@ -152,10 +154,13 @@ export const AppointmentDetailsPage = () => {
               <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
                 Paciente
               </span>
-              <span className="flex items-center gap-2 text-base font-medium text-gray-900">
+              <Link
+                to={`/patients/${appointment.patientId}`}
+                className="flex items-center gap-2 text-base font-medium text-gray-900"
+              >
                 <User className="w-4 h-4 text-gray-400" />
                 {patientName}
-              </span>
+              </Link>
             </div>
 
             <div className="flex flex-col gap-1">

@@ -6,7 +6,10 @@ import { usePatient } from "../hooks/usePatient";
 import { useSubscriptions } from "@/modules/subscriptions/hooks/useSubscriptions";
 import { usePlans } from "@/modules/plans/hooks/usePlans";
 import { useAppointments } from "@/modules/appointments/hooks/useAppointments";
-import { useMedicalRecordByPatient } from "@/modules/medicalRecords/hooks/useMedicalRecord";
+import {
+  useMedicalRecordByPatient,
+  useCreateMedicalRecord,
+} from "@/modules/medicalRecords/hooks/useMedicalRecord";
 
 import {
   MoveLeft,
@@ -19,15 +22,22 @@ import {
   Ruler,
   FileText,
   User,
+  CalendarDays,
+  Plus,
 } from "lucide-react";
+import { PatientEncountersList } from "../components/PatientEncountersList";
+import { CreateMedicalRecordForm } from "@/modules/medicalRecords/components/CreateMedicalRecordForm";
 
 export const PatientDetailsPage = () => {
   const { id } = useParams();
 
   // Estado para controlar qué pestaña está visible
-  const [activeTab, setActiveTab] = useState<"general" | "medical_record">(
-    "general",
-  );
+  const [activeTab, setActiveTab] = useState<
+    "general" | "medical_record" | "appointments"
+  >("general");
+
+  const [showCreateMedicalRecordForm, setShowCreateMedicalRecordForm] =
+    useState(false);
 
   const { data: patient, isLoading } = usePatient(id!);
   const { data: subscriptions } = useSubscriptions();
@@ -35,9 +45,8 @@ export const PatientDetailsPage = () => {
   const { data: appointments } = useAppointments();
 
   // Obtenemos la historia médica del paciente
-  const { data: medicalRecord, isLoading: isLoadingMR } = useMedicalRecordByPatient(
-    patient?.id,
-  );
+  const { data: medicalRecord, isLoading: isLoadingMR } =
+    useMedicalRecordByPatient(patient?.id);
 
   if (isLoading || !patient) {
     return (
@@ -174,6 +183,17 @@ export const PatientDetailsPage = () => {
           >
             <Activity className="w-4 h-4" /> Historia Médica
           </button>
+          <button
+            onClick={() => setActiveTab("appointments")}
+            className={`px-8 py-4 text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+              activeTab === "appointments"
+                ? "border-indigo-600 text-indigo-700 bg-white"
+                : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+            }`}
+          >
+            <CalendarDays className="w-4 h-4" />
+            Citas
+          </button>
         </div>
 
         {/* CONTENIDO DINÁMICO */}
@@ -246,14 +266,61 @@ export const PatientDetailsPage = () => {
                   Cargando expediente médico...
                 </p>
               ) : !medicalRecord ? (
-                <div className="text-center py-12 bg-slate-50 rounded-xl border border-dashed border-slate-300">
-                  <Activity className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-bold text-slate-900">
-                    Sin Historia Médica
-                  </h3>
-                  <p className="text-slate-500 mt-2">
-                    Este paciente aún no tiene un expediente clínico registrado.
-                  </p>
+                <div className="bg-slate-50 border border-dashed border-slate-300 rounded-2xl p-8">
+                  {!showCreateMedicalRecordForm ? (
+                    <div className="text-center">
+                      <Activity className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+
+                      <h3 className="text-xl font-bold text-slate-900">
+                        Sin Historia Médica
+                      </h3>
+
+                      <p className="text-slate-500 mt-2 max-w-md mx-auto leading-relaxed">
+                        Este paciente aún no tiene un expediente clínico
+                        registrado.
+                      </p>
+
+                      <button
+                        onClick={() => setShowCreateMedicalRecordForm(true)}
+                        className="mt-6 inline-flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors"
+                      >
+                        <Plus className="w-4 h-4" />
+                        Crear Expediente Médico
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="animate-in fade-in zoom-in-95 duration-300">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h3 className="text-xl font-bold text-slate-900">
+                            Crear Historia Médica
+                          </h3>
+
+                          <p className="text-slate-500 text-sm mt-1">
+                            Completa la información clínica inicial del
+                            paciente.
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => setShowCreateMedicalRecordForm(false)}
+                          className="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+
+                      <CreateMedicalRecordForm
+                        patientId={patient.id}
+                        onSuccess={() => {
+                          setShowCreateMedicalRecordForm(false);
+                        }}
+                        onCancel={() => {
+                          setShowCreateMedicalRecordForm(false);
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="flex flex-col gap-6">
@@ -266,11 +333,13 @@ export const PatientDetailsPage = () => {
                           Alertas y Factores de Riesgo
                         </h4>
                       </div>
+
                       <div className="flex gap-4">
                         <div className="flex-1">
                           <p className="text-xs text-slate-500 font-bold uppercase mb-2">
                             Alergias Clínicas
                           </p>
+
                           <div className="flex flex-wrap gap-2">
                             {medicalRecord.allergies?.length > 0 ? (
                               medicalRecord.allergies.map((a, i) => (
@@ -288,10 +357,12 @@ export const PatientDetailsPage = () => {
                             )}
                           </div>
                         </div>
+
                         <div className="flex-1">
                           <p className="text-xs text-slate-500 font-bold uppercase mb-2">
                             Factores de Riesgo
                           </p>
+
                           <div className="flex flex-wrap gap-2">
                             {medicalRecord.riskFactors?.length > 0 ? (
                               medicalRecord.riskFactors.map((r, i) => (
@@ -315,26 +386,35 @@ export const PatientDetailsPage = () => {
                     <div className="bg-sky-50/50 border border-sky-100 rounded-xl p-5 flex flex-col justify-center gap-4">
                       <div className="flex justify-between items-center pb-2 border-b border-sky-100">
                         <div className="flex items-center gap-2 text-sky-700">
-                          <Ruler className="w-4 h-4" />{" "}
+                          <Ruler className="w-4 h-4" />
+
                           <span className="font-semibold text-sm">
                             Estatura
                           </span>
                         </div>
+
                         <span className="font-bold text-lg text-sky-900">
-                          {medicalRecord.height}{" "}
+                          {medicalRecord.height}
+
                           <span className="text-sm font-normal text-sky-600">
+                            {" "}
                             cm
                           </span>
                         </span>
                       </div>
+
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2 text-sky-700">
-                          <Scale className="w-4 h-4" />{" "}
+                          <Scale className="w-4 h-4" />
+
                           <span className="font-semibold text-sm">Peso</span>
                         </div>
+
                         <span className="font-bold text-lg text-sky-900">
-                          {medicalRecord.weight}{" "}
+                          {medicalRecord.weight}
+
                           <span className="text-sm font-normal text-sky-600">
+                            {" "}
                             kg
                           </span>
                         </span>
@@ -347,10 +427,12 @@ export const PatientDetailsPage = () => {
                     <div className="border border-slate-200 rounded-xl p-5">
                       <div className="flex items-center gap-2 mb-4 text-indigo-600">
                         <HeartPulse className="w-5 h-5" />
+
                         <h4 className="font-bold text-slate-900">
                           Condiciones Actuales
                         </h4>
                       </div>
+
                       <div className="flex flex-col gap-3">
                         {medicalRecord.currentConditions?.length > 0 ? (
                           medicalRecord.currentConditions.map((cond, i) => (
@@ -358,6 +440,7 @@ export const PatientDetailsPage = () => {
                               <p className="font-bold text-slate-900 text-sm">
                                 CIE: {cond.diseaseId}
                               </p>
+
                               <p className="text-xs text-slate-500 mt-1">
                                 Diagnosticado por {cond.diagnosedBy || "N/A"} el{" "}
                                 {formatDate(cond.since)}
@@ -375,10 +458,12 @@ export const PatientDetailsPage = () => {
                     <div className="border border-slate-200 rounded-xl p-5">
                       <div className="flex items-center gap-2 mb-4 text-indigo-600">
                         <Pill className="w-5 h-5" />
+
                         <h4 className="font-bold text-slate-900">
                           Medicación Crónica
                         </h4>
                       </div>
+
                       <div className="flex flex-col gap-3">
                         {medicalRecord.chronicMedications?.length > 0 ? (
                           medicalRecord.chronicMedications.map((med, i) => (
@@ -390,6 +475,7 @@ export const PatientDetailsPage = () => {
                                 <p className="font-bold text-slate-900 text-sm">
                                   {med.medicationName}
                                 </p>
+
                                 <p className="text-xs text-slate-500 mt-1">
                                   {med.dosage.amount}
                                   {med.dosage.unit} •{" "}
@@ -412,10 +498,12 @@ export const PatientDetailsPage = () => {
                     <div className="border border-slate-200 rounded-xl p-5">
                       <div className="flex items-center gap-2 mb-4 text-indigo-600">
                         <Scissors className="w-5 h-5" />
+
                         <h4 className="font-bold text-slate-900">
                           Antecedentes Quirúrgicos
                         </h4>
                       </div>
+
                       <ul className="list-disc list-inside text-sm text-slate-700 flex flex-col gap-2">
                         {medicalRecord.surgicalHistory?.length > 0 ? (
                           medicalRecord.surgicalHistory.map((surg, i) => (
@@ -437,10 +525,12 @@ export const PatientDetailsPage = () => {
                     <div className="border border-slate-200 rounded-xl p-5 bg-slate-50/50">
                       <div className="flex items-center gap-2 mb-3 text-indigo-600">
                         <FileText className="w-5 h-5" />
+
                         <h4 className="font-bold text-slate-900">
                           Resumen Clínico
                         </h4>
                       </div>
+
                       <p className="text-sm text-slate-600 leading-relaxed">
                         {medicalRecord.summary ||
                           "No hay resumen clínico disponible."}
@@ -449,6 +539,13 @@ export const PatientDetailsPage = () => {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* VISTA: CITAS */}
+          {activeTab === "appointments" && (
+            <div className="animate-in fade-in duration-300">
+              <PatientEncountersList patientId={patient.id} />
             </div>
           )}
         </div>

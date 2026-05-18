@@ -24,4 +24,5 @@ export interface CreateEncounterDTO {
 // La entidad completa que te devuelve el backend al hacer un GET o un POST exitoso
 export interface Encounter extends CreateEncounterDTO {
   id: string; // Mongoose devuelve _id, pero asumo que en tu backend lo mapeas a id
+  createdAt: Date;
 }
