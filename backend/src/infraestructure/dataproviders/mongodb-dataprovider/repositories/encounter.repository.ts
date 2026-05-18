@@ -1,9 +1,13 @@
 import { EncounterEntity } from '../../../../core/domain/entities/encounter.entity';
 import { IEncounterRepository } from '../../../../core/domain/repositories/encounter.repository.interface';
 import EncounterModel from '../models/encounter.model';
+import { ClientSession } from 'mongoose';
 
 export class EncounterRepository implements IEncounterRepository {
-  public async create(encounter: EncounterEntity): Promise<EncounterEntity> {
+  public async create(
+    encounter: EncounterEntity,
+    session?: ClientSession,
+  ): Promise<EncounterEntity> {
     const encounterData = {
       patientId: encounter.patientId,
       medicId: encounter.medicId,
@@ -15,9 +19,11 @@ export class EncounterRepository implements IEncounterRepository {
       prescriptions: encounter.prescriptions,
     };
 
-    const createdEncounter = await EncounterModel.create(encounterData);
+    const createdEncounter = await EncounterModel.create([encounterData], {
+      session,
+    });
 
-    const plain = createdEncounter.toObject();
+    const plain = createdEncounter[0].toObject();
 
     return EncounterEntity.create({
       id: plain._id.toString(),

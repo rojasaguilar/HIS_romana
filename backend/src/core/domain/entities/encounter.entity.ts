@@ -1,3 +1,4 @@
+import { CategoriaEstudiosLab } from '../types/lab-test.categories.type';
 import { Dosage } from '../value-objects/dosage.vo';
 
 export interface PrescriptionProps {
@@ -7,6 +8,14 @@ export interface PrescriptionProps {
   startDate: Date;
   endDate: Date;
   //indicaciones
+}
+
+export interface EncounterLabTestProps {
+  category: CategoriaEstudiosLab;
+
+  testName: string;
+
+  instructions?: string;
 }
 
 export interface EncounterProps {
@@ -19,6 +28,7 @@ export interface EncounterProps {
   differentialDiagnosis: string;
   prescriptions: PrescriptionProps[];
   id?: string;
+  labTests?: EncounterLabTestProps[];
 }
 
 export class EncounterEntity {

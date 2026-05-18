@@ -9,6 +9,7 @@ import { AuthMiddleware } from '../presentation/http/middlewares/protect-route';
 import PatientRepository from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/patient.repository';
 import { MedicRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/medic.repository';
 import { AppointmentRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/appointment.repository';
+import { LabTestRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/lab-test.respository';
 
 export const createEncounterModule = () => {
   const jwtTokenService = new JWTTokenService();
@@ -18,6 +19,7 @@ export const createEncounterModule = () => {
   const patientRepostory = new PatientRepository();
   const medicRepository = new MedicRepository();
   const appointmentRepository = new AppointmentRepository();
+  const labTestRepository = new LabTestRepository();
   // const serviceRepository = new ServiceRepository();
 
   // USE CASES
@@ -26,6 +28,7 @@ export const createEncounterModule = () => {
     appointmentRepository,
     patientRepostory,
     medicRepository,
+    labTestRepository,
   );
 
   const getEncounterByAppointmentUseCase = new GetEncounterByAppointmentUseCase(

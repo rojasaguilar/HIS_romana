@@ -14,6 +14,7 @@ import { createAuthModule } from '../../modules/auth.module';
 import { createPlanModule } from '../../modules/plan.module';
 import { createSubscriptionModule } from '../../modules/subscription.module';
 import { createEncounterModule } from '../../modules/encounter.module';
+import { createLabTestModule } from '../../modules/lab-test.module';
 
 const app = express();
 const patientModule = createPatientModule();
@@ -27,6 +28,7 @@ const authModule = createAuthModule();
 const planModule = createPlanModule();
 const subscriptionModule = createSubscriptionModule();
 const encounterModule = createEncounterModule();
+const labTestModule = createLabTestModule();
 
 app.use(
   cors({
@@ -51,6 +53,7 @@ app.use('/auth', authModule.router);
 app.use('/plans', planModule.router);
 app.use('/subscriptions', subscriptionModule.router);
 app.use('/encounters', encounterModule.router);
+app.use('/lab-tests', labTestModule.router);
 
 //cambiar de lugar y hacer mejor
 app.use((err, req, res, next) => {
