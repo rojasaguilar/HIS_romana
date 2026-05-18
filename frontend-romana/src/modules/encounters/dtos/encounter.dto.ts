@@ -1,3 +1,5 @@
+import type { CreateEncounterLabTestDTO } from "@/modules/lab-test/dtos/lab-test.dto";
+
 // Extraemos la receta a su propia interfaz para que sea más fácil tipar formularios
 export interface PrescriptionDTO {
   medicationName: string;
@@ -16,6 +18,7 @@ export interface CreateEncounterDTO {
   preliminaryDiagnosis: string;
   differentialDiagnosis: string;
   prescriptions: PrescriptionDTO[];
+  labTests?: CreateEncounterLabTestDTO[];
 }
 
 // La entidad completa que te devuelve el backend al hacer un GET o un POST exitoso
