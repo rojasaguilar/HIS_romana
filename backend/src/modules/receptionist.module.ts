@@ -8,6 +8,7 @@ import { ReceptionistController } from '../presentation/http/controllers/recepti
 import { ReceptionistRouter } from '../presentation/http/routes/receptionist.routes';
 import { GetAllReceptionistUseCase } from '../core/usecases/recepcionist/getAll-receptionist.usecase';
 import { MongooseTransactionManager } from '../infraestructure/dataproviders/mongodb-dataprovider/mongoose-transaction.manager';
+import { GetReceptionistByIdUseCase } from '../core/usecases/recepcionist/getReceptionist.usecase';
 
 export const createreceptionistModule = () => {
   const receptionistRepository = new ReceptionistRepository();
@@ -30,10 +31,15 @@ export const createreceptionistModule = () => {
     receptionistRepository,
   );
 
+  const getReceptionistByIdUseCase = new GetReceptionistByIdUseCase(
+    receptionistRepository,
+  );
+
   //CONTROLLER
   const receptionistController = new ReceptionistController(
     registerReceptionistUseCase,
     getAllreceptionistsUseCase,
+    getReceptionistByIdUseCase,
   );
 
   //ROUTER

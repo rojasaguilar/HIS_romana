@@ -23,6 +23,14 @@ export class ReceptionistRouter {
         ),
       );
 
+    this.router
+      .route('/:receptionistId')
+      .get(
+        this.receptionistController.getReceptionistById.bind(
+          this.receptionistController,
+        ),
+      );
+
     // this.router
     //   .route('/:id/reschedule')
     //   .patch(

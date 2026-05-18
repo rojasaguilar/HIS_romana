@@ -3,11 +3,14 @@ import { RegisterRecepcionistUseCase } from '../../../core/usecases/recepcionist
 import { CreateReceptionistDTO } from '../../../core/domain/dtos/receptionist.dto';
 import { env } from '../../../infraestructure/config/environment';
 import { GetAllReceptionistUseCase } from '../../../core/usecases/recepcionist/getAll-receptionist.usecase';
+import { asyncHandler } from '../middlewares/asyncHandler';
+import { GetReceptionistByIdUseCase } from '../../../core/usecases/recepcionist/getReceptionist.usecase';
 
 export class ReceptionistController {
   constructor(
     private registerReceptionistUseCase: RegisterRecepcionistUseCase,
     private getAllReceptionistUseCase: GetAllReceptionistUseCase,
+    private getReceptionistByIdUseCase: GetReceptionistByIdUseCase,
   ) {}
 
   async getAllReceptionists(req: Request, res: Response) {
@@ -38,7 +41,17 @@ export class ReceptionistController {
     // res.cookie('refresh', receptionist.refreshToken, cookieOptions);
 
     res.status(201).json({
-      receptionist
+      receptionist,
     });
   }
+
+  getReceptionistById = asyncHandler(
+    async (req: Request<{ receptionistId: string }>, res: Response) => {
+      const { receptionistId } = req.params;
+      console.log(receptionistId);
+      const rec = await this.getReceptionistByIdUseCase.execute(receptionistId);
+
+      res.status(200).json(rec);
+    },
+  );
 }

@@ -34,8 +34,20 @@ export class ReceptionistRepository implements IReceptionistRepository {
       newReceptionist[0]._id.toString(),
     );
   }
-  findById(id: string): Promise<ReceptionistEntity | null> {
-    throw new Error('Method not implemented.');
+  async findById(id: string): Promise<ReceptionistEntity | null> {
+    const recepDoc = await receptionistModel.findById(id);
+
+    if (!recepDoc) return null;
+
+    return new ReceptionistEntity(
+      recepDoc.name,
+      recepDoc.email,
+      recepDoc.phoneNumber,
+      recepDoc.languages,
+      true,
+      recepDoc.profilePictureUrl ?? '',
+      recepDoc._id.toString(),
+    );
   }
 
   async getAll(): Promise<ReceptionistEntity[]> {
