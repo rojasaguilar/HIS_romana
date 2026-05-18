@@ -20,9 +20,10 @@ import { useAuthStore } from "@/modules/auth/store/auth.store";
 import { useCompleteAppointment } from "../hooks/useCompleteAppointment";
 import { useRescheduleAppointment } from "../hooks/useRescheduleAppointment";
 import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
-import { useState } from "react";
+import { useState, type SetStateAction } from "react";
 import { ConfirmModal } from "@/shared/components/feedback/modal/ConfirmModal";
 import { EncounterSection } from "@/modules/encounters/components/EncounterSection";
+import DatePicker from "react-datepicker";
 
 // IMPORTAMOS EL NUEVO COMPONENTE CLINICO
 
@@ -256,11 +257,45 @@ export const AppointmentDetailsPage = () => {
               <label className="block text-sm font-semibold text-gray-700 mb-1">
                 Nueva Fecha y Hora
               </label>
-              <input
+              {/* <input
                 type="datetime-local"
                 value={newStartDate}
                 onChange={(e) => setNewStartDate(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+              /> */}
+
+              <DatePicker
+                selected={
+                  newStartDate
+                    ? new Date(newStartDate)
+                    : startDate
+                      ? new Date(startDate)
+                      : null
+                }
+                onChange={(date: Date | null) => {
+                  setNewStartDate(date);
+                }}
+                showTimeSelect
+                timeIntervals={30}
+                dateFormat="MMMM d, yyyy h:mm aa"
+                inline
+                minDate={startDate ? new Date(startDate) : new Date()}
+                minTime={
+                  newStartDate &&
+                  startDate &&
+                  new Date(newStartDate).toDateString() ===
+                    new Date(startDate).toDateString()
+                    ? new Date(startDate)
+                    : new Date(new Date().setHours(8, 0, 0, 0))
+                }
+                maxTime={new Date(new Date().setHours(18, 0, 0, 0))}
+                calendarClassName="!border-none !shadow-none !font-sans !bg-transparent"
+                dayClassName={() =>
+                  "hover:!bg-indigo-100 !rounded-lg transition-colors"
+                }
+                timeClassName={() =>
+                  "hover:!bg-indigo-600 hover:!text-white !rounded-md !font-medium transition-all"
+                }
               />
             </div>
 
