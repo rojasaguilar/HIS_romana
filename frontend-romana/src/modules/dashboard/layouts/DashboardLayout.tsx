@@ -62,6 +62,12 @@ export const DashboardLayout = () => {
       allowedRoles: ["ADMIN"],
     },
     {
+      path: "/specialities",
+      label: "Especialidades",
+      icon: Activity,
+      allowedRoles: ["ADMIN"],
+    },
+    {
       path: "/services",
       label: "Servicios",
       icon: Activity,

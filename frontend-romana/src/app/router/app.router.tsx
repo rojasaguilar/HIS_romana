@@ -45,6 +45,7 @@ import { PlanDetailsPage } from "@/modules/plans/pages/PlanDetailsPage";
 import { CreateReceptionistPage } from "@/modules/receptionists/pages/CreateReceptionistPage";
 import { ReceptionistsPage } from "@/modules/receptionists/pages/ReceptionistsPage";
 import { ReceptionistDetailsPage } from "@/modules/receptionists/pages/ReceptionistDetailsPage";
+import { SpecialitiesPage } from "@/modules/specialities/pages/SpecialitiesPage";
 
 export const router = createBrowserRouter([
   /**
@@ -190,6 +191,10 @@ export const router = createBrowserRouter([
                 path: "/services/create",
 
                 element: <CreateServicePage />,
+              },
+              {
+                path: "/specialities",
+                element: <SpecialitiesPage />,
               },
 
               /**
