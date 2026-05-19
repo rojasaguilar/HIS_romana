@@ -1,56 +1,67 @@
 import { useState } from "react";
-// Asumiendo que crearás estos hooks basándote en tu arquitectura
 import { useSpecialities } from "../hooks/useSpecialities";
+import { useCreateSpeciality } from "../hooks/useCreateSpeciality";
+import { useUpdateSpeciality } from "../hooks/useUpdateSpeciality"; // <-- IMPORTAMOS EL NUEVO HOOK
 import { Search, Plus, Filter, ChevronDown, Stethoscope } from "lucide-react";
 import { SpecialityModal } from "../components/SpecialityModal";
 import type { Speciality } from "../types/speciality.types";
 import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
-import { useCreateSpeciality } from "../hooks/useCreateSpeciality";
 
 export const SpecialitiesPage = () => {
   const { data: specialities, isLoading } = useSpecialities();
-
-  // HOOKS HIPOTÉTICOS (asumiendo que usas React Query como con Encounters)
-  // const createSpeciality = useCreateSpeciality();
-  // const updateSpeciality = useUpdateSpeciality();
-
+  
   const createSpeciality = useCreateSpeciality();
+  const updateSpeciality = useUpdateSpeciality(); // <-- INICIALIZAMOS EL HOOK
   const { showToast } = useToast();
 
-  // 1. ESTADOS PARA CONTROLAR EL MODAL
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSpeciality, setSelectedSpeciality] =
-    useState<Speciality | null>(null);
+  const [selectedSpeciality, setSelectedSpeciality] = useState<Speciality | null>(null);
 
-  // 2. HANDLERS PARA ABRIR EL MODAL
   const handleOpenCreate = () => {
-    setSelectedSpeciality(null); // Limpiamos la data para que sea "Creación"
+    setSelectedSpeciality(null);
     setIsModalOpen(true);
   };
 
   const handleOpenEdit = (speciality: Speciality) => {
-    setSelectedSpeciality(speciality); // Le pasamos la data para que sea "Edición"
+    setSelectedSpeciality(speciality);
     setIsModalOpen(true);
   };
 
-  // 3. HANDLER PARA CUANDO EL MODAL HACE SUBMIT
   const handleModalSubmit = (payload: Partial<Speciality>) => {
     if (payload.id) {
-      // Si trae ID, es una actualización (próximamente harás el useUpdateSpeciality)
-      console.log("Actualizando...", payload);
+      // ES UNA ACTUALIZACIÓN
+      updateSpeciality.mutate(
+        { 
+          id: payload.id, 
+          name: payload.name!, 
+          isActive: payload.isActive! 
+        },
+        {
+          onSuccess: () => {
+            showToast("Especialidad actualizada correctamente", "success");
+            setIsModalOpen(false);
+          },
+          onError: () => {
+            showToast("Error al actualizar la especialidad", "error");
+          },
+        }
+      );
     } else {
-      // Si no trae ID, disparamos tu mutation de crear
+      // ES UNA CREACIÓN
       createSpeciality.mutate(
-        { name: payload.name! },
+        { 
+          name: payload.name!,
+          // isActive: payload.isActive! // Asegúrate de que tu createRequest también acepte este campo
+        },
         {
           onSuccess: () => {
             showToast("Especialidad creada correctamente", "success");
-            setIsModalOpen(false); // Cerramos el modal solo si fue exitoso
+            setIsModalOpen(false);
           },
           onError: () => {
             showToast("Error al crear la especialidad", "error");
           },
-        },
+        }
       );
     }
   };
@@ -74,7 +85,6 @@ export const SpecialitiesPage = () => {
           </p>
         </div>
 
-        {/* CAMBIO: De <Link> a <button> llamando al handler */}
         <button
           onClick={handleOpenCreate}
           className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors shadow-sm"
@@ -109,7 +119,6 @@ export const SpecialitiesPage = () => {
           <span>Estado</span>
         </div>
 
-        {/* List Body */}
         {/* List Body */}
         <div className="flex flex-col">
           {specialities?.map((speciality) => (
@@ -149,16 +158,16 @@ export const SpecialitiesPage = () => {
             </div>
           )}
         </div>
-        {/* RENDERIZADO DEL MODAL */}
-        <SpecialityModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={handleModalSubmit}
-          initialData={selectedSpeciality}
-          isLoading={createSpeciality.isPending}
-          // isLoading={createSpeciality.isPending || updateSpeciality.isPending}
-        />
       </div>
+
+      {/* RENDERIZADO DEL MODAL */}
+      <SpecialityModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleModalSubmit}
+        initialData={selectedSpeciality}
+        isLoading={createSpeciality.isPending || updateSpeciality.isPending} 
+      />
     </div>
   );
 };

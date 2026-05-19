@@ -15,3 +15,13 @@ export const createSpecialityRequest = async (data: {
 
   return response.data;
 };
+
+export const updateSpecialityRequest = async (data: {
+  id: string; // <-- Vital para saber cuál actualizar
+  name: string;
+  isActive: boolean;
+}): Promise<Speciality> => {
+  // Pasamos el ID en la URL como es el estándar REST
+  const response = await api.patch(`/specialities/${data.id}`, data);
+  return response.data;
+};
