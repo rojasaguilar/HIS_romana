@@ -35,6 +35,13 @@ export const CreateAppointmentPage = () => {
   const { data: services } = useServices();
   const { data: specialities } = useSpecialities();
 
+  const filteredServices = services?.filter((service) =>
+    specialities?.some(
+      (speciality) =>
+        speciality.id === service.specialityId && speciality.isActive === true,
+    ),
+  );
+
   /**
    * FORM STATE
    */
@@ -254,7 +261,7 @@ export const CreateAppointmentPage = () => {
                   >
                     <option value="">Seleccionar servicio</option>
 
-                    {services?.map((s) => (
+                    {filteredServices?.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.name}
                       </option>
