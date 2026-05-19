@@ -28,6 +28,11 @@ export class SpecialityRoutes {
         this.specialityController.getSpecialityById.bind(
           this.specialityController,
         ),
+      )
+      .patch(
+        this.specialityController.updateSpeciality.bind(
+          this.specialityController,
+        ),
       );
   }
 }
