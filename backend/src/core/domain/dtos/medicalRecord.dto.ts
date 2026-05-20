@@ -4,7 +4,7 @@ export interface CreateMedicalRecordDTO {
   height: number;
   weight: number;
   currentConditions: {
-    conditionId: number;
+    conditionId: string;
     since: string;
     diagnosedBy?: string;
   }[];
@@ -26,7 +26,7 @@ export interface UpdateMedicalRecordDTO {
   height: number;
   weight: number;
   currentConditions: {
-    conditionId: number;
+    conditionId: string;
     since: string;
     diagnosedBy?: string;
   }[];

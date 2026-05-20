@@ -1,4 +1,6 @@
 import { MedicalRecordEntity } from '../../../../core/domain/entities/medicalRecord.entity';
+import { ChronicMedication } from '../../../../core/domain/value-objects/chronicMedication.vo';
+import { CurrentCondition } from '../../../../core/domain/value-objects/currentCondition.vo';
 import { medicalRecordDocument } from '../models/medicalRecord.model';
 
 export class MedicalRecordMapper {
@@ -8,8 +10,23 @@ export class MedicalRecordMapper {
       allergies: doc.allergies,
       height: doc.height,
       weight: doc.weight,
-      currentConditions: doc.currentConditions,
-      chronicMedications: doc.chronicMedications,
+      currentConditions: doc.currentConditions?.map(
+        (condition) =>
+          new CurrentCondition(
+            condition.conditionId.toString(),
+            condition.since,
+            condition.diagnosedBy,
+          ),
+      ),
+      chronicMedications: doc.chronicMedications?.map(
+        (m) =>
+          new ChronicMedication(
+            m.medicationName,
+            m.dosage,
+            m.frequency,
+            m.startedAt,
+          ),
+      ),
       riskFactors: doc.riskFactors,
       surgicalHistory: doc.surgicalHistory,
       familyHistory: doc.familyHistory,

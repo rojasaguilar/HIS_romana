@@ -15,7 +15,7 @@ export interface ChronicMedication {
   frequency: {
     timesPerDay: number;
   };
-  startedAt: string; // ISO string de la fecha
+  startedAt: Date; // ISO string de la fecha
 }
 
 export interface FamilyHistory {
@@ -25,7 +25,7 @@ export interface FamilyHistory {
 
 export interface SurgicalHistory {
   surgeryName: string;
-  surgeryDate: string; // ISO string de la fecha
+  surgeryDate: Date; // ISO string de la fecha
 }
 
 // --- ENTIDAD PRINCIPAL (Lo que devuelve el backend en los GET) ---

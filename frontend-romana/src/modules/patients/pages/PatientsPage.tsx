@@ -3,17 +3,23 @@ import { usePatients } from "../hooks/usePatients";
 import { Search, Plus, Phone, Filter, ChevronDown } from "lucide-react";
 import { usePlans } from "@/modules/plans/hooks/usePlans";
 import { useSubscriptions } from "@/modules/subscriptions/hooks/useSubscriptions";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
 
 export const PatientsPage = () => {
   const { data: patients, isLoading } = usePatients();
   const { data: plans } = usePlans();
   const { data: subscriptions } = useSubscriptions();
 
+  const user = useAuthStore((state) => state.user);
+
+  const isMedic = user?.roles.includes("MEDIC") ?? false;
+
   // 2. El método de cruce
   const getPatientPlanName = (patientId: string): string => {
     const activeSubscription = subscriptions?.find(
-      (subscription) =>  subscription._patientId === patientId &&
-      subscription._status === "active",
+      (subscription) =>
+        subscription._patientId === patientId &&
+        subscription._status === "active",
     );
 
     if (!activeSubscription) return "Sin subscripcion";
@@ -41,13 +47,17 @@ export const PatientsPage = () => {
             Gestiona tu directorio de clientes
           </p>
         </div>
-        <Link
-          to="/patients/create"
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Nuevo Paciente
-        </Link>
+        {!isMedic ? (
+          <Link
+            to="/patients/create"
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Nuevo Paciente
+          </Link>
+        ) : (
+          <></>
+        )}
       </div>
 
       {/* 2. Main List Container */}

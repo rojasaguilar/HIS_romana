@@ -32,9 +32,15 @@ import { CreateMedicalRecordForm } from "@/modules/medicalRecords/components/Cre
 // Asumimos que crearás este componente siguiendo el patrón del Create
 import { UpdateMedicalRecordForm } from "@/modules/medicalRecords/components/UpdateMedicalRecordForm";
 import { UpdatePatientForm } from "../components/UpdatePatientForm";
+import { useConditions } from "@/modules/conditions/hooks/useConditions";
+import { useAuthStore } from "@/modules/auth/store/auth.store";
 
 export const PatientDetailsPage = () => {
   const { id } = useParams();
+
+  const user = useAuthStore((state) => state.user);
+
+  const isMedic = user?.roles.includes("MEDIC") ?? false;
 
   // Estado para controlar qué pestaña está visible
   const [activeTab, setActiveTab] = useState<
@@ -52,6 +58,7 @@ export const PatientDetailsPage = () => {
   const { data: subscriptions } = useSubscriptions();
   const { data: plans } = usePlans();
   const { data: appointments } = useAppointments();
+  const { data: conditions } = useConditions();
 
   // Obtenemos la historia médica del paciente
   const { data: medicalRecord, isLoading: isLoadingMR } =
@@ -68,6 +75,9 @@ export const PatientDetailsPage = () => {
       subscription._patientId === patient.id &&
       subscription._status === "active",
   );
+
+  const getConditionName = (id: string) =>
+    conditions?.find((c) => c.id === id)?.name;
 
   const plan = plans?.find((plan) => plan.id === patientSubscription?._planId);
 
@@ -182,16 +192,20 @@ export const PatientDetailsPage = () => {
           >
             <User className="w-4 h-4" /> Información General
           </button>
-          <button
-            onClick={() => setActiveTab("medical_record")}
-            className={`px-8 py-4 text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
-              activeTab === "medical_record"
-                ? "border-indigo-600 text-indigo-700 bg-white"
-                : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-            }`}
-          >
-            <Activity className="w-4 h-4" /> Historia Médica
-          </button>
+          {isMedic ? (
+            <button
+              onClick={() => setActiveTab("medical_record")}
+              className={`px-8 py-4 text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
+                activeTab === "medical_record"
+                  ? "border-indigo-600 text-indigo-700 bg-white"
+                  : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+              }`}
+            >
+              <Activity className="w-4 h-4" /> Historia Médica
+            </button>
+          ) : (
+            <></>
+          )}
           <button
             onClick={() => setActiveTab("appointments")}
             className={`px-8 py-4 text-sm font-bold transition-all border-b-2 flex items-center gap-2 ${
@@ -560,7 +574,7 @@ export const PatientDetailsPage = () => {
                           medicalRecord.currentConditions.map((cond, i) => (
                             <div key={i} className="p-3 bg-slate-50 rounded-lg">
                               <p className="font-bold text-slate-900 text-sm">
-                                CIE: {cond.diseaseId}
+                                CIE: {getConditionName(cond.conditionId)}
                               </p>
 
                               <p className="text-xs text-slate-500 mt-1">

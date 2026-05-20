@@ -1,6 +1,6 @@
 export class CurrentCondition {
   constructor(
-    public readonly conditionId: number,
+    public readonly conditionId: string,
     public readonly since: string,
     public readonly diagnosedBy?: string,
   ) {

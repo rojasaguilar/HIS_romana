@@ -33,6 +33,7 @@ export const CreateMedicalRecordForm = ({
   const { data: backendConditions = [], isLoading: isLoadingConditions } =
     useConditions();
 
+  console.log(backendConditions);
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [summary, setSummary] = useState("");
@@ -43,10 +44,16 @@ export const CreateMedicalRecordForm = ({
   const [riskInput, setRiskInput] = useState("");
   const [riskFactors, setRiskFactors] = useState<string[]>([]);
 
-  const [conditions, setConditions] = useState([
+  const [conditions, setConditions] = useState<
+    {
+      conditionId: string;
+      since: string;
+      diagnosedBy: string;
+    }[]
+  >([
     {
       conditionId: "",
-      since: new Date(),
+      since: "",
       diagnosedBy: "",
     },
   ]);
@@ -87,7 +94,7 @@ export const CreateMedicalRecordForm = ({
       ...prev,
       {
         conditionId: "",
-        since: new Date(),
+        since: "",
         diagnosedBy: "",
       },
     ]);
@@ -221,7 +228,7 @@ export const CreateMedicalRecordForm = ({
           .filter((c) => c.conditionId && c.since)
           .map((c) => ({
             conditionId: c.conditionId,
-            since: new Date(c.since).toISOString(),
+            since: c.since,
             diagnosedBy: c.diagnosedBy || undefined,
           })),
 
@@ -238,7 +245,7 @@ export const CreateMedicalRecordForm = ({
             frequency: {
               timesPerDay: Number(m.timesPerDay),
             },
-            startedAt: new Date(m.startedAt).toISOString(),
+            startedAt: new Date(m.startedAt),
           })),
 
         familyHistory: [],
@@ -249,7 +256,7 @@ export const CreateMedicalRecordForm = ({
           .filter((s) => s.surgeryName && s.surgeryDate)
           .map((s) => ({
             surgeryName: s.surgeryName,
-            surgeryDate: new Date(s.surgeryDate).toISOString(),
+            surgeryDate: new Date(s.surgeryDate),
           })),
 
         summary,
@@ -426,11 +433,7 @@ export const CreateMedicalRecordForm = ({
 
               <input
                 type="date"
-                value={
-                  condition.since
-                    ? new Date(condition.since).toISOString().split("T")[0]
-                    : ""
-                }
+                value={condition.since}
                 onChange={(e) =>
                   updateCondition(index, "since", e.target.value)
                 }

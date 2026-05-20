@@ -336,7 +336,7 @@ export const DashboardPage = () => {
         </div>
 
         {/* WIDGET SUSCRIPCIONES (Estático por ahora) */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+        {/* <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
           <div className="flex justify-between items-center mb-6 text-amber-600">
             <h3 className="font-bold text-gray-900">
               Suscripciones por Vencer
@@ -364,7 +364,7 @@ export const DashboardPage = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
 
       <AppointmentsCalendar appointments={appointmentsFormated} />

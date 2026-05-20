@@ -30,7 +30,13 @@ export const getConditions = async (req, res) => {
       // }
       ();
 
-    return res.json(conditions);
+    const mappedConditions = conditions?.map((c) => ({
+      id: c._id,
+      code: c.code,
+      name: c.name,
+    }));
+
+    return res.json(mappedConditions);
   } catch (error) {
     return res.status(500).json({
       message: 'Error fetching conditions',

@@ -8,10 +8,7 @@ const currentConditionSchema = new Schema({
     required: [true, 'A disease must be specified'],
   },
   since: { type: Date, required: [true, 'Must specified a aprox date'] },
-  diagnosedBy: {
-    type: Types.ObjectId,
-    ref: 'Medic',
-  },
+  diagnosedBy: String
 });
 
 const dosageSchema = new Schema(
@@ -85,8 +82,8 @@ const medicalRecordSchema = new Schema({
     required: [true, 'weight must be specified'],
     min: [1, 'weight too low'],
   },
-  currentCondition: [currentConditionSchema],
-  chronicMedication: [chronicMedicationSchema],
+  currentConditions: [currentConditionSchema],
+  chronicMedications: [chronicMedicationSchema],
   riskFactors: [String],
   surgicalHistory: [surgeryRecordSchema],
   familyHistory: [familyHistorySchema],

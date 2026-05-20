@@ -11,6 +11,7 @@ export class GenerateMedicalRecordUseCase {
   async execute(
     data: CreateMedicalRecordDTO,
   ): Promise<MedicalRecordEntity | null> {
+    console.log('dtata', data);
     const medicalRecord = MedicalRecordEntity.create(data);
 
     const savedMedicalRecord =
