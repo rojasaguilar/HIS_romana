@@ -1,9 +1,37 @@
-import { EncounterEntity } from '../../../../core/domain/entities/encounter.entity';
+import { EncounterEntity, EncounterProps } from '../../../../core/domain/entities/encounter.entity';
 import { IEncounterRepository } from '../../../../core/domain/repositories/encounter.repository.interface';
 import EncounterModel from '../models/encounter.model';
 import { ClientSession } from 'mongoose';
 
 export class EncounterRepository implements IEncounterRepository {
+  
+  public async update(
+    id: string, 
+    data: Partial<EncounterProps>, 
+    session?: ClientSession
+  ): Promise<EncounterEntity | null> {
+    // Usamos { new: true } para que devuelva el documento después de aplicar los cambios
+    const updatedDoc = await EncounterModel.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true, session }
+    ).lean();
+
+    if (!updatedDoc) return null;
+
+    return EncounterEntity.create({
+      id: updatedDoc._id.toString(),
+      patientId: updatedDoc.patientId.toString(),
+      medicId: updatedDoc.medicId.toString(),
+      appointmentId: updatedDoc.appointmentId.toString(),
+      symptoms: updatedDoc.symptoms,
+      notes: updatedDoc.notes || undefined,
+      preliminaryDiagnosis: updatedDoc.preliminaryDiagnosis,
+      differentialDiagnosis: updatedDoc.differentialDiagnosis ?? '',
+      prescriptions: updatedDoc.prescriptions ?? [],
+    });
+  }
+
   public async create(
     encounter: EncounterEntity,
     session?: ClientSession,

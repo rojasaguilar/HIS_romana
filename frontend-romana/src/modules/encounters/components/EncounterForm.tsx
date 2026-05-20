@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
+
 import { Plus, Trash2, Pill, FlaskConical } from "lucide-react";
-import { useCreateEncounter } from "../hooks/useCreateEncounter";
 
 import {
   CATEGORIAS_ESTUDIOS_LAB,
   type CategoriaEstudiosLab,
 } from "@/modules/lab-test/dtos/lab-test.dto";
+import { useSaveEncounter } from "../hooks/useUpdateEncounter";
 
 // =========================
 // TYPES
@@ -30,30 +31,76 @@ interface LabTestInput {
 interface EncounterFormProps {
   appointment: any;
   onCancel: () => void;
+
+  encounter?: any;
+
+  mode?: "create" | "edit";
 }
 
 export const EncounterForm = ({
   appointment,
   onCancel,
+  encounter,
+  mode = "create",
 }: EncounterFormProps) => {
   const { showToast } = useToast();
-  const createEncounter = useCreateEncounter();
+
+  const saveEncounter = useSaveEncounter();
 
   // =========================
   // FORM STATES
   // =========================
 
-  const [symptoms, setSymptoms] = useState("");
-  const [preliminaryDiagnosis, setPreliminaryDiagnosis] = useState("");
-  const [differentialDiagnosis, setDifferentialDiagnosis] = useState("");
-  const [notes, setNotes] = useState("");
+  const [symptoms, setSymptoms] = useState(encounter?.symptoms || "");
 
-  const [prescriptions, setPrescriptions] = useState<PrescriptionInput[]>([]);
+  const [preliminaryDiagnosis, setPreliminaryDiagnosis] = useState(
+    encounter?.preliminaryDiagnosis || "",
+  );
 
-  const [labTests, setLabTests] = useState<LabTestInput[]>([]);
+  const [differentialDiagnosis, setDifferentialDiagnosis] = useState(
+    encounter?.differentialDiagnosis || "",
+  );
+
+  const [notes, setNotes] = useState(encounter?.notes || "");
 
   // =========================
   // PRESCRIPTIONS
+  // =========================
+
+  const [prescriptions, setPrescriptions] = useState<PrescriptionInput[]>(
+    encounter?.prescriptions?.map((p: any) => ({
+      medicationName: p.medicationName,
+
+      dosageAmount: String(p.dosage?.amount || ""),
+
+      dosageUnit: p.dosage?.unit || "mg",
+
+      frequency: p.frequency || "",
+
+      startDate: p.startDate
+        ? new Date(p.startDate).toISOString().split("T")[0]
+        : "",
+
+      endDate: p.endDate ? new Date(p.endDate).toISOString().split("T")[0] : "",
+    })) || [],
+  );
+
+  // =========================
+  // LAB TESTS
+  // =========================
+
+  const [labTests, setLabTests] = useState<LabTestInput[]>(
+    encounter?.labTests?.map((lab: any) => ({
+      category: lab.category,
+
+      testName: lab.testName,
+
+      instructions: lab.instructions || "",
+    })) || [],
+  );
+
+  // =========================
+  // PRESCRIPTIONS HANDLERS
   // =========================
 
   const handleAddPrescription = () => {
@@ -90,7 +137,7 @@ export const EncounterForm = ({
   };
 
   // =========================
-  // LAB TESTS
+  // LAB TESTS HANDLERS
   // =========================
 
   const handleAddLabTest = () => {
@@ -135,6 +182,7 @@ export const EncounterForm = ({
         "Los síntomas y diagnóstico preliminar son obligatorios",
         "error",
       );
+
       return;
     }
 
@@ -149,6 +197,7 @@ export const EncounterForm = ({
         !p.endDate
       ) {
         showToast("Completa todos los campos de los medicamentos", "error");
+
         return;
       }
 
@@ -157,6 +206,7 @@ export const EncounterForm = ({
           `La dosis de ${p.medicationName || "un medicamento"} debe ser válida`,
           "error",
         );
+
         return;
       }
     }
@@ -166,13 +216,16 @@ export const EncounterForm = ({
     for (const lab of labTests) {
       if (!lab.testName.trim()) {
         showToast("Todos los estudios deben tener nombre", "error");
+
         return;
       }
     }
 
     const encounterData = {
       patientId: appointment.patientId,
+
       medicId: appointment.medicId,
+
       appointmentId: appointment.id,
 
       symptoms: symptoms.trim(),
@@ -188,6 +241,7 @@ export const EncounterForm = ({
 
         dosage: {
           amount: Number(p.dosageAmount),
+
           unit: p.dosageUnit,
         },
 
@@ -200,26 +254,45 @@ export const EncounterForm = ({
 
       labTests: labTests.map((lab) => ({
         category: lab.category,
+
         testName: lab.testName,
+
         instructions: lab.instructions,
       })),
     };
 
-    createEncounter.mutate(encounterData, {
-      onSuccess: () => {
-        showToast("Nota clínica guardada y cita finalizada", "success");
+    saveEncounter.mutate(
+      {
+        id: mode === "edit" ? encounter?.id : undefined,
 
-        onCancel();
+        data: encounterData,
       },
+      {
+        onSuccess: () => {
+          showToast(
+            mode === "edit"
+              ? "Nota clínica actualizada"
+              : "Nota clínica guardada y cita finalizada",
+            "success",
+          );
 
-      onError: (err: any) => {
-        showToast(
-          err?.response?.data?.message || "Error al guardar la nota",
-          "error",
-        );
+          onCancel();
+        },
+
+        onError: (err: any) => {
+          showToast(
+            err?.response?.data?.message ||
+              (mode === "edit"
+                ? "Error al actualizar la nota"
+                : "Error al guardar la nota"),
+            "error",
+          );
+        },
       },
-    });
+    );
   };
+
+  const isPending = saveEncounter.isPending;
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
@@ -424,7 +497,7 @@ export const EncounterForm = ({
       {/* LAB TESTS */}
       {/* ========================= */}
 
-      <div className="flex flex-col gap-4">
+      {/* <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between border-b border-gray-100 pb-2">
           <div className="flex items-center gap-2">
             <FlaskConical className="w-5 h-5 text-purple-600" />
@@ -538,7 +611,7 @@ export const EncounterForm = ({
             ))}
           </div>
         )}
-      </div>
+      </div> */}
 
       {/* ========================= */}
       {/* ACTIONS */}
@@ -548,7 +621,7 @@ export const EncounterForm = ({
         <button
           type="button"
           onClick={onCancel}
-          disabled={createEncounter.isPending}
+          disabled={isPending}
           className="px-4 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl"
         >
           Cancelar
@@ -556,12 +629,16 @@ export const EncounterForm = ({
 
         <button
           type="submit"
-          disabled={createEncounter.isPending}
+          disabled={isPending}
           className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl"
         >
-          {createEncounter.isPending
-            ? "Guardando nota..."
-            : "Guardar Nota Clínica"}
+          {isPending
+            ? mode === "edit"
+              ? "Actualizando nota..."
+              : "Guardando nota..."
+            : mode === "edit"
+              ? "Actualizar Nota Clínica"
+              : "Guardar Nota Clínica"}
         </button>
       </div>
     </form>

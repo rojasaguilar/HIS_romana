@@ -25,10 +25,11 @@ export const createEncounterRequest = async (
   return response.data;
 };
 
-// export const updateMedicalRecordRequest = async (
-//   id: string,
-//   data: UpdateMedicalRecordDTO
-// ): Promise<MedicalRecord> => {
-//   const response = await api.put(`/medicalRecords/${id}`, data);
-//   return response.data;
-// };
+export const updateEncounterRequest = async (
+  id: string,
+  data: CreateEncounterDTO,
+): Promise<Encounter> => {
+  const response = await api.patch(`/encounters/${id}`, data);
+
+  return response.data;
+};

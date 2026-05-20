@@ -10,6 +10,7 @@ import PatientRepository from '../infraestructure/dataproviders/mongodb-dataprov
 import { MedicRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/medic.repository';
 import { AppointmentRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/appointment.repository';
 import { LabTestRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/lab-test.respository';
+import { UpdateEncounterUseCase } from '../core/usecases/encounters/update-encounter.usecase';
 
 export const createEncounterModule = () => {
   const jwtTokenService = new JWTTokenService();
@@ -39,11 +40,20 @@ export const createEncounterModule = () => {
     encounterRepository,
   );
 
+  const updateEncounterUseCase = new UpdateEncounterUseCase(
+    encounterRepository,
+    appointmentRepository,
+    patientRepostory,
+    medicRepository,
+    labTestRepository,
+  );
+
   // CONTROLLER
   const encounterController = new EncounterController(
     createEncounterUseCase,
     getPatientEncountersUseCase,
     getEncounterByAppointmentUseCase,
+    updateEncounterUseCase,
   );
 
   // ROUTER
