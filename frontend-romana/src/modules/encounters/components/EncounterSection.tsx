@@ -148,7 +148,7 @@ export const EncounterSection = ({
         </div>
 
         {/* ACTIONS */}
-        <div className="flex flex-wrap gap-3">
+        {/* <div className="flex flex-wrap gap-3">
           <button className="flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors">
             <Printer className="w-4 h-4" />
             Imprimir receta digital
@@ -158,7 +158,7 @@ export const EncounterSection = ({
             <ClipboardList className="w-4 h-4" />
             Imprimir orden de laboratorio
           </button>
-        </div>
+        </div> */}
       </div>
 
       <div className="flex flex-col gap-8">
