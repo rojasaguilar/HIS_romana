@@ -22,7 +22,7 @@ export class MedicalRecordRouter {
       // .get(
       //   this.medRecController.getAllMedicalRecords.bind(this.medRecController),
       // )
-      .patch(
+      .put(
         this.medRecController.updateMedicalRecord.bind(this.medRecController),
       );
 

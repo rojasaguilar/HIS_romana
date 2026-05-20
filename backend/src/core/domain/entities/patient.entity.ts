@@ -1,6 +1,7 @@
 import { InvalidBloodTypeError } from '../errors/blood_type.error';
 import { PatientInconsistentStateError } from '../errors/patient.errors';
 import { PersonalInfoValidationError } from '../errors/personal-info.error';
+import { EstadoCivil } from '../types/martialStatus.type';
 import { Address } from '../value-objects/address.vo';
 import { EmergencyContact } from '../value-objects/emergencyContact.vo';
 import { BloodType, BLOOD_TYPE } from './../types/blood.type';
@@ -15,6 +16,9 @@ export class PatientEntity {
     public address: Address,
     public birthDate: string,
     public allergies: string[],
+
+    public sex: 'M' | 'F',
+    public maritalStatus: EstadoCivil,
 
     //medical stuff
     public bloodType: BloodType,
@@ -39,6 +43,8 @@ export class PatientEntity {
     address: Address;
     birthDate: string;
     allergies: string[];
+    sex: 'M' | 'F';
+    maritalStatus: EstadoCivil;
     bloodType: BloodType;
     isActive: boolean;
     emergencyContact?: EmergencyContact;
@@ -79,6 +85,8 @@ export class PatientEntity {
       data.address,
       data.birthDate,
       data.allergies,
+      data.sex,
+      data.maritalStatus,
       data.bloodType,
       data.isActive,
       data.emergencyContact,

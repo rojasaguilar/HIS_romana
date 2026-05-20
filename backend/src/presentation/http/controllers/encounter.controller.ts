@@ -3,7 +3,6 @@ import { CreateEncounterUseCase } from '../../../core/usecases/encounters/create
 import { GetEncounterByAppointmentUseCase } from '../../../core/usecases/encounters/getEncounterByAppointment-usecse';
 import { GetPatientEncountersUseCase } from '../../../core/usecases/encounters/getPatient-encounters.usecase';
 import { asyncHandler } from '../middlewares/asyncHandler';
-import { EncounterProps } from '../../../core/domain/entities/encounter.entity';
 
 export class EncounterController {
   constructor(

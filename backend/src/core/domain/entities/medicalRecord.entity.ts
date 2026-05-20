@@ -22,7 +22,7 @@ export class MedicalRecordEntity {
   ) {
     if (patientId.length <= 0)
       throw new InconsistantMedicalRecordError(`Invalid patientId`);
-    
+
     if (height <= 0)
       throw new InconsistantMedicalRecordError(
         `A height of : ${height} is not valid`,
@@ -40,7 +40,7 @@ export class MedicalRecordEntity {
       ? data.currentConditions.map(
           (condition) =>
             new CurrentCondition(
-              condition.diseaseId,
+              condition.conditionId,
               condition.since,
               condition.diagnosedBy,
             ),

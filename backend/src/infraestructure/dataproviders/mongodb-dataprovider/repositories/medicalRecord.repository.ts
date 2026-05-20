@@ -41,6 +41,7 @@ export class MedicalRecordRepository implements IMedicalRecordRepository {
 
     return MedicalRecordMapper.toDomain(medRecordDoc);
   }
+  
   findById(id: string): Promise<MedicalRecordEntity | null> {
     throw new Error('Method not implemented.');
   }

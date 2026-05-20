@@ -2,9 +2,9 @@ import { Schema, Types, model, HydratedDocument } from 'mongoose';
 import { CreateMedicalRecordDTO } from '../../../../core/domain/dtos/medicalRecord.dto';
 
 const currentConditionSchema = new Schema({
-  diseaseId: {
+  conditionId: {
     type: Types.ObjectId,
-    ref: 'Disease',
+    ref: 'Conditions',
     required: [true, 'A disease must be specified'],
   },
   since: { type: Date, required: [true, 'Must specified a aprox date'] },
@@ -39,9 +39,9 @@ const familyHistorySchema = new Schema({
     type: String,
     enum: ['madre', 'padre', 'abuelo', 'abuela', 'hermano', 'hermana'],
   },
-  diseaseId: {
+  conditionId: {
     type: Types.ObjectId,
-    ref: 'Disease',
+    ref: 'Conditions',
     required: [true, 'A disease must be specified'],
   },
 });

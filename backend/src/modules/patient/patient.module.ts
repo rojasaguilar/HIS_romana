@@ -7,6 +7,7 @@ import { JWTTokenService } from '../../infraestructure/services/JWT.token.servic
 import { PatientController } from '../../presentation/http/controllers/patient.controller';
 import { AuthMiddleware } from '../../presentation/http/middlewares/protect-route';
 import { PatientRouter } from '../../presentation/http/routes/patient.routes';
+import { UpdatePatientUseCase } from '../../core/usecases/patients/update-patient.usecase';
 
 export const createPatientModule = () => {
   const patientRepository = new PatientRepository();
@@ -20,6 +21,8 @@ export const createPatientModule = () => {
     appointmentRepository,
   );
 
+  const updatePatientUseCase = new UpdatePatientUseCase(patientRepository);
+
   const jwtTokenService = new JWTTokenService();
   const authMiddleware = AuthMiddleware(jwtTokenService);
 
@@ -27,6 +30,7 @@ export const createPatientModule = () => {
     registerPatientUseCase,
     getPatientUseCase,
     getMedicPatientsUseCase,
+    updatePatientUseCase,
   );
 
   const patientRouter = new PatientRouter(patientController, authMiddleware);

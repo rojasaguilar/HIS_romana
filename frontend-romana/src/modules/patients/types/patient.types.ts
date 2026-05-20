@@ -1,3 +1,5 @@
+import type { EstadoCivil } from "./martialStatus.type";
+
 export type BloodType = "O+" | "O-" | "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-";
 
 export interface Address {
@@ -15,7 +17,7 @@ export interface EmergencyContact {
 
   phoneNumber: string;
 
-  relation: string;
+  relationship: string;
 }
 
 export interface Patient {
@@ -32,6 +34,9 @@ export interface Patient {
   birthDate: string;
 
   allergies: string[];
+
+   sex: "M" | "F";
+    maritalStatus: EstadoCivil;
 
   bloodType: BloodType;
 

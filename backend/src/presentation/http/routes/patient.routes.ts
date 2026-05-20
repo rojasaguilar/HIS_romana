@@ -23,6 +23,7 @@ export class PatientRouter {
 
     this.router
       .route('/:id')
-      .get(this.patientController.getPatientById.bind(this.patientController));
+      .get(this.patientController.getPatientById.bind(this.patientController))
+      .patch(this.patientController.updatePatient.bind(this.patientController));
   }
 }

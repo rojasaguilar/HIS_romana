@@ -21,6 +21,8 @@ export class PatientMapper {
       address,
       birthDate: dto.birthDate,
       allergies: dto.allergies,
+      sex: dto.sex,
+      maritalStatus: dto.maritalStatus,
       bloodType: parseBloodType(dto.bloodType),
       isActive: dto.isActive,
       emergencyContact: dto.emergencyContact,

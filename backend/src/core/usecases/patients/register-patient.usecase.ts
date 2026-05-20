@@ -22,7 +22,7 @@ export class RegisterPatientUseCase {
           name: data.emergencyContact.name,
 
           phoneNumber: data.emergencyContact.phoneNumber,
-          relation: data.emergencyContact.relation,
+          relationship: data.emergencyContact.relationship,
         })
       : undefined;
 
@@ -33,6 +33,8 @@ export class RegisterPatientUseCase {
       address,
       birthDate: data.birthDate,
       allergies: data.allergies,
+      sex: data.sex,
+      maritalStatus: data.maritalStatus,
       isActive: true,
       bloodType: parseBloodType(data.bloodType),
 

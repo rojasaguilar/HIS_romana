@@ -4,6 +4,8 @@ import { GetPatientUseCase } from '../../../core/usecases/patients/get-patient.u
 import { asyncHandler } from '../middlewares/asyncHandler';
 import { GetMedicPatientsUseCase } from '../../../core/usecases/patients/get-medic-patients.usecase';
 // import PatientEntity from '../../../core/domain/entities/patient.entity';
+import { RegisterPatientDTO } from '../../../core/domain/dtos/patient.dto';
+import { UpdatePatientUseCase } from '../../../core/usecases/patients/update-patient.usecase';
 // import PatientEntity just to know if my useCase returns that type
 
 export class PatientController {
@@ -11,6 +13,7 @@ export class PatientController {
     private registerPatient: RegisterPatientUseCase,
     private getPatient: GetPatientUseCase,
     private getMedicPatientsUseCase: GetMedicPatientsUseCase,
+    private readonly updatePatientUseCase: UpdatePatientUseCase,
   ) {}
 
   async createPatient(req: Request, res: Response) {
@@ -42,4 +45,17 @@ export class PatientController {
 
     res.status(200).json(patients);
   });
+
+  updatePatient = asyncHandler(
+    async (
+      req: Request<{ id: string }, any, RegisterPatientDTO>,
+      res: Response,
+    ) => {
+      const { id } = req.params;
+      const data = req.body;
+      const updatedPatient = await this.updatePatientUseCase.execute(id, data);
+
+      res.status(200).json(updatedPatient);
+    },
+  );
 }

@@ -1,3 +1,5 @@
+import { EstadoCivil } from '../types/martialStatus.type';
+
 export interface RegisterPatientDTO {
   name: string;
   email: string;
@@ -12,10 +14,13 @@ export interface RegisterPatientDTO {
   birthDate: string;
   allergies: string[];
 
+  sex: 'M' | 'F';
+  maritalStatus: EstadoCivil;
+
   //medical stuff
   bloodType: string;
 
-  emergencyContact?: { name: string; phoneNumber: string; relation: string };
+  emergencyContact?: { name: string; phoneNumber: string; relationship: string };
 }
 
 export interface PatientDocument {
@@ -31,12 +36,18 @@ export interface PatientDocument {
   };
   birthDate: string;
   allergies: string[];
+  sex: 'M' | 'F';
+  maritalStatus: EstadoCivil;
 
   //medical stuff
   bloodType: string;
 
   isActive: boolean;
 
-  emergencyContact?: { name: string; phoneNumber: string; relation: string };
+  emergencyContact?: {
+    name: string;
+    phoneNumber: string;
+    relationship: string;
+  };
   _id: Object;
 }

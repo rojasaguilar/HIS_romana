@@ -8,7 +8,8 @@ import { usePlans } from "@/modules/plans/hooks/usePlans";
 import { useAppointments } from "@/modules/appointments/hooks/useAppointments";
 import {
   useMedicalRecordByPatient,
-  useCreateMedicalRecord,
+  // Ya no importamos useCreate aquí directo si lo usa el form por dentro,
+  // pero importamos el de update si hiciera falta a nivel página (aunque es mejor en el Form).
 } from "@/modules/medicalRecords/hooks/useMedicalRecord";
 
 import {
@@ -24,9 +25,13 @@ import {
   User,
   CalendarDays,
   Plus,
+  Edit, // <-- Nuevo icono importado
 } from "lucide-react";
 import { PatientEncountersList } from "../components/PatientEncountersList";
 import { CreateMedicalRecordForm } from "@/modules/medicalRecords/components/CreateMedicalRecordForm";
+// Asumimos que crearás este componente siguiendo el patrón del Create
+import { UpdateMedicalRecordForm } from "@/modules/medicalRecords/components/UpdateMedicalRecordForm";
+import { UpdatePatientForm } from "../components/UpdatePatientForm";
 
 export const PatientDetailsPage = () => {
   const { id } = useParams();
@@ -38,6 +43,10 @@ export const PatientDetailsPage = () => {
 
   const [showCreateMedicalRecordForm, setShowCreateMedicalRecordForm] =
     useState(false);
+
+  // <-- NUEVO ESTADO: Controla si estamos editando el expediente existente
+  const [isEditingMR, setIsEditingMR] = useState(false);
+  const [isEditingPatient, setIsEditingPatient] = useState(false);
 
   const { data: patient, isLoading } = usePatient(id!);
   const { data: subscriptions } = useSubscriptions();
@@ -198,62 +207,135 @@ export const PatientDetailsPage = () => {
 
         {/* CONTENIDO DINÁMICO */}
         <div className="p-8">
-          {/* VISTA: INFORMACIÓN GENERAL */}
           {activeTab === "general" && (
             <div className="animate-in fade-in duration-300">
-              <div className="mb-8">
-                <h3 className="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
-                  Datos Personales
-                </h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-slate-500 text-sm">
-                      Fecha de Nacimiento
-                    </p>
-                    <strong className="text-slate-900">
-                      {formatDate(patient.birthDate)}
-                    </strong>
-                  </div>
-                  <div>
-                    <p className="text-slate-500 text-sm">Tipo de Sangre</p>
-                    <strong className="text-slate-900">
-                      {patient.bloodType}
-                    </strong>
-                  </div>
-                  <div>
-                    <p className="text-slate-500 text-sm">Alergias</p>
-                    <strong className="text-slate-900">
-                      {patient.allergies?.join(", ") || "Sin alergias"}
-                    </strong>
-                  </div>
-                  <div>
-                    <p className="text-slate-500 text-sm">
-                      Contacto de Emergencia
-                    </p>
-                    <strong className="text-slate-900">
-                      {patient.emergencyContact?.name} -{" "}
-                      {patient.emergencyContact?.phoneNumber}
-                    </strong>
-                  </div>
-                </div>
-              </div>
+              {isEditingPatient ? (
+                <div className="animate-in fade-in zoom-in-95 duration-300">
+                  <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-900">
+                        Editar Paciente
+                      </h3>
 
-              {patientSubscription && (
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
-                    Información de Suscripción
-                  </h3>
-                  <div>
-                    <h4 className="font-bold text-slate-900">{plan?.name}</h4>
-                    <p className="text-green-600 font-medium my-2">
-                      Estado: activa
-                    </p>
-                    <p className="text-slate-500 text-sm">
-                      Periodo: {formatDate(patientSubscription._startDate)} -{" "}
-                      {formatDate(patientSubscription._endDate)}
-                    </p>
+                      <p className="text-slate-500 text-sm mt-1">
+                        Actualiza la información general del paciente.
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => setIsEditingPatient(false)}
+                      className="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors font-medium"
+                    >
+                      Cancelar
+                    </button>
                   </div>
+
+                  <UpdatePatientForm
+                    patient={patient}
+                    onSuccess={() => setIsEditingPatient(false)}
+                    onCancel={() => setIsEditingPatient(false)}
+                  />
                 </div>
+              ) : (
+                <>
+                  {/* BOTÓN EDITAR */}
+                  <div className="flex justify-end mb-6">
+                    <button
+                      onClick={() => setIsEditingPatient(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-white border border-indigo-200 text-indigo-700 text-sm font-semibold rounded-lg hover:bg-indigo-50 transition-colors shadow-sm"
+                    >
+                      <Edit className="w-4 h-4" />
+                      Editar Datos
+                    </button>
+                  </div>
+
+                  <div className="mb-8">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
+                      Datos Personales
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-slate-500 text-sm">
+                          Fecha de Nacimiento
+                        </p>
+
+                        <strong className="text-slate-900">
+                          {formatDate(patient.birthDate)}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <p className="text-slate-500 text-sm">Tipo de Sangre</p>
+
+                        <strong className="text-slate-900">
+                          {patient.bloodType}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <p className="text-slate-500 text-sm">Sexo</p>
+
+                        <strong className="text-slate-900">
+                          {patient.sex === "M" ? "Masculino" : "Femenino"}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <p className="text-slate-500 text-sm">Estado Civil</p>
+
+                        <strong className="text-slate-900">
+                          {patient.maritalStatus}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <p className="text-slate-500 text-sm">Alergias</p>
+
+                        <strong className="text-slate-900">
+                          {patient.allergies?.join(", ") || "Sin alergias"}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <p className="text-slate-500 text-sm">
+                          Contacto de Emergencia
+                        </p>
+
+                        <strong className="text-slate-900">
+                          {patient.emergencyContact?.name || "N/A"}{" "}
+                          {patient.emergencyContact?.phoneNumber
+                            ? `- ${patient.emergencyContact.phoneNumber}`
+                            : ""}
+                          {` - ${patient.emergencyContact?.relationship}`}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  {patientSubscription && (
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100">
+                        Información de Suscripción
+                      </h3>
+
+                      <div>
+                        <h4 className="font-bold text-slate-900">
+                          {plan?.name}
+                        </h4>
+
+                        <p className="text-green-600 font-medium my-2">
+                          Estado: activa
+                        </p>
+
+                        <p className="text-slate-500 text-sm">
+                          Periodo: {formatDate(patientSubscription._startDate)}{" "}
+                          - {formatDate(patientSubscription._endDate)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
@@ -322,8 +404,48 @@ export const PatientDetailsPage = () => {
                     </div>
                   )}
                 </div>
+              ) : isEditingMR ? (
+                // <-- NUEVA VISTA: MODO EDICIÓN DEL EXPEDIENTE
+                <div className="animate-in fade-in zoom-in-95 duration-300">
+                  <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                    <div>
+                      <h3 className="text-xl font-bold text-slate-900">
+                        Editar Historia Médica
+                      </h3>
+                      <p className="text-slate-500 text-sm mt-1">
+                        Actualiza la información clínica y biometría del
+                        paciente.
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => setIsEditingMR(false)}
+                      className="px-4 py-2 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors font-medium"
+                    >
+                      Cancelar Edición
+                    </button>
+                  </div>
+
+                  {/* Aquí invocas a tu componente de edición y le pasas la data actual */}
+                  <UpdateMedicalRecordForm
+                    medicalRecord={medicalRecord}
+                    onSuccess={() => setIsEditingMR(false)}
+                    onCancel={() => setIsEditingMR(false)}
+                  />
+                </div>
               ) : (
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-6 animate-in fade-in duration-300">
+                  {/* <-- NUEVO: BOTÓN PARA ACTIVAR EDICIÓN --> */}
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => setIsEditingMR(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-white border border-indigo-200 text-indigo-700 text-sm font-semibold rounded-lg hover:bg-indigo-50 transition-colors shadow-sm"
+                    >
+                      <Edit className="w-4 h-4" />
+                      Actualizar Expediente
+                    </button>
+                  </div>
+
                   {/* Fila 1: Biometría y Alertas */}
                   <div className="grid grid-cols-3 gap-6">
                     <div className="col-span-2 bg-red-50/50 border border-red-100 rounded-xl p-5">

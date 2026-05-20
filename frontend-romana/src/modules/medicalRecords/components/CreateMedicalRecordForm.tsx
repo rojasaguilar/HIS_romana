@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
 
 import { useCreateMedicalRecord } from "../hooks/useMedicalRecord";
+import { useConditions } from "@/modules/conditions/hooks/useConditions";
 
 interface Props {
   patientId: string;
@@ -29,6 +30,9 @@ export const CreateMedicalRecordForm = ({
 
   const createMedicalRecord = useCreateMedicalRecord();
 
+  const { data: backendConditions = [], isLoading: isLoadingConditions } =
+    useConditions();
+
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [summary, setSummary] = useState("");
@@ -41,8 +45,8 @@ export const CreateMedicalRecordForm = ({
 
   const [conditions, setConditions] = useState([
     {
-      diseaseId: "",
-      since: "",
+      conditionId: "",
+      since: new Date(),
       diagnosedBy: "",
     },
   ]);
@@ -82,8 +86,8 @@ export const CreateMedicalRecordForm = ({
     setConditions((prev) => [
       ...prev,
       {
-        diseaseId: "",
-        since: "",
+        conditionId: "",
+        since: new Date(),
         diagnosedBy: "",
       },
     ]);
@@ -95,7 +99,7 @@ export const CreateMedicalRecordForm = ({
 
   const updateCondition = (
     index: number,
-    field: "diseaseId" | "since" | "diagnosedBy",
+    field: "conditionId" | "since" | "diagnosedBy",
     value: string,
   ) => {
     setConditions((prev) => {
@@ -214,9 +218,9 @@ export const CreateMedicalRecordForm = ({
         weight: Number(weight),
 
         currentConditions: conditions
-          .filter((c) => c.diseaseId && c.since)
+          .filter((c) => c.conditionId && c.since)
           .map((c) => ({
-            diseaseId: Number(c.diseaseId),
+            conditionId: c.conditionId,
             since: new Date(c.since).toISOString(),
             diagnosedBy: c.diagnosedBy || undefined,
           })),
@@ -400,19 +404,33 @@ export const CreateMedicalRecordForm = ({
               key={index}
               className="grid grid-cols-4 gap-3 border border-slate-200 rounded-xl p-4"
             >
-              <input
-                type="number"
-                placeholder="Disease ID"
-                value={condition.diseaseId}
+              <select
+                value={condition.conditionId}
                 onChange={(e) =>
-                  updateCondition(index, "diseaseId", e.target.value)
+                  updateCondition(index, "conditionId", e.target.value)
                 }
                 className="px-4 py-3 rounded-xl border border-slate-200"
-              />
+              >
+                <option value="">
+                  {isLoadingConditions
+                    ? "Cargando condiciones..."
+                    : "Seleccionar condición"}
+                </option>
+
+                {backendConditions.map((cond) => (
+                  <option key={cond.id} value={cond.id}>
+                    {cond.code} - {cond.name}
+                  </option>
+                ))}
+              </select>
 
               <input
                 type="date"
-                value={condition.since}
+                value={
+                  condition.since
+                    ? new Date(condition.since).toISOString().split("T")[0]
+                    : ""
+                }
                 onChange={(e) =>
                   updateCondition(index, "since", e.target.value)
                 }

@@ -4,6 +4,7 @@ import { useCreatePatient } from "../hooks/useCreatePatient";
 import type { BloodType } from "../types/patient.types";
 import { MoveLeft, User, MapPin, PhoneCall, Save } from "lucide-react";
 import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
+import { ESTADO_CIVIL, type EstadoCivil } from "../types/martialStatus.type";
 
 export const CreatePatientPage = () => {
   const navigate = useNavigate();
@@ -17,6 +18,10 @@ export const CreatePatientPage = () => {
   const [birthDate, setBirthDate] = useState("");
   const [bloodType, setBloodType] = useState<BloodType>("O+");
   const [allergies, setAllergies] = useState("");
+
+  const [sex, setSex] = useState<"M" | "F">("M");
+
+  const [maritalStatus, setMaritalStatus] = useState<EstadoCivil>("Soltero(a)");
 
   const [street, setStreet] = useState("");
   const [city, setCity] = useState("");
@@ -37,14 +42,20 @@ export const CreatePatientPage = () => {
         phoneNumber,
         birthDate,
         bloodType,
+
+        sex,
+        maritalStatus,
+
         allergies:
           allergies.length > 0 ? allergies.split(",").map((a) => a.trim()) : [],
+
         address: {
           street,
           city,
           state,
           zipCode,
         },
+
         emergencyContact:
           emergencyName && emergencyPhone && relationship
             ? {
@@ -175,7 +186,34 @@ export const CreatePatientPage = () => {
                 <option value="AB-">AB-</option>
               </select>
             </div>
+            <div>
+              <label className={labelClassName}>Sexo</label>
 
+              <select
+                value={sex}
+                onChange={(e) => setSex(e.target.value as "M" | "F")}
+                className={inputClassName}
+              >
+                <option value="M">Masculino</option>
+                <option value="F">Femenino</option>
+              </select>
+            </div>
+
+            <div>
+              <label className={labelClassName}>Estado Civil</label>
+
+              <select
+                value={maritalStatus}
+                onChange={(e) =>
+                  setMaritalStatus(e.target.value as EstadoCivil)
+                }
+                className={inputClassName}
+              >
+                {Object.values(ESTADO_CIVIL).map((estado) => (
+                  <option value={estado}>{estado}</option>
+                ))}
+              </select>
+            </div>
             <div>
               <label className={labelClassName}>Alergias (Opcional)</label>
               <input
