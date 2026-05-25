@@ -1,8 +1,8 @@
-import PatientModel from '../models/patient.model';
 import { PatientEntity } from './../../../../core/domain/entities/patient.entity';
 import { IPatientRepository } from '../../../../core/domain/repositories/patient.repository.interface';
 import { PatientMapper } from '../mappers/patient.mapper';
 import { RegisterPatientDTO } from '../../../../core/domain/dtos/patient.dto';
+import { PatientModel } from '../models/patient.model';
 //persist the data
 
 export class PatientRepository implements IPatientRepository {
@@ -26,6 +26,7 @@ export class PatientRepository implements IPatientRepository {
     return patients.map((patient) => PatientMapper.toDomain(patient));
   }
   async save(patient: PatientEntity): Promise<PatientEntity> {
+    
     const data = PatientMapper.toPersistance(patient);
 
     const savedPatient = await PatientModel.create(data);

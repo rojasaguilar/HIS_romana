@@ -4,6 +4,7 @@ import { PersonalInfoValidationError } from '../errors/personal-info.error';
 import { EstadoCivil } from '../types/martialStatus.type';
 import { Address } from '../value-objects/address.vo';
 import { EmergencyContact } from '../value-objects/emergencyContact.vo';
+import { LegalGuardian } from '../value-objects/legalGuardian.vo';
 import { BloodType, BLOOD_TYPE } from './../types/blood.type';
 
 import validator from 'validator';
@@ -19,14 +20,15 @@ export class PatientEntity {
 
     public sex: 'M' | 'F',
     public maritalStatus: EstadoCivil,
+    public nationality: string,
 
     //medical stuff
     public bloodType: BloodType,
 
-    public isActive: boolean,
-
     public emergencyContact?: EmergencyContact,
     public readonly id?: string,
+    public ethnicity?: string,
+    public legalGuardian?: LegalGuardian,
   ) {
     if (!validator.isEmail(this.email))
       throw new Error('Invalid email address');
@@ -45,10 +47,12 @@ export class PatientEntity {
     allergies: string[];
     sex: 'M' | 'F';
     maritalStatus: EstadoCivil;
+    nationality: string;
     bloodType: BloodType;
-    isActive: boolean;
     emergencyContact?: EmergencyContact;
     id?: string;
+    ethnicity?: string;
+    legalGuardian?: LegalGuardian;
   }): PatientEntity {
     if (!data.name || data.name.trim().length === 0)
       throw new PatientInconsistentStateError('Name is required');
@@ -87,10 +91,13 @@ export class PatientEntity {
       data.allergies,
       data.sex,
       data.maritalStatus,
+      data.nationality,
       data.bloodType,
-      data.isActive,
+      // data.isActive,
       data.emergencyContact,
       data.id,
+      data.ethnicity,
+      data.legalGuardian,
     );
   }
 

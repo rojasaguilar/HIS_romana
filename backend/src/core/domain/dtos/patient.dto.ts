@@ -16,14 +16,21 @@ export interface RegisterPatientDTO {
 
   sex: 'M' | 'F';
   maritalStatus: EstadoCivil;
+  nationality: string;
 
   //medical stuff
   bloodType: string;
 
-  emergencyContact?: { name: string; phoneNumber: string; relationship: string };
+  emergencyContact?: {
+    name: string;
+    phoneNumber: string;
+    relationship: string;
+  };
+  ethnicity?: string;
+  legalGuardian?: { name: string; relationship: string };
 }
 
-export interface PatientDocument {
+export interface PatientPersistence {
   name: string;
   email: string;
   phoneNumber: string;
@@ -38,16 +45,17 @@ export interface PatientDocument {
   allergies: string[];
   sex: 'M' | 'F';
   maritalStatus: EstadoCivil;
+  nationality: string;
 
   //medical stuff
   bloodType: string;
-
-  isActive: boolean;
 
   emergencyContact?: {
     name: string;
     phoneNumber: string;
     relationship: string;
   };
+  ethnicity?: string;
+  legalGuardian?: { name: string; relationship: string };
   _id: Object;
 }
