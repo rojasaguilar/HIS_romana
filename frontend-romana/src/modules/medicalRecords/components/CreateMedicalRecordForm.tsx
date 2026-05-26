@@ -1,19 +1,23 @@
 import { useState } from "react";
-import {
-  Activity,
-  Plus,
-  Trash2,
-  Pill,
-  HeartPulse,
-  Scissors,
-  AlertTriangle,
-  FileText,
-} from "lucide-react";
 
 import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
-
 import { useCreateMedicalRecord } from "../hooks/useMedicalRecord";
 import { useConditions } from "@/modules/conditions/hooks/useConditions";
+
+import { BiometricsSection } from "./sections/BiometricsSection";
+import { AllergiesSection } from "./sections/AllergiesSection";
+import { ConditionsSection } from "./sections/ConditionsSection";
+import { FamilyHistorySection } from "./sections/FamilyHistorySection";
+import { MedicationsSection } from "./sections/MedicationsSection";
+import { RiskFactorsSection } from "./sections/RiskFactorsSection";
+import { SummarySection } from "./sections/SummarySection";
+import { SurgicalHistorySection } from "./sections/SurgicalHistorySection";
+
+// Importamos el componente y la interfaz que acabamos de crear
+import { 
+  PersonalHistorySection, 
+  type AntecedentesPersonalesPatologicosProps 
+} from "./sections/PersonalHistorySection";
 
 interface Props {
   patientId: string;
@@ -30,54 +34,28 @@ export const CreateMedicalRecordForm = ({
 
   const createMedicalRecord = useCreateMedicalRecord();
 
-  const { data: backendConditions = [], isLoading: isLoadingConditions } =
-    useConditions();
+  const {
+    data: backendConditions = [],
+    isLoading: isLoadingConditions,
+  } = useConditions();
 
-  console.log(backendConditions);
+  // ===============================
+  // BASIC INFO
+  // ===============================
+
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
   const [summary, setSummary] = useState("");
 
+  // ===============================
+  // ALLERGIES
+  // ===============================
+
   const [allergyInput, setAllergyInput] = useState("");
   const [allergies, setAllergies] = useState<string[]>([]);
 
-  const [riskInput, setRiskInput] = useState("");
-  const [riskFactors, setRiskFactors] = useState<string[]>([]);
-
-  const [conditions, setConditions] = useState<
-    {
-      conditionId: string;
-      since: string;
-      diagnosedBy: string;
-    }[]
-  >([
-    {
-      conditionId: "",
-      since: "",
-      diagnosedBy: "",
-    },
-  ]);
-
-  const [medications, setMedications] = useState([
-    {
-      medicationName: "",
-      amount: "",
-      unit: "mg",
-      timesPerDay: "",
-      startedAt: "",
-    },
-  ]);
-
-  const [surgeries, setSurgeries] = useState([
-    {
-      surgeryName: "",
-      surgeryDate: "",
-    },
-  ]);
-
   const addAllergy = () => {
     if (!allergyInput.trim()) return;
-
     setAllergies((prev) => [...prev, allergyInput.trim()]);
     setAllergyInput("");
   };
@@ -85,9 +63,35 @@ export const CreateMedicalRecordForm = ({
   const removeAllergy = (index: number) => {
     setAllergies((prev) => prev.filter((_, i) => i !== index));
   };
+
+  // ===============================
+  // RISK FACTORS
+  // ===============================
+
+  const [riskInput, setRiskInput] = useState("");
+  const [riskFactors, setRiskFactors] = useState<string[]>([]);
+
+  const addRiskFactor = () => {
+    if (!riskInput.trim()) return;
+    setRiskFactors((prev) => [...prev, riskInput.trim()]);
+    setRiskInput("");
+  };
+
+  const removeRiskFactor = (index: number) => {
+    setRiskFactors((prev) => prev.filter((_, i) => i !== index));
+  };
+
   // ===============================
   // CONDITIONS
   // ===============================
+
+  const [conditions, setConditions] = useState([
+    {
+      conditionId: "",
+      since: "",
+      diagnosedBy: "",
+    },
+  ]);
 
   const addCondition = () => {
     setConditions((prev) => [
@@ -111,12 +115,10 @@ export const CreateMedicalRecordForm = ({
   ) => {
     setConditions((prev) => {
       const updated = [...prev];
-
       updated[index] = {
         ...updated[index],
         [field]: value,
       };
-
       return updated;
     });
   };
@@ -125,11 +127,23 @@ export const CreateMedicalRecordForm = ({
   // MEDICATIONS
   // ===============================
 
+  const [medications, setMedications] = useState([
+    {
+      medicationName: "",
+      routeAdministration: "oral",
+      amount: "",
+      unit: "mg",
+      timesPerDay: "",
+      startedAt: "",
+    },
+  ]);
+
   const addMedication = () => {
     setMedications((prev) => [
       ...prev,
       {
         medicationName: "",
+        routeAdministration: "oral",
         amount: "",
         unit: "mg",
         timesPerDay: "",
@@ -144,17 +158,21 @@ export const CreateMedicalRecordForm = ({
 
   const updateMedication = (
     index: number,
-    field: "medicationName" | "amount" | "unit" | "timesPerDay" | "startedAt",
+    field:
+      | "medicationName"
+      | "routeAdministration"
+      | "amount"
+      | "unit"
+      | "timesPerDay"
+      | "startedAt",
     value: string,
   ) => {
     setMedications((prev) => {
       const updated = [...prev];
-
       updated[index] = {
         ...updated[index],
         [field]: value,
       };
-
       return updated;
     });
   };
@@ -162,6 +180,13 @@ export const CreateMedicalRecordForm = ({
   // ===============================
   // SURGERIES
   // ===============================
+
+  const [surgeries, setSurgeries] = useState([
+    {
+      surgeryName: "",
+      surgeryDate: "",
+    },
+  ]);
 
   const addSurgery = () => {
     setSurgeries((prev) => [
@@ -184,30 +209,101 @@ export const CreateMedicalRecordForm = ({
   ) => {
     setSurgeries((prev) => {
       const updated = [...prev];
-
       updated[index] = {
         ...updated[index],
         [field]: value,
       };
-
       return updated;
     });
   };
 
   // ===============================
-  // RISK FACTORS
+  // FAMILY HISTORY
   // ===============================
 
-  const addRiskFactor = () => {
-    if (!riskInput.trim()) return;
+  const [familyHistory, setFamilyHistory] = useState([
+    {
+      relationship: "",
+      diseaseId: "",
+    },
+  ]);
 
-    setRiskFactors((prev) => [...prev, riskInput.trim()]);
-    setRiskInput("");
+  const addFamilyHistory = () => {
+    setFamilyHistory((prev) => [
+      ...prev,
+      {
+        relationship: "",
+        diseaseId: "",
+      },
+    ]);
   };
 
-  const removeRiskFactor = (index: number) => {
-    setRiskFactors((prev) => prev.filter((_, i) => i !== index));
+  const removeFamilyHistory = (index: number) => {
+    setFamilyHistory((prev) => prev.filter((_, i) => i !== index));
   };
+
+  const updateFamilyHistory = (
+    index: number,
+    field: "relationship" | "diseaseId",
+    value: string,
+  ) => {
+    setFamilyHistory((prev) => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        [field]: value,
+      };
+      return updated;
+    });
+  };
+
+  // ===============================
+  // PERSONAL HISTORY (UNIFICADO)
+  // ===============================
+
+  const [personalHistory, setPersonalHistory] = useState<AntecedentesPersonalesPatologicosProps>({
+    tabaquismo: {
+      consume: false,
+      frecuencia: "",
+      cantidad: "",
+      tiempoConsumo: "",
+      fechaUltimoConsumo: "",
+      observaciones: "",
+    },
+    alcoholismo: {
+      consume: false,
+      frecuencia: "",
+      cantidad: "",
+      tiempoConsumo: "",
+      fechaUltimoConsumo: "",
+      observaciones: "",
+    },
+    toxicomanias: {
+      consume: false,
+      sustancias: [],
+      frecuencia: "",
+      tiempoConsumo: "",
+      fechaUltimoConsumo: "",
+      observaciones: "",
+    },
+    quirurgicos: [],
+    hemotransfusiones: {
+      haRecibido: false,
+      cantidad: 0,
+      fechaUltima: "",
+      motivo: "",
+      reaccionesAdversas: false,
+      observaciones: "",
+    },
+    fracturas: [],
+    infectocontagiosas: [],
+    hospitalizacionesPrevias: [],
+    cronicoDegenerativo: [],
+  });
+
+  // ===============================
+  // SUBMIT
+  // ===============================
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -234,10 +330,15 @@ export const CreateMedicalRecordForm = ({
 
         chronicMedications: medications
           .filter(
-            (m) => m.medicationName && m.amount && m.timesPerDay && m.startedAt,
+            (m) =>
+              m.medicationName &&
+              m.amount &&
+              m.timesPerDay &&
+              m.startedAt,
           )
           .map((m) => ({
             medicationName: m.medicationName,
+            routeAdministration: m.routeAdministration,
             dosage: {
               amount: Number(m.amount),
               unit: m.unit,
@@ -248,7 +349,9 @@ export const CreateMedicalRecordForm = ({
             startedAt: new Date(m.startedAt),
           })),
 
-        familyHistory: [],
+        familyHistory: familyHistory.filter(
+          (f) => f.relationship && f.diseaseId,
+        ),
 
         riskFactors,
 
@@ -259,6 +362,9 @@ export const CreateMedicalRecordForm = ({
             surgeryDate: new Date(s.surgeryDate),
           })),
 
+        // Ahora solo pasamos el estado unificado directamente
+        antecedentesPersonalesPatologicos: personalHistory,
+
         summary,
       },
       {
@@ -266,10 +372,10 @@ export const CreateMedicalRecordForm = ({
           showToast("Expediente médico creado", "success");
           onSuccess?.();
         },
-
         onError: (err: any) => {
           showToast(
-            err?.response?.data?.message || "Error al crear expediente médico",
+            err?.response?.data?.message ||
+              "Error al crear expediente médico",
             "error",
           );
         },
@@ -279,355 +385,77 @@ export const CreateMedicalRecordForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-8">
-      {/* BIOMETRÍA */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-5">
-          <Activity className="w-5 h-5 text-indigo-600" />
-          <h3 className="font-bold text-slate-900">Biometría</h3>
-        </div>
+      <BiometricsSection
+        height={height}
+        weight={weight}
+        setHeight={setHeight}
+        setWeight={setWeight}
+      />
 
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            type="number"
-            placeholder="Altura (cm)"
-            value={height}
-            onChange={(e) => setHeight(e.target.value)}
-            className="px-4 py-3 rounded-xl border border-slate-200"
-          />
+      <AllergiesSection
+        allergies={allergies}
+        allergyInput={allergyInput}
+        setAllergyInput={setAllergyInput}
+        addAllergy={addAllergy}
+        removeAllergy={removeAllergy}
+      />
 
-          <input
-            type="number"
-            placeholder="Peso (kg)"
-            value={weight}
-            onChange={(e) => setWeight(e.target.value)}
-            className="px-4 py-3 rounded-xl border border-slate-200"
-          />
-        </div>
-      </div>
+      <RiskFactorsSection
+        riskInput={riskInput}
+        riskFactors={riskFactors}
+        setRiskInput={setRiskInput}
+        addRiskFactor={addRiskFactor}
+        removeRiskFactor={removeRiskFactor}
+      />
 
-      {/* ALERGIAS */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-5">
-          <AlertTriangle className="w-5 h-5 text-red-500" />
-          <h3 className="font-bold text-slate-900">Alergias</h3>
-        </div>
+      <ConditionsSection
+        conditions={conditions}
+        backendConditions={backendConditions}
+        isLoadingConditions={isLoadingConditions}
+        addCondition={addCondition}
+        removeCondition={removeCondition}
+        updateCondition={updateCondition}
+      />
 
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={allergyInput}
-            onChange={(e) => setAllergyInput(e.target.value)}
-            placeholder="Ej. Penicilina"
-            className="flex-1 px-4 py-3 rounded-xl border border-slate-200"
-          />
+      <MedicationsSection
+        medications={medications}
+        addMedication={addMedication}
+        removeMedication={removeMedication}
+        updateMedication={updateMedication}
+      />
 
-          <button
-            type="button"
-            onClick={addAllergy}
-            className="px-4 bg-red-500 text-white rounded-xl"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-        </div>
+      <SurgicalHistorySection
+        surgeries={surgeries}
+        addSurgery={addSurgery}
+        removeSurgery={removeSurgery}
+        updateSurgery={updateSurgery}
+      />
 
-        <div className="flex flex-wrap gap-2 mt-4">
-          {allergies.map((a, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-2 px-3 py-2 bg-red-100 text-red-700 rounded-lg"
-            >
-              <span>{a}</span>
+      <FamilyHistorySection
+        familyHistory={familyHistory}
+        conditions={backendConditions}
+        addFamilyHistory={addFamilyHistory}
+        removeFamilyHistory={removeFamilyHistory}
+        updateFamilyHistory={updateFamilyHistory}
+      />
 
-              <button type="button" onClick={() => removeAllergy(i)}>
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* Actualizado para usar la nueva estructura de props */}
+      <PersonalHistorySection
+        data={personalHistory}
+        setData={setPersonalHistory}
+      />
 
-      {/* FACTORES DE RIESGO */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-5">
-          <AlertTriangle className="w-5 h-5 text-orange-500" />
-          <h3 className="font-bold text-slate-900">Factores de Riesgo</h3>
-        </div>
+      <SummarySection
+        summary={summary}
+        setSummary={setSummary}
+      />
 
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={riskInput}
-            onChange={(e) => setRiskInput(e.target.value)}
-            placeholder="Ej. Tabaquismo"
-            className="flex-1 px-4 py-3 rounded-xl border border-slate-200"
-          />
-
-          <button
-            type="button"
-            onClick={addRiskFactor}
-            className="px-4 bg-orange-500 text-white rounded-xl"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="flex flex-wrap gap-2 mt-4">
-          {riskFactors.map((risk, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-2 px-3 py-2 bg-orange-100 text-orange-700 rounded-lg"
-            >
-              <span>{risk}</span>
-
-              <button type="button" onClick={() => removeRiskFactor(i)}>
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* CONDICIONES ACTUALES */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <HeartPulse className="w-5 h-5 text-pink-600" />
-            <h3 className="font-bold text-slate-900">Condiciones Actuales</h3>
-          </div>
-
-          <button
-            type="button"
-            onClick={addCondition}
-            className="px-3 py-2 bg-pink-100 text-pink-700 rounded-xl text-sm font-semibold flex items-center gap-1"
-          >
-            <Plus className="w-4 h-4" />
-            Agregar
-          </button>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          {conditions.map((condition, index) => (
-            <div
-              key={index}
-              className="grid grid-cols-4 gap-3 border border-slate-200 rounded-xl p-4"
-            >
-              <select
-                value={condition.conditionId}
-                onChange={(e) =>
-                  updateCondition(index, "conditionId", e.target.value)
-                }
-                className="px-4 py-3 rounded-xl border border-slate-200"
-              >
-                <option value="">
-                  {isLoadingConditions
-                    ? "Cargando condiciones..."
-                    : "Seleccionar condición"}
-                </option>
-
-                {backendConditions.map((cond) => (
-                  <option key={cond.id} value={cond.id}>
-                    {cond.code} - {cond.name}
-                  </option>
-                ))}
-              </select>
-
-              <input
-                type="date"
-                value={condition.since}
-                onChange={(e) =>
-                  updateCondition(index, "since", e.target.value)
-                }
-                className="px-4 py-3 rounded-xl border border-slate-200"
-              />
-
-              <input
-                type="text"
-                placeholder="Diagnosticado por"
-                value={condition.diagnosedBy}
-                onChange={(e) =>
-                  updateCondition(index, "diagnosedBy", e.target.value)
-                }
-                className="px-4 py-3 rounded-xl border border-slate-200"
-              />
-
-              <button
-                type="button"
-                onClick={() => removeCondition(index)}
-                className="bg-red-50 hover:bg-red-100 text-red-600 rounded-xl flex items-center justify-center"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* MEDICACIÓN CRÓNICA */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <Pill className="w-5 h-5 text-indigo-600" />
-            <h3 className="font-bold text-slate-900">Medicación Crónica</h3>
-          </div>
-
-          <button
-            type="button"
-            onClick={addMedication}
-            className="px-3 py-2 bg-indigo-100 text-indigo-700 rounded-xl text-sm font-semibold flex items-center gap-1"
-          >
-            <Plus className="w-4 h-4" />
-            Agregar
-          </button>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          {medications.map((med, index) => (
-            <div
-              key={index}
-              className="grid grid-cols-5 gap-3 border border-slate-200 rounded-xl p-4"
-            >
-              <input
-                type="text"
-                placeholder="Medicamento"
-                value={med.medicationName}
-                onChange={(e) =>
-                  updateMedication(index, "medicationName", e.target.value)
-                }
-                className="px-4 py-3 rounded-xl border border-slate-200"
-              />
-
-              <input
-                type="number"
-                placeholder="Cantidad"
-                value={med.amount}
-                onChange={(e) =>
-                  updateMedication(index, "amount", e.target.value)
-                }
-                className="px-4 py-3 rounded-xl border border-slate-200"
-              />
-
-              <input
-                type="text"
-                placeholder="Unidad"
-                value={med.unit}
-                onChange={(e) =>
-                  updateMedication(index, "unit", e.target.value)
-                }
-                className="px-4 py-3 rounded-xl border border-slate-200"
-              />
-
-              <input
-                type="number"
-                placeholder="Veces al día"
-                value={med.timesPerDay}
-                onChange={(e) =>
-                  updateMedication(index, "timesPerDay", e.target.value)
-                }
-                className="px-4 py-3 rounded-xl border border-slate-200"
-              />
-
-              <div className="flex gap-2">
-                <input
-                  type="date"
-                  value={med.startedAt}
-                  onChange={(e) =>
-                    updateMedication(index, "startedAt", e.target.value)
-                  }
-                  className="w-full px-4 py-3 rounded-xl border border-slate-200"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => removeMedication(index)}
-                  className="px-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* CIRUGÍAS */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6">
-        <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <Scissors className="w-5 h-5 text-slate-700" />
-            <h3 className="font-bold text-slate-900">
-              Antecedentes Quirúrgicos
-            </h3>
-          </div>
-
-          <button
-            type="button"
-            onClick={addSurgery}
-            className="px-3 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-semibold flex items-center gap-1"
-          >
-            <Plus className="w-4 h-4" />
-            Agregar
-          </button>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          {surgeries.map((surgery, index) => (
-            <div
-              key={index}
-              className="grid grid-cols-3 gap-3 border border-slate-200 rounded-xl p-4"
-            >
-              <input
-                type="text"
-                placeholder="Nombre de cirugía"
-                value={surgery.surgeryName}
-                onChange={(e) =>
-                  updateSurgery(index, "surgeryName", e.target.value)
-                }
-                className="px-4 py-3 rounded-xl border border-slate-200"
-              />
-
-              <input
-                type="date"
-                value={surgery.surgeryDate}
-                onChange={(e) =>
-                  updateSurgery(index, "surgeryDate", e.target.value)
-                }
-                className="px-4 py-3 rounded-xl border border-slate-200"
-              />
-
-              <button
-                type="button"
-                onClick={() => removeSurgery(index)}
-                className="bg-red-50 hover:bg-red-100 text-red-600 rounded-xl flex items-center justify-center"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* RESUMEN */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6">
-        <div className="flex items-center gap-2 mb-5">
-          <FileText className="w-5 h-5 text-slate-700" />
-          <h3 className="font-bold text-slate-900">Resumen Clínico</h3>
-        </div>
-
-        <textarea
-          value={summary}
-          onChange={(e) => setSummary(e.target.value)}
-          placeholder="Resumen general del paciente..."
-          className="w-full h-32 resize-none px-4 py-3 rounded-xl border border-slate-200"
-        />
-      </div>
-
-      {/* ACTIONS */}
       <div className="flex justify-end gap-3">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="px-5 py-3 border border-slate-200 rounded-xl font-semibold"
+            className="px-5 py-3 border border-slate-200 rounded-xl font-semibold transition hover:bg-slate-50"
           >
             Cancelar
           </button>
@@ -636,7 +464,7 @@ export const CreateMedicalRecordForm = ({
         <button
           type="submit"
           disabled={createMedicalRecord.isPending}
-          className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold"
+          className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {createMedicalRecord.isPending
             ? "Creando expediente..."

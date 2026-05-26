@@ -1,20 +1,42 @@
-// --- DTOs (Lo que envías desde el frontend en POST/PUT) ---
+// --- DTOs (Frontend -> Backend) ---
 
-import type { ChronicMedication, CurrentCondition, FamilyHistory, SurgicalHistory } from "../types/medical-record.types";
+import type {
+  ChronicMedication,
+  CurrentCondition,
+  FamilyHistory,
+  SurgicalHistory,
+  AntecedentesGinecoObstetricos,
+  AntecedentesPersonalesPatologicos,
+} from "../types/medical-record.types";
 
 export interface CreateMedicalRecordDTO {
   patientId: string;
+
   allergies: string[];
+
   height: number;
+
   weight: number;
+
   currentConditions: CurrentCondition[];
+
   chronicMedications: ChronicMedication[];
+
   familyHistory: FamilyHistory[];
+
   riskFactors: string[];
+
   surgicalHistory: SurgicalHistory[];
+
+  antecedentesPersonalesPatologicos: AntecedentesPersonalesPatologicos;
+
+  antecedentesGinecoObstetricos?: AntecedentesGinecoObstetricos;
+
   summary?: string;
 }
 
-// Para el Update, es exactamente igual al Create, pero sin el patientId.
-// Usamos Omit de TypeScript para mantener el código limpio y evitar repetir.
-export type UpdateMedicalRecordDTO = Omit<CreateMedicalRecordDTO, 'patientId'>;
+// Update DTO
+export type UpdateMedicalRecordDTO = Omit<
+  CreateMedicalRecordDTO,
+  "patientId"
+>;
