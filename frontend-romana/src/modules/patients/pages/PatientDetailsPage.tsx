@@ -136,7 +136,7 @@ export const PatientDetailsPage = () => {
         </div>
 
         <div>
-          <span
+          {/* <span
             className={`px-4 py-2 rounded-full font-semibold text-sm ${
               patient.isActive
                 ? "bg-green-100 text-green-800"
@@ -144,7 +144,7 @@ export const PatientDetailsPage = () => {
             }`}
           >
             {patient.isActive ? "Activo" : "Inactivo"}
-          </span>
+          </span> */}
         </div>
       </div>
 

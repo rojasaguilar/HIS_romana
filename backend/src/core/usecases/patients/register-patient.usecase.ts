@@ -14,6 +14,8 @@ export class RegisterPatientUseCase {
   async execute(data: RegisterPatientDTO): Promise<PatientEntity> {
     // const patientToSave = PatientMapper.toDomain(data);
 
+    console.log(data);
+
     const address = Address.create({
       street: data.address.street,
       number: data.address.number,

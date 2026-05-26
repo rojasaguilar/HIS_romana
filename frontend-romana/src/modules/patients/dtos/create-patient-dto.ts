@@ -10,6 +10,7 @@ export interface CreatePatientDTO {
 
   address: {
     street: string;
+    number: string;
     city: string;
     state: string;
     zipCode: string;
@@ -19,14 +20,25 @@ export interface CreatePatientDTO {
 
   allergies: string[];
 
-  bloodType: BloodType;
-
   sex: "M" | "F";
+
   maritalStatus: EstadoCivil;
+
+  nationality: string;
+
+  // medical stuff
+  bloodType: BloodType;
 
   emergencyContact?: {
     name: string;
     phoneNumber: string;
+    relationship: string;
+  };
+
+  ethnicity?: string;
+
+  legalGuardian?: {
+    name: string;
     relationship: string;
   };
 }

@@ -6,12 +6,17 @@ export class EmergencyContact {
     public readonly name: string,
     public readonly phoneNumber: string,
     public readonly relationship: string,
-  ) {
-    if (!validator.isMobilePhone(this.phoneNumber))
-      throw new PersonalInfoValidationError(`Mobile phone is not valid`);
-  }
+  ) {}
 
-  static create(data: { name: string; phoneNumber: string; relationship: string }) {
+  static create(data: {
+    name: string;
+    phoneNumber: string;
+    relationship: string;
+  }) {
+    if (!validator.isMobilePhone(data.phoneNumber))
+      throw new PersonalInfoValidationError(
+        `Mobile phone ${data.phoneNumber}is not valid`,
+      );
     return new EmergencyContact(data.name, data.phoneNumber, data.relationship);
   }
 }

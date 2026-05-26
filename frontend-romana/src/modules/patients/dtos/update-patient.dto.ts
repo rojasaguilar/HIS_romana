@@ -1,37 +1,44 @@
-import type {
-  BloodType,
-} from "../types/patient.types";
+import type { EstadoCivil } from "../types/martialStatus.type";
+import type { BloodType } from "../types/patient.types";
 
-export interface UpdatePatientDTO {
-  name?: string;
+export interface CreatePatientDTO {
+  name: string;
 
-  email?: string;
+  email: string;
 
-  phoneNumber?: string;
+  phoneNumber: string;
 
-  address?: {
-    street?: string;
-
-    city?: string;
-
-    state?: string;
-
-    zipCode?: string;
+  address: {
+    street: string;
+    number: string;
+    city: string;
+    state: string;
+    zipCode: string;
   };
 
-  birthDate?: string;
+  birthDate: string;
 
-  allergies?: string[];
+  allergies: string[];
 
-  bloodType?: BloodType;
+  sex: "M" | "F";
 
-  isActive?: boolean;
+  maritalStatus: EstadoCivil;
+
+  nationality: string;
+
+  // medical stuff
+  bloodType: BloodType;
 
   emergencyContact?: {
-    name?: string;
+    name: string;
+    phoneNumber: string;
+    relationship: string;
+  };
 
-    phoneNumber?: string;
+  ethnicity?: string;
 
-    relationship?: string;
+  legalGuardian?: {
+    name: string;
+    relationship: string;
   };
 }
