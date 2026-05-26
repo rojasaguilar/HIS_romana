@@ -1,39 +1,22 @@
-import { useState } from "react";
 import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
+import { 
+  Plus, 
+  Trash2, 
+  Pill, 
+  Activity, 
+  Stethoscope, 
+  FileText, 
+  ClipboardList,
+  Eye
+} from "lucide-react";
 
-import { Plus, Trash2, Pill, FlaskConical } from "lucide-react";
-
-import {
-  CATEGORIAS_ESTUDIOS_LAB,
-  type CategoriaEstudiosLab,
-} from "@/modules/lab-test/dtos/lab-test.dto";
 import { useSaveEncounter } from "../hooks/useUpdateEncounter";
-
-// =========================
-// TYPES
-// =========================
-
-interface PrescriptionInput {
-  medicationName: string;
-  dosageAmount: string;
-  dosageUnit: string;
-  frequency: string;
-  startDate: string;
-  endDate: string;
-}
-
-interface LabTestInput {
-  category: CategoriaEstudiosLab;
-  testName: string;
-  instructions: string;
-}
+import { useEncounterForm } from "../hooks/useEncounterForm";
 
 interface EncounterFormProps {
   appointment: any;
   onCancel: () => void;
-
   encounter?: any;
-
   mode?: "create" | "edit";
 }
 
@@ -44,585 +27,455 @@ export const EncounterForm = ({
   mode = "create",
 }: EncounterFormProps) => {
   const { showToast } = useToast();
-
   const saveEncounter = useSaveEncounter();
 
-  // =========================
-  // FORM STATES
-  // =========================
+  const { 
+    form, 
+    interrogatorio, 
+    diagnosticos, 
+    exploracion, 
+    recetas 
+  } = useEncounterForm(encounter);
 
-  const [symptoms, setSymptoms] = useState(encounter?.symptoms || "");
+  const { register, handleSubmit, formState: { errors } } = form;
+  const isPending = saveEncounter.isPending;
 
-  const [preliminaryDiagnosis, setPreliminaryDiagnosis] = useState(
-    encounter?.preliminaryDiagnosis || "",
-  );
-
-  const [differentialDiagnosis, setDifferentialDiagnosis] = useState(
-    encounter?.differentialDiagnosis || "",
-  );
-
-  const [notes, setNotes] = useState(encounter?.notes || "");
-
-  // =========================
-  // PRESCRIPTIONS
-  // =========================
-
-  const [prescriptions, setPrescriptions] = useState<PrescriptionInput[]>(
-    encounter?.prescriptions?.map((p: any) => ({
-      medicationName: p.medicationName,
-
-      dosageAmount: String(p.dosage?.amount || ""),
-
-      dosageUnit: p.dosage?.unit || "mg",
-
-      frequency: p.frequency || "",
-
-      startDate: p.startDate
-        ? new Date(p.startDate).toISOString().split("T")[0]
-        : "",
-
-      endDate: p.endDate ? new Date(p.endDate).toISOString().split("T")[0] : "",
-    })) || [],
-  );
-
-  // =========================
-  // LAB TESTS
-  // =========================
-
-  const [labTests, setLabTests] = useState<LabTestInput[]>(
-    encounter?.labTests?.map((lab: any) => ({
-      category: lab.category,
-
-      testName: lab.testName,
-
-      instructions: lab.instructions || "",
-    })) || [],
-  );
-
-  // =========================
-  // PRESCRIPTIONS HANDLERS
-  // =========================
-
-  const handleAddPrescription = () => {
-    setPrescriptions((prev) => [
-      ...prev,
-      {
-        medicationName: "",
-        dosageAmount: "",
-        dosageUnit: "mg",
-        frequency: "",
-        startDate: "",
-        endDate: "",
-      },
-    ]);
-  };
-
-  const handleRemovePrescription = (index: number) => {
-    setPrescriptions((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handlePrescriptionChange = (
-    index: number,
-    field: keyof PrescriptionInput,
-    value: string,
-  ) => {
-    const updated = [...prescriptions];
-
-    updated[index] = {
-      ...updated[index],
-      [field]: value,
-    };
-
-    setPrescriptions(updated);
-  };
-
-  // =========================
-  // LAB TESTS HANDLERS
-  // =========================
-
-  const handleAddLabTest = () => {
-    setLabTests((prev) => [
-      ...prev,
-      {
-        category: CATEGORIAS_ESTUDIOS_LAB.SANGRE,
-        testName: "",
-        instructions: "",
-      },
-    ]);
-  };
-
-  const handleRemoveLabTest = (index: number) => {
-    setLabTests((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleLabTestChange = (
-    index: number,
-    field: keyof LabTestInput,
-    value: string,
-  ) => {
-    const updated = [...labTests];
-
-    updated[index] = {
-      ...updated[index],
-      [field]: value,
-    };
-
-    setLabTests(updated);
-  };
-
-  // =========================
-  // SUBMIT
-  // =========================
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!symptoms.trim() || !preliminaryDiagnosis.trim()) {
-      showToast(
-        "Los síntomas y diagnóstico preliminar son obligatorios",
-        "error",
-      );
-
+  const onSubmit = (data: any) => {
+    if (!data.symptoms.trim()) {
+      showToast("El motivo de consulta / síntomas es obligatorio", "error");
       return;
-    }
-
-    // VALIDAR RECETAS
-
-    for (const p of prescriptions) {
-      if (
-        !p.medicationName ||
-        !p.dosageAmount ||
-        !p.frequency ||
-        !p.startDate ||
-        !p.endDate
-      ) {
-        showToast("Completa todos los campos de los medicamentos", "error");
-
-        return;
-      }
-
-      if (isNaN(Number(p.dosageAmount))) {
-        showToast(
-          `La dosis de ${p.medicationName || "un medicamento"} debe ser válida`,
-          "error",
-        );
-
-        return;
-      }
-    }
-
-    // VALIDAR LAB TESTS
-
-    for (const lab of labTests) {
-      if (!lab.testName.trim()) {
-        showToast("Todos los estudios deben tener nombre", "error");
-
-        return;
-      }
     }
 
     const encounterData = {
       patientId: appointment.patientId,
-
       medicId: appointment.medicId,
-
       appointmentId: appointment.id,
-
-      symptoms: symptoms.trim(),
-
-      preliminaryDiagnosis: preliminaryDiagnosis.trim(),
-
-      differentialDiagnosis: differentialDiagnosis.trim(),
-
-      notes: notes.trim() || undefined,
-
-      prescriptions: prescriptions.map((p) => ({
-        medicationName: p.medicationName,
-
-        dosage: {
-          amount: Number(p.dosageAmount),
-
-          unit: p.dosageUnit,
-        },
-
-        frequency: p.frequency,
-
-        startDate: new Date(p.startDate).toISOString(),
-
-        endDate: new Date(p.endDate).toISOString(),
-      })),
-
-      labTests: labTests.map((lab) => ({
-        category: lab.category,
-
-        testName: lab.testName,
-
-        instructions: lab.instructions,
-      })),
+      ...data,
     };
 
     saveEncounter.mutate(
       {
         id: mode === "edit" ? encounter?.id : undefined,
-
         data: encounterData,
       },
       {
         onSuccess: () => {
           showToast(
-            mode === "edit"
-              ? "Nota clínica actualizada"
-              : "Nota clínica guardada y cita finalizada",
-            "success",
+            mode === "edit" ? "Nota clínica actualizada" : "Nota clínica guardada",
+            "success"
           );
-
           onCancel();
         },
-
         onError: (err: any) => {
           showToast(
-            err?.response?.data?.message ||
-              (mode === "edit"
-                ? "Error al actualizar la nota"
-                : "Error al guardar la nota"),
-            "error",
+            err?.response?.data?.message || "Error al procesar la nota clínica",
+            "error"
           );
         },
-      },
+      }
     );
   };
 
-  const isPending = saveEncounter.isPending;
+  // Clases CSS compartidas
+  const sectionHeaderClass = "flex items-center justify-between border-b border-slate-200 pb-2 mb-4";
+  const sectionTitleClass = "flex items-center gap-2 text-md font-bold text-slate-800";
+  const labelClass = "text-xs font-semibold text-slate-600 mb-1 ml-1";
+  const inputClass = "w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-400 focus:bg-white transition-colors";
+  const btnAddClass = "flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors";
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8 max-h-[80vh] overflow-y-auto pr-2">
+      
       {/* ========================= */}
-      {/* EVALUACIÓN */}
+      {/* MOTIVO DE CONSULTA */}
       {/* ========================= */}
-
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-2 border-b border-gray-100 pb-2">
-          <h4 className="text-md font-bold text-gray-800">
-            Evaluación del Paciente
-          </h4>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-semibold text-gray-700">
-            Síntomas / Motivo de consulta *
-          </label>
-
-          <textarea
-            value={symptoms}
-            onChange={(e) => setSymptoms(e.target.value)}
-            placeholder="Ej. Dolor abdominal..."
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl resize-none h-24 text-sm"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-semibold text-gray-700">
-              Diagnóstico Preliminar *
-            </label>
-
-            <textarea
-              value={preliminaryDiagnosis}
-              onChange={(e) => setPreliminaryDiagnosis(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl resize-none h-24 text-sm"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-semibold text-gray-700">
-              Diagnóstico Diferencial
-            </label>
-
-            <textarea
-              value={differentialDiagnosis}
-              onChange={(e) => setDifferentialDiagnosis(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl resize-none h-24 text-sm"
-            />
+      <div className="flex flex-col gap-3">
+        <div className={sectionHeaderClass}>
+          <div className={sectionTitleClass}>
+            <FileText className="w-5 h-5 text-indigo-600" />
+            <h4>Motivo de Consulta</h4>
           </div>
         </div>
-
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-semibold text-gray-700">
-            Notas adicionales
-          </label>
-
+        <div className="flex flex-col">
+          <label className={labelClass}>Síntomas / Motivo principal *</label>
           <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl resize-none h-20 text-sm"
+            {...register("symptoms", { required: true })}
+            placeholder="Ej. Dolor abdominal de 3 días de evolución..."
+            className={`${inputClass} resize-none h-20`}
           />
+        </div>
+        <div className="flex flex-col">
+          <label className={labelClass}>Notas adicionales (Opcional)</label>
+          <textarea
+            {...register("notes")}
+            placeholder="Observaciones generales..."
+            className={`${inputClass} resize-none h-16`}
+          />
+        </div>
+      </div>
+{/* ========================= */}
+{/* SIGNOS VITALES Y SOMATOMETRÍA */}
+{/* ========================= */}
+<div className="flex flex-col gap-3">
+  <div className={sectionHeaderClass}>
+    <div className={sectionTitleClass}>
+      <Activity className="w-5 h-5 text-red-500" />
+      <h4>Signos Vitales y Somatometría</h4>
+    </div>
+  </div>
+  
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 p-4 border border-slate-200 rounded-2xl">
+    
+    {/* Tensión Arterial - Sistólica */}
+    <div className="flex flex-col">
+      <label className={labelClass}>Tensión Arterial Sistólica (mmHg)</label>
+      <input 
+        type="number" 
+        {...register("signosVitales.tensionArterial.sistolica", { valueAsNumber: true })} 
+        placeholder="Ej. 120"
+        className={inputClass} 
+      />
+    </div>
+
+    {/* Tensión Arterial - Diastólica */}
+    <div className="flex flex-col">
+      <label className={labelClass}>Tensión Arterial Diastólica (mmHg)</label>
+      <input 
+        type="number" 
+        {...register("signosVitales.tensionArterial.diastolica", { valueAsNumber: true })} 
+        placeholder="Ej. 80"
+        className={inputClass} 
+      />
+    </div>
+
+    {/* Frecuencia Cardíaca */}
+    <div className="flex flex-col">
+      <label className={labelClass}>Frecuencia Cardíaca (lpm)</label>
+      <input 
+        type="number" 
+        {...register("signosVitales.frecuenciaCardiaca.valor", { valueAsNumber: true })} 
+        placeholder="Ej. 72"
+        className={inputClass} 
+      />
+    </div>
+
+    {/* Frecuencia Respiratoria */}
+    <div className="flex flex-col">
+      <label className={labelClass}>Frecuencia Respiratoria (rpm)</label>
+      <input 
+        type="number" 
+        {...register("signosVitales.frecuenciaRespiratoria.valor", { valueAsNumber: true })} 
+        placeholder="Ej. 16"
+        className={inputClass} 
+      />
+    </div>
+
+    {/* Temperatura */}
+    <div className="flex flex-col">
+      <label className={labelClass}>Temperatura (°C)</label>
+      <input 
+        type="number" 
+        step="0.1" 
+        {...register("signosVitales.temperatura.valor", { valueAsNumber: true })} 
+        placeholder="Ej. 36.5"
+        className={inputClass} 
+      />
+    </div>
+
+    {/* Talla / Estatura */}
+    <div className="flex flex-col">
+      <label className={labelClass}>Talla / Estatura (cm)</label>
+      <input 
+        type="number" 
+        {...register("signosVitales.talla.valor", { valueAsNumber: true })} 
+        placeholder="Ej. 170"
+        className={inputClass} 
+      />
+    </div>
+
+    {/* Peso (Valor + Selector de Unidad) */}
+    <div className="flex flex-col col-span-2 gap-1">
+      <label className={labelClass}>Peso Corporal</label>
+      <div className="flex gap-2">
+        <input 
+          type="number" 
+          step="0.1" 
+          placeholder="Valor (Ej. 70)" 
+          {...register("signosVitales.peso.valor", { valueAsNumber: true })} 
+          className={inputClass} 
+        />
+        <select 
+          {...register("signosVitales.peso.unidad")} 
+          className={`${inputClass} max-w-[85px] bg-white cursor-pointer`}
+        >
+          <option value="kg">kg</option>
+          <option value="lb">lb</option>
+        </select>
+      </div>
+    </div>
+
+    {/* Índice de Masa Corporal (IMC) */}
+    <div className="flex flex-col col-span-2 gap-1">
+      <label className={labelClass}>Índice de Masa Corporal (IMC)</label>
+      <div className="flex gap-2">
+        <input 
+          type="number" 
+          step="0.01" 
+          placeholder="Valor (Ej. 24.2)" 
+          {...register("signosVitales.imc.valor", { valueAsNumber: true })} 
+          className={inputClass} 
+        />
+        <input 
+          type="text" 
+          placeholder="Clasificación (Ej. Normal, Sobrepeso)" 
+          {...register("signosVitales.imc.clasificacion")} 
+          className={inputClass} 
+        />
+      </div>
+    </div>
+
+    {/* Índice Cintura-Cadera (ICC) */}
+    <div className="flex flex-col col-span-2 gap-1">
+      <label className={labelClass}>Índice Cintura-Cadera (ICC)</label>
+      <div className="flex gap-2">
+        <input 
+          type="number" 
+          step="0.01" 
+          placeholder="Valor (Ej. 0.85)" 
+          {...register("signosVitales.icc.valor", { valueAsNumber: true })} 
+          className={inputClass} 
+        />
+        <input 
+          type="text" 
+          placeholder="Clasificación (Ej. Riesgo Moderado)" 
+          {...register("signosVitales.icc.clasificacion")} 
+          className={inputClass} 
+        />
+      </div>
+    </div>
+
+  </div>
+</div>
+
+      {/* ========================= */}
+      {/* INTERROGATORIO POR APARATOS Y SISTEMAS */}
+      {/* ========================= */}
+      <div className="flex flex-col gap-3">
+        <div className={sectionHeaderClass}>
+          <div className={sectionTitleClass}>
+            <ClipboardList className="w-5 h-5 text-amber-600" />
+            <h4>Interrogatorio (Aparatos y Sistemas)</h4>
+          </div>
+          <button
+            type="button"
+            onClick={() => interrogatorio.append({ system: "", normal: true, sintomas: "", notas: "" })}
+            className={`${btnAddClass} text-amber-700 bg-amber-50 hover:bg-amber-100`}
+          >
+            <Plus className="w-3.5 h-3.5" /> Agregar Sistema
+          </button>
+        </div>
+        <div className="flex flex-col gap-3">
+          {interrogatorio.fields.map((field, index) => (
+            <div key={field.id} className="border border-slate-200 p-4 rounded-xl bg-white grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+              <button type="button" onClick={() => interrogatorio.remove(index)} className="absolute top-4 right-4 text-red-400 hover:text-red-600">
+                <Trash2 className="w-4 h-4" />
+              </button>
+              <div className="pr-8 flex flex-col gap-1">
+                <label className={labelClass}>Sistema interrogado</label>
+                <input {...register(`interrogatorioAparatosSistemas.${index}.system` as const, { required: true })} placeholder="Ej. Respiratorio, Digestivo..." className={inputClass} />
+              </div>
+              <div className="flex items-center gap-2 mt-4 md:mt-6">
+                <input type="checkbox" {...register(`interrogatorioAparatosSistemas.${index}.normal` as const)} className="w-4 h-4 accent-indigo-600" />
+                <span className="text-sm font-semibold text-slate-700">Aparato / Sistema Normal</span>
+              </div>
+              <div className="md:col-span-2 flex flex-col gap-1">
+                <label className={labelClass}>Síntomas reportados</label>
+                <input {...register(`interrogatorioAparatosSistemas.${index}.sintomas` as const)} placeholder="Síntomas referidos por el paciente..." className={inputClass} />
+              </div>
+              <div className="md:col-span-2 flex flex-col gap-1">
+                <label className={labelClass}>Notas adicionales</label>
+                <textarea {...register(`interrogatorioAparatosSistemas.${index}.notas` as const)} placeholder="Observaciones..." className={`${inputClass} h-12 resize-none`} />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* ========================= */}
-      {/* RECETAS */}
+      {/* EXPLORACIÓN FÍSICA */}
       {/* ========================= */}
-
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-          <div className="flex items-center gap-2">
-            <Pill className="w-5 h-5 text-blue-600" />
-
-            <h4 className="text-md font-bold text-gray-800">
-              Tratamiento y Receta
-            </h4>
+      <div className="flex flex-col gap-3">
+        <div className={sectionHeaderClass}>
+          <div className={sectionTitleClass}>
+            <Eye className="w-5 h-5 text-teal-600" />
+            <h4>Exploración Física</h4>
           </div>
-
           <button
             type="button"
-            onClick={handleAddPrescription}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 rounded-lg"
+            onClick={() => exploracion.append({ sistema: "", normal: true, hallazgos: "", descripcion: "", observaciones: "" })}
+            className={`${btnAddClass} text-teal-700 bg-teal-50 hover:bg-teal-100`}
           >
-            <Plus className="w-3.5 h-3.5" />
-            Agregar Medicamento
+            <Plus className="w-3.5 h-3.5" /> Agregar Exploración
           </button>
         </div>
+        <div className="flex flex-col gap-3">
+          {exploracion.fields.map((field, index) => (
+            <div key={field.id} className="border border-slate-200 p-4 rounded-xl bg-white grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+              <button type="button" onClick={() => exploracion.remove(index)} className="absolute top-4 right-4 text-red-400 hover:text-red-600">
+                <Trash2 className="w-4 h-4" />
+              </button>
+              <div className="pr-8 flex flex-col gap-1">
+                <label className={labelClass}>Región o Sistema</label>
+                <input {...register(`exploracionFisica.${index}.sistema` as const, { required: true })} placeholder="Ej. Cabeza y cuello, Tórax..." className={inputClass} />
+              </div>
+              <div className="flex items-center gap-2 mt-4 md:mt-6">
+                <input type="checkbox" {...register(`exploracionFisica.${index}.normal` as const)} className="w-4 h-4 accent-indigo-600" />
+                <span className="text-sm font-semibold text-slate-700">Exploración Normal</span>
+              </div>
+              <div className="md:col-span-2 flex flex-col gap-1">
+                <label className={labelClass}>Hallazgos</label>
+                <input {...register(`exploracionFisica.${index}.hallazgos` as const)} placeholder="Hallazgos principales..." className={inputClass} />
+              </div>
+              <div className="flex flex-col gap-1 md:col-span-1">
+                <label className={labelClass}>Descripción detallada</label>
+                <textarea {...register(`exploracionFisica.${index}.descripcion` as const)} placeholder="Describe lo explorado..." className={`${inputClass} h-16 resize-none`} />
+              </div>
+              <div className="flex flex-col gap-1 md:col-span-1">
+                <label className={labelClass}>Observaciones</label>
+                <textarea {...register(`exploracionFisica.${index}.observaciones` as const)} placeholder="Notas clínicas extra..." className={`${inputClass} h-16 resize-none`} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
-        {prescriptions.length === 0 ? (
-          <p className="text-sm text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-            No se han agregado medicamentos.
-          </p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {prescriptions.map((prescription, index) => (
-              <div
-                key={index}
-                className="border border-gray-200 rounded-xl p-4 flex flex-col gap-4"
-              >
-                <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => handleRemovePrescription(index)}
-                  >
-                    <Trash2 className="w-4 h-4 text-red-500" />
-                  </button>
+      {/* ========================= */}
+      {/* INTEGRACIÓN DIAGNÓSTICA */}
+      {/* ========================= */}
+      <div className="flex flex-col gap-3">
+        <div className={sectionHeaderClass}>
+          <div className={sectionTitleClass}>
+            <Stethoscope className="w-5 h-5 text-emerald-600" />
+            <h4>Integración Diagnóstica</h4>
+          </div>
+          <button
+            type="button"
+            onClick={() => diagnosticos.append({ diagnostico: "", cie10: "", tipo: "PRESUNTIVO", estado: "ACTIVO" })}
+            className={`${btnAddClass} text-emerald-700 bg-emerald-50 hover:bg-emerald-100`}
+          >
+            <Plus className="w-3.5 h-3.5" /> Agregar Diagnóstico
+          </button>
+        </div>
+        <div className="flex flex-col gap-3">
+          {diagnosticos.fields.map((field, index) => (
+            <div key={field.id} className="border border-slate-200 p-4 rounded-xl bg-white grid grid-cols-1 md:grid-cols-12 gap-3 relative">
+              <button type="button" onClick={() => diagnosticos.remove(index)} className="absolute top-4 right-4 text-red-400 hover:text-red-600">
+                <Trash2 className="w-4 h-4" />
+              </button>
+              <div className="md:col-span-6 pr-6 flex flex-col gap-1">
+                <label className={labelClass}>Diagnóstico</label>
+                <input {...register(`integracionDiagnostica.${index}.diagnostico` as const, { required: true })} placeholder="Nombre del diagnóstico" className={inputClass} />
+              </div>
+              <div className="md:col-span-3 flex flex-col gap-1">
+                <label className={labelClass}>CIE-10</label>
+                <input {...register(`integracionDiagnostica.${index}.cie10` as const)} placeholder="Ej. J00" className={inputClass} />
+              </div>
+              <div className="md:col-span-3 flex flex-col gap-1">
+                <label className={labelClass}>Tipo</label>
+                <select {...register(`integracionDiagnostica.${index}.tipo` as const)} className={inputClass}>
+                  <option value="PRESUNTIVO">Presuntivo</option>
+                  <option value="DEFINITIVO">Definitivo</option>
+                </select>
+              </div>
+              <div className="md:col-span-12 flex flex-col gap-1">
+                <label className={labelClass}>Observaciones (opcional)</label>
+                <input {...register(`integracionDiagnostica.${index}.observaciones` as const)} placeholder="Notas..." className={inputClass} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ========================= */}
+      {/* TRATAMIENTO Y RECETA */}
+      {/* ========================= */}
+      <div className="flex flex-col gap-3">
+        <div className={sectionHeaderClass}>
+          <div className={sectionTitleClass}>
+            <Pill className="w-5 h-5 text-blue-600" />
+            <h4>Tratamiento y Receta</h4>
+          </div>
+          <button
+            type="button"
+            onClick={() => recetas.append({ nombre: "", tipo: "Medicamento", dosis: "", frecuencia: "", routeAdministration: "oral", fechaInicio: new Date().toISOString().split("T")[0], fechaFin: "" })}
+            className={`${btnAddClass} text-blue-700 bg-blue-50 hover:bg-blue-100`}
+          >
+            <Plus className="w-3.5 h-3.5" /> Agregar Fármaco
+          </button>
+        </div>
+        <div className="flex flex-col gap-3">
+          {recetas.fields.map((field, index) => (
+            <div key={field.id} className="border border-slate-200 p-4 rounded-xl bg-white grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+              <button type="button" onClick={() => recetas.remove(index)} className="absolute top-4 right-4 text-red-400 hover:text-red-600">
+                <Trash2 className="w-4 h-4" />
+              </button>
+              
+              <div className="pr-6 flex flex-col gap-1">
+                <label className={labelClass}>Medicamento</label>
+                <input {...register(`prescriptions.${index}.nombre` as const, { required: true })} placeholder="Nombre comercial/genérico" className={inputClass} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className={labelClass}>Dosis y Unidad</label>
+                <input {...register(`prescriptions.${index}.dosis` as const, { required: true })} placeholder="Ej. 500mg, 1 tableta..." className={inputClass} />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className={labelClass}>Frecuencia</label>
+                  <input {...register(`prescriptions.${index}.frecuencia` as const, { required: true })} placeholder="Ej. Cada 8 horas" className={inputClass} />
                 </div>
-
-                <input
-                  type="text"
-                  placeholder="Medicamento"
-                  value={prescription.medicationName}
-                  onChange={(e) =>
-                    handlePrescriptionChange(
-                      index,
-                      "medicationName",
-                      e.target.value,
-                    )
-                  }
-                  className="px-3 py-2 border rounded-lg"
-                />
-
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    placeholder="Cantidad"
-                    value={prescription.dosageAmount}
-                    onChange={(e) =>
-                      handlePrescriptionChange(
-                        index,
-                        "dosageAmount",
-                        e.target.value,
-                      )
-                    }
-                    className="px-3 py-2 border rounded-lg"
-                  />
-
-                  <select
-                    value={prescription.dosageUnit}
-                    onChange={(e) =>
-                      handlePrescriptionChange(
-                        index,
-                        "dosageUnit",
-                        e.target.value,
-                      )
-                    }
-                    className="px-3 py-2 border rounded-lg"
-                  >
-                    <option value="mg">mg</option>
-                    <option value="g">g</option>
-                    <option value="ml">ml</option>
-                    <option value="mcg">mcg</option>
-                    <option value="UI">UI</option>
-                    <option value="tabletas">tabletas</option>
-                    <option value="cápsulas">cápsulas</option>
-                    <option value="gotas">gotas</option>
+                <div className="flex flex-col gap-1">
+                  <label className={labelClass}>Vía Adm.</label>
+                  <select {...register(`prescriptions.${index}.routeAdministration` as const)} className={inputClass}>
+                    <option value="oral">Oral</option>
+                    <option value="intravenosa">Intravenosa</option>
+                    <option value="intramuscular">Intramuscular</option>
+                    <option value="subcutanea">Subcutánea</option>
+                    <option value="topica">Tópica</option>
+                    <option value="otra">Otra</option>
                   </select>
                 </div>
+              </div>
 
-                <input
-                  type="text"
-                  placeholder="Frecuencia"
-                  value={prescription.frequency}
-                  onChange={(e) =>
-                    handlePrescriptionChange(index, "frequency", e.target.value)
-                  }
-                  className="px-3 py-2 border rounded-lg"
-                />
-
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="date"
-                    value={prescription.startDate}
-                    onChange={(e) =>
-                      handlePrescriptionChange(
-                        index,
-                        "startDate",
-                        e.target.value,
-                      )
-                    }
-                    className="px-3 py-2 border rounded-lg"
-                  />
-
-                  <input
-                    type="date"
-                    value={prescription.endDate}
-                    onChange={(e) =>
-                      handlePrescriptionChange(index, "endDate", e.target.value)
-                    }
-                    className="px-3 py-2 border rounded-lg"
-                  />
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className={labelClass}>Fecha Inicio</label>
+                  <input type="date" {...register(`prescriptions.${index}.fechaInicio` as const, { required: true })} className={inputClass} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className={labelClass}>Fecha Fin</label>
+                  <input type="date" {...register(`prescriptions.${index}.fechaFin` as const, { required: true })} className={inputClass} />
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              <div className="md:col-span-2 flex flex-col gap-1">
+                <label className={labelClass}>Indicaciones Especiales</label>
+                <textarea {...register(`prescriptions.${index}.indicacion` as const)} placeholder="Ej. Tomar junto con los alimentos..." className={`${inputClass} resize-none h-12`} />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ========================= */}
-      {/* LAB TESTS */}
+      {/* BOTONES DE ACCIÓN */}
       {/* ========================= */}
-
-      {/* <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-          <div className="flex items-center gap-2">
-            <FlaskConical className="w-5 h-5 text-purple-600" />
-
-            <h4 className="text-md font-bold text-gray-800">
-              Estudios de Laboratorio
-            </h4>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleAddLabTest}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-purple-700 bg-purple-50 rounded-lg"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Agregar Estudio
-          </button>
-        </div>
-
-        {labTests.length === 0 ? (
-          <p className="text-sm text-gray-400 italic text-center py-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-            No se han agregado estudios de laboratorio.
-          </p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {labTests.map((lab, index) => (
-              <div
-                key={index}
-                className="relative border border-purple-100 bg-white rounded-2xl shadow-sm p-5 flex flex-col gap-4"
-              >
-                <div className="absolute top-0 left-0 w-1 h-full bg-purple-500 rounded-l-2xl"></div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <FlaskConical className="w-5 h-5 text-purple-600" />
-
-                    <span className="font-semibold text-gray-800">
-                      Estudio #{index + 1}
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveLabTest(index)}
-                    className="p-2 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-600 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-sm font-semibold text-gray-700">
-                      Nombre del estudio
-                    </label>
-
-                    <input
-                      type="text"
-                      required
-                      value={lab.testName}
-                      onChange={(e) =>
-                        handleLabTestChange(index, "testName", e.target.value)
-                      }
-                      placeholder="Ej. Biometría Hemática"
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm"
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-1">
-                    <label className="text-sm font-semibold text-gray-700">
-                      Categoría
-                    </label>
-
-                    <select
-                      value={lab.category}
-                      onChange={(e) =>
-                        handleLabTestChange(index, "category", e.target.value)
-                      }
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm"
-                    >
-                      {Object.values(CATEGORIAS_ESTUDIOS_LAB).map(
-                        (category) => (
-                          <option key={category} value={category}>
-                            {category}
-                          </option>
-                        ),
-                      )}
-                    </select>
-                  </div>
-
-                  <div className="md:col-span-2 flex flex-col gap-1">
-                    <label className="text-sm font-semibold text-gray-700">
-                      Indicaciones
-                    </label>
-
-                    <textarea
-                      value={lab.instructions}
-                      onChange={(e) =>
-                        handleLabTestChange(
-                          index,
-                          "instructions",
-                          e.target.value,
-                        )
-                      }
-                      placeholder="Ayuno de 8 horas..."
-                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl resize-none h-20 text-sm"
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div> */}
-
-      {/* ========================= */}
-      {/* ACTIONS */}
-      {/* ========================= */}
-
-      <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+      <div className="flex justify-end gap-3 border-t border-slate-200 pt-6 sticky bottom-0 bg-white pb-2 mt-2">
         <button
           type="button"
           onClick={onCancel}
           disabled={isPending}
-          className="px-4 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-200 rounded-xl"
+          className="px-5 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors"
         >
           Cancelar
         </button>
@@ -630,15 +483,11 @@ export const EncounterForm = ({
         <button
           type="submit"
           disabled={isPending}
-          className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl"
+          className="px-6 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 rounded-xl transition-colors shadow-sm"
         >
           {isPending
-            ? mode === "edit"
-              ? "Actualizando nota..."
-              : "Guardando nota..."
-            : mode === "edit"
-              ? "Actualizar Nota Clínica"
-              : "Guardar Nota Clínica"}
+            ? mode === "edit" ? "Actualizando..." : "Guardando..."
+            : mode === "edit" ? "Actualizar Nota Clínica" : "Guardar Nota Clínica"}
         </button>
       </div>
     </form>

@@ -24,6 +24,7 @@ import { useState, type SetStateAction } from "react";
 import { ConfirmModal } from "@/shared/components/feedback/modal/ConfirmModal";
 import { EncounterSection } from "@/modules/encounters/components/EncounterSection";
 import DatePicker from "react-datepicker";
+import { useEncounterByAppointment } from "@/modules/encounters/hooks/useEncounter";
 
 // IMPORTAMOS EL NUEVO COMPONENTE CLINICO
 
@@ -47,6 +48,7 @@ export const AppointmentDetailsPage = () => {
     useAppointmentDetails(id!);
   const { data: services, isLoading: loadingServices } = useServices();
   const { data: patients, isLoading: loadingPatients } = usePatients();
+  const { data: encounter, isLoading } = useEncounterByAppointment(id ?? "");
 
   if (loadingAppointment || loadingServices || loadingPatients) {
     return (
@@ -96,7 +98,7 @@ export const AppointmentDetailsPage = () => {
           </h1>
 
           <div className="flex items-center gap-3">
-            {appointment.status === "PROGRAMADA" && (
+            {appointment.status === "PROGRAMADA" && !encounter && (
               <button
                 onClick={() => setOpenRescheduleModal(true)}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
