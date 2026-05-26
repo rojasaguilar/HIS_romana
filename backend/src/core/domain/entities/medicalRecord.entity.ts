@@ -1,5 +1,10 @@
 import { CreateMedicalRecordDTO } from '../dtos/medicalRecord.dto';
+
 import { InconsistantMedicalRecordError } from '../errors/medicalRecord.error';
+
+import { AntecedentesGinecoObstetricosVO } from '../value-objects/antecedentesGinecoObstetricos.vo';
+import { AntecedentesPersonalesPatologicosVO } from '../value-objects/antecedentesPersonalesPatologicos.vo';
+
 import { ChronicMedication } from '../value-objects/chronicMedication.vo';
 import { CurrentCondition } from '../value-objects/currentCondition.vo';
 import { FamilyHistory } from '../value-objects/familyHistory.vo';
@@ -9,33 +14,47 @@ import { SurgeryRecord } from '../value-objects/surgeryRecord.vo';
 export class MedicalRecordEntity {
   private constructor(
     public readonly patientId: string,
+
     public allergies: string[],
+
     public height: number,
     public weight: number,
+
     public currentConditions: CurrentCondition[],
     public chronicMedications: ChronicMedication[],
+
     public riskFactors: string[],
+
     public surgicalHistory: SurgeryRecord[],
+
     public familyHistory: FamilyHistory[],
+
+    public antecedentesPersonalesPatologicos: AntecedentesPersonalesPatologicosVO,
+
+    public antecedentesGinecoObstetricos?: AntecedentesGinecoObstetricosVO,
+
     public summary?: string,
+
     public id?: string,
   ) {
-    if (patientId.length <= 0)
-      throw new InconsistantMedicalRecordError(`Invalid patientId`);
+    if (!patientId.trim()) {
+      throw new InconsistantMedicalRecordError('Invalid patientId');
+    }
 
-    if (height <= 0)
+    if (height <= 0) {
       throw new InconsistantMedicalRecordError(
-        `A height of : ${height} is not valid`,
+        `A height of: ${height} is not valid`,
       );
+    }
 
     if (weight <= 0) {
       throw new InconsistantMedicalRecordError(
-        `A weight of : ${weight} is not valid`,
+        `A weight of: ${weight} is not valid`,
       );
     }
   }
 
-  public static create(data: CreateMedicalRecordDTO) {
+  public static create(data: CreateMedicalRecordDTO): MedicalRecordEntity {
     const currentConditions = data.currentConditions
       ? data.currentConditions.map(
           (condition) =>
@@ -52,6 +71,7 @@ export class MedicalRecordEntity {
           (medication) =>
             new ChronicMedication(
               medication.medicationName,
+              medication.routeAdministration,
               medication.dosage,
               medication.frequency,
               medication.startedAt,
@@ -68,24 +88,47 @@ export class MedicalRecordEntity {
 
     const familyHistory = data.familyHistory
       ? data.familyHistory.map((fh) => {
-          //create relationship based on dto relationship
-          const relationShip = Relationship.create(fh.relationship);
-          //return a Family member with it's disease
-          return new FamilyHistory(relationShip, fh.diseaseId);
+          const relationship = Relationship.create(fh.relationship);
+
+          return new FamilyHistory(relationship, fh.diseaseId);
         })
       : [];
 
+    const antecedentesPersonalesPatologicos =
+      AntecedentesPersonalesPatologicosVO.create(
+        data.antecedentesPersonalesPatologicos,
+      );
+
+    const antecedentesGinecoObstetricos = data.antecedentesGinecoObstetricos
+      ? AntecedentesGinecoObstetricosVO.create(
+          data.antecedentesGinecoObstetricos,
+        )
+      : undefined;
+
     return new MedicalRecordEntity(
       data.patientId,
-      data.allergies,
+
+      data.allergies ?? [],
+
       data.height,
       data.weight,
+
       currentConditions,
+
       chronicMedications,
-      data.riskFactors,
+
+      data.riskFactors ?? [],
+
       surgicalHistory,
+
       familyHistory,
+
+      antecedentesPersonalesPatologicos,
+
+      antecedentesGinecoObstetricos,
+
       data.summary,
+
       data.id,
     );
   }

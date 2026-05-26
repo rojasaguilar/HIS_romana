@@ -1,6 +1,5 @@
 import { UpdateMedicalRecordDTO } from '../../../../core/domain/dtos/medicalRecord.dto';
 import { MedicalRecordEntity } from '../../../../core/domain/entities/medicalRecord.entity';
-import { MedicalRecordCreationError } from '../../../../core/domain/errors/medicalRecord.error';
 import { IMedicalRecordRepository } from '../../../../core/domain/repositories/medicalRecord.repository.interface';
 import { MedicalRecordMapper } from '../mappers/medicalRecord.mapper';
 import medicalRecordModel from '../models/medicalRecord.model';
