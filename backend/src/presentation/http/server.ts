@@ -17,6 +17,7 @@ import { createSubscriptionModule } from '../../modules/subscription.module';
 import { createLabTestModule } from '../../modules/lab-test.module';
 import conditionRoutes from './routes/conditions.routes';
 import encounterRoutes from './routes/encounter.routes.old';
+import cie10Routes from './routes/cie10.routes';
 
 const app = express();
 const patientModule = createPatientModule();
@@ -57,6 +58,7 @@ app.use('/subscriptions', subscriptionModule.router);
 app.use('/encounters', encounterRoutes);
 app.use('/lab-tests', labTestModule.router);
 app.use('/conditions', conditionRoutes);
+app.use('/cie-10', cie10Routes);
 
 //cambiar de lugar y hacer mejor
 app.use((err, req, res, next) => {

@@ -111,11 +111,10 @@ const IntegracionDiagnosticaSchema = new Schema(
     diagnostico: {
       type: String,
       required: true,
-      enum: DIAGNOSTICO_TIPO,
     },
     cie10: { type: String, required: true },
 
-    tipo: { type: String, required: true },
+    tipo: { type: String, required: true, enum: DIAGNOSTICO_TIPO },
     estado: { type: String, required: true },
 
     principal: { type: Boolean, default: false },
@@ -246,4 +245,7 @@ encounterSchema.index({ appointmentId: 1 }, { unique: true });
 export type EncounterSchemaType = InferSchemaType<typeof encounterSchema>;
 export type encounterDocument = HydratedDocument<EncounterSchemaType>;
 
-export const encounterModel =  model<EncounterSchemaType>('Encounter', encounterSchema);
+export const encounterModel = model<EncounterSchemaType>(
+  'Encounter',
+  encounterSchema,
+);

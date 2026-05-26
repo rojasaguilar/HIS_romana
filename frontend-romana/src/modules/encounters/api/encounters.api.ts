@@ -33,3 +33,19 @@ export const updateEncounterRequest = async (
 
   return response.data;
 };
+
+export interface Cie10DTO {
+  code: string;
+  description: string;
+  level?: number;
+}
+
+export const searchCie10Request = async (
+  searchTerm: string,
+): Promise<Cie10DTO[]> => {
+  const response = await api.get("/cie-10", {
+    params: { search: searchTerm },
+  });
+
+  return response.data;
+};

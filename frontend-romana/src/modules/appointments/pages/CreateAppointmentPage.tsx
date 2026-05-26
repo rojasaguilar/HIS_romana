@@ -566,7 +566,7 @@ export const CreateAppointmentPage = () => {
                         </p>
 
                         <p className="text-xs text-amber-600 mt-1 leading-relaxed">
-                          El backend determinará automáticamente el cobro final
+                          El sistema determinará automáticamente el cobro final
                           al momento de agendar la cita.
                         </p>
                       </div>
