@@ -7,6 +7,7 @@ export class CreateLabTestUseCase {
   constructor(private readonly labTestRepository: ILabTestRepository) {}
 
   public async execute(data: CreateLabTestDTO): Promise<LabTestEntity> {
+    console.log(data);
     // 1. Creamos la entidad pura con las reglas de negocio
     const newLabTest = LabTestEntity.create({
       id: crypto.randomUUID(), // El dominio genera su propio ID independiente de Mongo
