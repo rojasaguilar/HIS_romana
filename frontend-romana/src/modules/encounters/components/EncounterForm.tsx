@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useToast } from "@/shared/components/feedback/toast/ToastProvider";
 import { 
   Plus, 
@@ -37,31 +38,67 @@ export const EncounterForm = ({
     recetas 
   } = useEncounterForm(encounter);
 
-  const { register, handleSubmit, formState: { errors } } = form;
+  const { register, handleSubmit, formState: { errors }, reset } = form;
   const isPending = saveEncounter.isPending;
 
+  // =========================
+  // CARGAR DATOS EN MODO EDICIÓN
+  // =========================
+  useEffect(() => {
+    if (mode === "edit" && encounter) {
+      // 1. Formatear las fechas de las recetas para que los inputs type="date" las reconozcan (YYYY-MM-DD)
+      const formattedPrescriptions = encounter.prescriptions?.map((p: any) => ({
+        ...p,
+        fechaInicio: p.fechaInicio ? new Date(p.fechaInicio).toISOString().split("T")[0] : "",
+        fechaFin: p.fechaFin ? new Date(p.fechaFin).toISOString().split("T")[0] : ""
+      })) || [];
+
+      // 2. Insertar los datos en el react-hook-form
+      reset({
+        symptoms: encounter.symptoms || "",
+        notes: encounter.notes || "",
+        signosVitales: encounter.signosVitales || undefined,
+        interrogatorioAparatosSistemas: encounter.interrogatorioAparatosSistemas || [],
+        exploracionFisica: encounter.exploracionFisica || [],
+        integracionDiagnostica: encounter.integracionDiagnostica || [],
+        prescriptions: formattedPrescriptions,
+      });
+    }
+  }, [encounter, mode, reset]);
+
+  // =========================
+  // GUARDAR / ACTUALIZAR
+  // =========================
   const onSubmit = (data: any) => {
     if (!data.symptoms.trim()) {
       showToast("El motivo de consulta / síntomas es obligatorio", "error");
       return;
     }
 
+    // Regresar las fechas al formato ISO para el backend
+    const formattedPrescriptions = data.prescriptions.map((p: any) => ({
+      ...p,
+      fechaInicio: p.fechaInicio ? new Date(`${p.fechaInicio}T00:00:00.000Z`).toISOString() : undefined,
+      fechaFin: p.fechaFin ? new Date(`${p.fechaFin}T00:00:00.000Z`).toISOString() : undefined,
+    }));
+
     const encounterData = {
       patientId: appointment.patientId,
       medicId: appointment.medicId,
       appointmentId: appointment.id,
       ...data,
+      prescriptions: formattedPrescriptions,
     };
 
     saveEncounter.mutate(
       {
-        id: mode === "edit" ? encounter?.id : undefined,
+        id: mode === "edit" ? (encounter?.id || encounter?._id) : undefined,
         data: encounterData,
       },
       {
         onSuccess: () => {
           showToast(
-            mode === "edit" ? "Nota clínica actualizada" : "Nota clínica guardada",
+            mode === "edit" ? "Nota clínica actualizada con éxito" : "Nota clínica guardada con éxito",
             "success"
           );
           onCancel();
@@ -113,149 +150,69 @@ export const EncounterForm = ({
           />
         </div>
       </div>
-{/* ========================= */}
-{/* SIGNOS VITALES Y SOMATOMETRÍA */}
-{/* ========================= */}
-<div className="flex flex-col gap-3">
-  <div className={sectionHeaderClass}>
-    <div className={sectionTitleClass}>
-      <Activity className="w-5 h-5 text-red-500" />
-      <h4>Signos Vitales y Somatometría</h4>
-    </div>
-  </div>
-  
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 p-4 border border-slate-200 rounded-2xl">
-    
-    {/* Tensión Arterial - Sistólica */}
-    <div className="flex flex-col">
-      <label className={labelClass}>Tensión Arterial Sistólica (mmHg)</label>
-      <input 
-        type="number" 
-        {...register("signosVitales.tensionArterial.sistolica", { valueAsNumber: true })} 
-        placeholder="Ej. 120"
-        className={inputClass} 
-      />
-    </div>
 
-    {/* Tensión Arterial - Diastólica */}
-    <div className="flex flex-col">
-      <label className={labelClass}>Tensión Arterial Diastólica (mmHg)</label>
-      <input 
-        type="number" 
-        {...register("signosVitales.tensionArterial.diastolica", { valueAsNumber: true })} 
-        placeholder="Ej. 80"
-        className={inputClass} 
-      />
-    </div>
-
-    {/* Frecuencia Cardíaca */}
-    <div className="flex flex-col">
-      <label className={labelClass}>Frecuencia Cardíaca (lpm)</label>
-      <input 
-        type="number" 
-        {...register("signosVitales.frecuenciaCardiaca.valor", { valueAsNumber: true })} 
-        placeholder="Ej. 72"
-        className={inputClass} 
-      />
-    </div>
-
-    {/* Frecuencia Respiratoria */}
-    <div className="flex flex-col">
-      <label className={labelClass}>Frecuencia Respiratoria (rpm)</label>
-      <input 
-        type="number" 
-        {...register("signosVitales.frecuenciaRespiratoria.valor", { valueAsNumber: true })} 
-        placeholder="Ej. 16"
-        className={inputClass} 
-      />
-    </div>
-
-    {/* Temperatura */}
-    <div className="flex flex-col">
-      <label className={labelClass}>Temperatura (°C)</label>
-      <input 
-        type="number" 
-        step="0.1" 
-        {...register("signosVitales.temperatura.valor", { valueAsNumber: true })} 
-        placeholder="Ej. 36.5"
-        className={inputClass} 
-      />
-    </div>
-
-    {/* Talla / Estatura */}
-    <div className="flex flex-col">
-      <label className={labelClass}>Talla / Estatura (cm)</label>
-      <input 
-        type="number" 
-        {...register("signosVitales.talla.valor", { valueAsNumber: true })} 
-        placeholder="Ej. 170"
-        className={inputClass} 
-      />
-    </div>
-
-    {/* Peso (Valor + Selector de Unidad) */}
-    <div className="flex flex-col col-span-2 gap-1">
-      <label className={labelClass}>Peso Corporal</label>
-      <div className="flex gap-2">
-        <input 
-          type="number" 
-          step="0.1" 
-          placeholder="Valor (Ej. 70)" 
-          {...register("signosVitales.peso.valor", { valueAsNumber: true })} 
-          className={inputClass} 
-        />
-        <select 
-          {...register("signosVitales.peso.unidad")} 
-          className={`${inputClass} max-w-[85px] bg-white cursor-pointer`}
-        >
-          <option value="kg">kg</option>
-          <option value="lb">lb</option>
-        </select>
+      {/* ========================= */}
+      {/* SIGNOS VITALES Y SOMATOMETRÍA */}
+      {/* ========================= */}
+      <div className="flex flex-col gap-3">
+        <div className={sectionHeaderClass}>
+          <div className={sectionTitleClass}>
+            <Activity className="w-5 h-5 text-red-500" />
+            <h4>Signos Vitales y Somatometría</h4>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 p-4 border border-slate-200 rounded-2xl">
+          <div className="flex flex-col">
+            <label className={labelClass}>T.A. Sistólica (mmHg)</label>
+            <input type="number" {...register("signosVitales.tensionArterial.sistolica", { valueAsNumber: true })} className={inputClass} />
+          </div>
+          <div className="flex flex-col">
+            <label className={labelClass}>T.A. Diastólica (mmHg)</label>
+            <input type="number" {...register("signosVitales.tensionArterial.diastolica", { valueAsNumber: true })} className={inputClass} />
+          </div>
+          <div className="flex flex-col">
+            <label className={labelClass}>Frec. Cardíaca (lpm)</label>
+            <input type="number" {...register("signosVitales.frecuenciaCardiaca.valor", { valueAsNumber: true })} className={inputClass} />
+          </div>
+          <div className="flex flex-col">
+            <label className={labelClass}>Frec. Respiratoria (rpm)</label>
+            <input type="number" {...register("signosVitales.frecuenciaRespiratoria.valor", { valueAsNumber: true })} className={inputClass} />
+          </div>
+          <div className="flex flex-col">
+            <label className={labelClass}>Temperatura (°C)</label>
+            <input type="number" step="0.1" {...register("signosVitales.temperatura.valor", { valueAsNumber: true })} className={inputClass} />
+          </div>
+          <div className="flex flex-col">
+            <label className={labelClass}>Talla / Estatura (cm)</label>
+            <input type="number" {...register("signosVitales.talla.valor", { valueAsNumber: true })} className={inputClass} />
+          </div>
+          <div className="flex flex-col col-span-2 gap-1">
+            <label className={labelClass}>Peso Corporal</label>
+            <div className="flex gap-2">
+              <input type="number" step="0.1" placeholder="Valor" {...register("signosVitales.peso.valor", { valueAsNumber: true })} className={inputClass} />
+              <select {...register("signosVitales.peso.unidad")} className={`${inputClass} max-w-[85px] bg-white cursor-pointer`}>
+                <option value="kg">kg</option>
+                <option value="lb">lb</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex flex-col col-span-2 gap-1">
+            <label className={labelClass}>Índice de Masa Corporal (IMC)</label>
+            <div className="flex gap-2">
+              <input type="number" step="0.01" placeholder="Valor" {...register("signosVitales.imc.valor", { valueAsNumber: true })} className={inputClass} />
+              <input type="text" placeholder="Clasificación (Ej. Normal, Sobrepeso)" {...register("signosVitales.imc.clasificacion")} className={inputClass} />
+            </div>
+          </div>
+          <div className="flex flex-col col-span-2 gap-1">
+            <label className={labelClass}>Índice Cintura-Cadera (ICC)</label>
+            <div className="flex gap-2">
+              <input type="number" step="0.01" placeholder="Valor" {...register("signosVitales.icc.valor", { valueAsNumber: true })} className={inputClass} />
+              <input type="text" placeholder="Clasificación" {...register("signosVitales.icc.clasificacion")} className={inputClass} />
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-
-    {/* Índice de Masa Corporal (IMC) */}
-    <div className="flex flex-col col-span-2 gap-1">
-      <label className={labelClass}>Índice de Masa Corporal (IMC)</label>
-      <div className="flex gap-2">
-        <input 
-          type="number" 
-          step="0.01" 
-          placeholder="Valor (Ej. 24.2)" 
-          {...register("signosVitales.imc.valor", { valueAsNumber: true })} 
-          className={inputClass} 
-        />
-        <input 
-          type="text" 
-          placeholder="Clasificación (Ej. Normal, Sobrepeso)" 
-          {...register("signosVitales.imc.clasificacion")} 
-          className={inputClass} 
-        />
-      </div>
-    </div>
-
-    {/* Índice Cintura-Cadera (ICC) */}
-    <div className="flex flex-col col-span-2 gap-1">
-      <label className={labelClass}>Índice Cintura-Cadera (ICC)</label>
-      <div className="flex gap-2">
-        <input 
-          type="number" 
-          step="0.01" 
-          placeholder="Valor (Ej. 0.85)" 
-          {...register("signosVitales.icc.valor", { valueAsNumber: true })} 
-          className={inputClass} 
-        />
-        <input 
-          type="text" 
-          placeholder="Clasificación (Ej. Riesgo Moderado)" 
-          {...register("signosVitales.icc.clasificacion")} 
-          className={inputClass} 
-        />
-      </div>
-    </div>
-
-  </div>
-</div>
 
       {/* ========================= */}
       {/* INTERROGATORIO POR APARATOS Y SISTEMAS */}
@@ -470,7 +427,7 @@ export const EncounterForm = ({
       {/* ========================= */}
       {/* BOTONES DE ACCIÓN */}
       {/* ========================= */}
-      <div className="flex justify-end gap-3 border-t border-slate-200 pt-6 sticky bottom-0 bg-white pb-2 mt-2">
+      <div className="flex justify-end gap-3 border-t border-slate-200 pt-6 sticky bottom-0 bg-white pb-2 mt-2 z-10">
         <button
           type="button"
           onClick={onCancel}
