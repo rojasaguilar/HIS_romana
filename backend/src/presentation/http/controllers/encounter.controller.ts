@@ -4,7 +4,7 @@ import { GetEncounterByAppointmentUseCase } from '../../../core/usecases/encount
 import { GetPatientEncountersUseCase } from '../../../core/usecases/encounters/getPatient-encounters.usecase';
 import { UpdateEncounterUseCase } from '../../../core/usecases/encounters/update-encounter.usecase'; // Asegúrate de ajustar la ruta
 import { asyncHandler } from '../middlewares/asyncHandler';
-import { EncounterProps } from '../../../core/domain/entities/encounter.entity';
+// import { EncounterProps } from '../../../core/domain/entities/encounter.entity';
 
 export class EncounterController {
   constructor(

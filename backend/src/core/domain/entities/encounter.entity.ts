@@ -1,104 +1,127 @@
-import { CategoriaEstudiosLab } from '../types/lab-test.categories.type';
-import { Dosage } from '../value-objects/dosage.vo';
-
-export interface PrescriptionProps {
-  medicationName: string;
-  dosage: Dosage;
-  frequency: string;
-  startDate: Date;
-  endDate: Date;
-  //indicaciones
-}
-
-export interface EncounterLabTestProps {
-  category: CategoriaEstudiosLab;
-
-  testName: string;
-
-  instructions?: string;
-}
-
-export interface EncounterProps {
-  patientId: string;
-  medicId: string;
-  appointmentId: string;
-  symptoms: string;
-  notes?: string;
-  preliminaryDiagnosis: string;
-  differentialDiagnosis: string;
-  prescriptions: PrescriptionProps[];
-  id?: string;
-  labTests?: EncounterLabTestProps[];
-}
+import { CreateEncounterDTO } from '../dtos/encounter.dto';
+import { ExploracionFisicaItemVO } from '../value-objects/ExploracionFisicaItem.vo';
+import { IntegracionDiagnosticaItemVO } from '../value-objects/IntegracionDiagnosticaItem.vo';
+import { InterrogatorioSistemaVO } from '../value-objects/InterrogatorioSistema.vo';
+import { SignosVitalesVO } from '../value-objects/signosVitales.vo';
+import { TratamientoPrevioVO } from '../value-objects/TratamientoPrevio.vo';
 
 export class EncounterEntity {
-  public readonly id?: string;
-  public readonly patientId: string;
-  public readonly medicId: string;
-  public readonly appointmentId: string;
-  public readonly symptoms: string;
-  public readonly notes?: string;
-  public readonly preliminaryDiagnosis: string;
-  public readonly prescriptions: PrescriptionProps[];
-  public readonly differentialDiagnosis: string;
+  private constructor(
+    public readonly patientId: string,
 
-  private constructor(props: EncounterProps) {
-    this.patientId = props.patientId;
-    this.medicId = props.medicId;
-    this.appointmentId = props.appointmentId;
-    this.symptoms = props.symptoms;
-    this.notes = props.notes;
-    this.preliminaryDiagnosis = props.preliminaryDiagnosis;
-    this.differentialDiagnosis = props.differentialDiagnosis;
-    this.prescriptions = props.prescriptions;
-    this.id = props.id;
+    public readonly medicId: string,
+
+    public readonly appointmentId: string,
+
+    public symptoms: string,
+
+    public interrogatorioAparatosSistemas: InterrogatorioSistemaVO[],
+
+    public signosVitales: SignosVitalesVO,
+
+    public integracionDiagnostica: IntegracionDiagnosticaItemVO[],
+
+    public exploracionFisica: ExploracionFisicaItemVO[],
+
+    public prescriptions: TratamientoPrevioVO[],
+
+    public notes?: string,
+
+    public id?: string,
+  ) {
+    // ===============================
+    // IDS
+    // ===============================
+
+    if (!patientId.trim()) {
+      throw new Error('PatientId is required');
+    }
+
+    if (!medicId.trim()) {
+      throw new Error('MedicId is required');
+    }
+
+    if (!appointmentId.trim()) {
+      throw new Error('AppointmentId is required');
+    }
+
+    // ===============================
+    // SYMPTOMS
+    // ===============================
+
+    // const invalidSymptom = symptoms.some((symptom) => !symptom.trim());
+
+    // if (invalidSymptom) {
+    //   throw new Error('Symptoms cannot contain empty values');
+    // }
+
+    // ===============================
+    // DIAGNOSTICOS PRINCIPALES
+    // ===============================
+
+    const principales = integracionDiagnostica.filter(
+      (d) => d.toValue().principal,
+    );
+
+    if (principales.length > 1) {
+      throw new Error('Only one principal diagnosis is allowed');
+    }
   }
 
-  public static create(props: EncounterProps): EncounterEntity {
-    // 1. Validaciones de campos obligatorios
-    if (!props.patientId) throw new Error('El patientId es obligatorio.');
-    if (!props.medicId) throw new Error('El medicId es obligatorio.');
-    if (!props.appointmentId)
-      throw new Error('El appointmentId es obligatorio.');
-    if (!props.symptoms) throw new Error('Los síntomas son obligatorios.');
-    if (!props.preliminaryDiagnosis)
-      throw new Error('El diagnóstico preeliminar es obligatorio.');
+  public static create(data: CreateEncounterDTO): EncounterEntity {
+    const interrogatorioAparatosSistemas =
+      data.interrogatorioAparatosSistemas.map((item) =>
+        InterrogatorioSistemaVO.create(item),
+      );
 
-    // 2. Validación de la estructura de las recetas (prescriptions)
-    if (props.prescriptions && !Array.isArray(props.prescriptions)) {
-      throw new Error('Las recetas deben ser un arreglo (array).');
-    }
+    const signosVitales = SignosVitalesVO.create(data.signosVitales);
 
-    if (props.prescriptions && props.prescriptions.length > 0) {
-      props.prescriptions.forEach((prescription, index) => {
-        if (!prescription.medicationName)
-          throw new Error(
-            `Receta [${index}]: El nombre del medicamento es obligatorio.`,
-          );
-        if (!prescription.dosage)
-          throw new Error(`Receta [${index}]: La dosis es obligatoria.`);
-        if (!prescription.frequency)
-          throw new Error(`Receta [${index}]: La frecuencia es obligatoria.`);
-        if (!prescription.startDate)
-          throw new Error(
-            `Receta [${index}]: La fecha de inicio es obligatoria.`,
-          );
-        if (!prescription.endDate)
-          throw new Error(`Receta [${index}]: La fecha de fin es obligatoria.`);
+    const integracionDiagnostica = data.integracionDiagnostica.map((item) =>
+      IntegracionDiagnosticaItemVO.create({
+        ...item,
+        fechaDiagnostico: new Date(item.fechaDiagnostico),
+      }),
+    );
 
-        // Validación de coherencia en fechas
-        if (new Date(prescription.startDate) > new Date(prescription.endDate)) {
-          throw new Error(
-            `Receta [${index}]: La fecha de inicio no puede ser mayor a la fecha de fin.`,
-          );
-        }
-      });
-    }
+    const exploracionFisica = data.exploracionFisica.map((item) =>
+      ExploracionFisicaItemVO.create(item),
+    );
 
-    // Si todo es válido, retornamos la nueva instancia usando el constructor privado
-    return new EncounterEntity({
-      ...props,
-      prescriptions: props.prescriptions || [], // Aseguramos que siempre sea un array
-    });
+    const prescriptions = data.prescriptions.map((prescription) =>
+      TratamientoPrevioVO.create({
+        ...prescription,
+        fechaInicio: prescription.fechaInicio
+          ? new Date(prescription.fechaInicio)
+          : undefined,
+
+        fechaFin: prescription.fechaFin
+          ? new Date(prescription.fechaFin)
+          : undefined,
+      }),
+    );
+
+    return new EncounterEntity(
+      data.patientId,
+
+      data.medicId,
+
+      data.appointmentId,
+
+      data.symptoms,
+
+      interrogatorioAparatosSistemas,
+
+      signosVitales,
+
+      integracionDiagnostica,
+
+      exploracionFisica,
+
+      prescriptions,
+
+      data.notes,
+
+      data.id,
+    );
   }
 }

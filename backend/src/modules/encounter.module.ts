@@ -11,6 +11,8 @@ import { MedicRepository } from '../infraestructure/dataproviders/mongodb-datapr
 import { AppointmentRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/appointment.repository';
 import { LabTestRepository } from '../infraestructure/dataproviders/mongodb-dataprovider/repositories/lab-test.respository';
 import { UpdateEncounterUseCase } from '../core/usecases/encounters/update-encounter.usecase';
+import { EncounterNewController } from '../presentation/http/controllers/encounter.controller.new';
+import { EncounterNewRouter } from '../presentation/http/routes/encounter.routes.old';
 
 export const createEncounterModule = () => {
   const jwtTokenService = new JWTTokenService();
@@ -49,15 +51,22 @@ export const createEncounterModule = () => {
   );
 
   // CONTROLLER
-  const encounterController = new EncounterController(
-    createEncounterUseCase,
-    getPatientEncountersUseCase,
-    getEncounterByAppointmentUseCase,
-    updateEncounterUseCase,
-  );
+  // const encounterController = new EncounterController(
+  //   createEncounterUseCase,
+  //   getPatientEncountersUseCase,
+  //   getEncounterByAppointmentUseCase,
+  //   updateEncounterUseCase,
+  // );
+
+  const encounterController = new EncounterNewController();
 
   // ROUTER
-  const encounterRouter = new EncounterRouter(
+  // const encounterRouter = new EncounterRouter(
+  //   encounterController,
+  //   authMiddleware,
+  // );
+
+  const encounterRouter = new EncounterNewRouter(
     encounterController,
     authMiddleware,
   );

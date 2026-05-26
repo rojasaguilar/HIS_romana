@@ -13,9 +13,10 @@ import { createreceptionistModule } from '../../modules/receptionist.module';
 import { createAuthModule } from '../../modules/auth.module';
 import { createPlanModule } from '../../modules/plan.module';
 import { createSubscriptionModule } from '../../modules/subscription.module';
-import { createEncounterModule } from '../../modules/encounter.module';
+// import { createEncounterModule } from '../../modules/encounter.module';
 import { createLabTestModule } from '../../modules/lab-test.module';
 import conditionRoutes from './routes/conditions.routes';
+import encounterRoutes from './routes/encounter.routes.old';
 
 const app = express();
 const patientModule = createPatientModule();
@@ -28,7 +29,7 @@ const receptionistModule = createreceptionistModule();
 const authModule = createAuthModule();
 const planModule = createPlanModule();
 const subscriptionModule = createSubscriptionModule();
-const encounterModule = createEncounterModule();
+// const encounterModule = createEncounterModule();
 const labTestModule = createLabTestModule();
 
 app.use(
@@ -53,7 +54,7 @@ app.use('/receptionists', receptionistModule.router);
 app.use('/auth', authModule.router);
 app.use('/plans', planModule.router);
 app.use('/subscriptions', subscriptionModule.router);
-app.use('/encounters', encounterModule.router);
+app.use('/encounters', encounterRoutes);
 app.use('/lab-tests', labTestModule.router);
 app.use('/conditions', conditionRoutes);
 
