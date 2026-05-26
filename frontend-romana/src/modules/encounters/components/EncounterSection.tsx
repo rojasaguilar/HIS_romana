@@ -33,7 +33,7 @@ export const EncounterSection = ({
   const { data: labTests = [], isLoading: isLoadingLabTests } =
     useEncounterLabTests(encounter?._id);
 
-  console.log(encounter._id);
+  // console.log(encounter._id);
 
   // =========================
   // STATES
